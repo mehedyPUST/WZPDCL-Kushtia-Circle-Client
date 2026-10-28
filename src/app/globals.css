@@ -1,0 +1,1250 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   Theme tokens — dark (default) & light
+   Components use Tailwind + these CSS variables.
+   ═══════════════════════════════════════════════════════════ */
+
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* MongoDB.com dark — evergreen ink + spring green */
+  --app-bg: #001e2b;
+  --app-surface: #012433;
+  --app-surface-2: #023430;
+  --app-surface-3: #0c3b34;
+  --app-elevated: #013041;
+  --app-border: rgba(0, 237, 100, 0.14);
+  --app-border-strong: rgba(184, 196, 194, 0.28);
+  --app-text: #f9fbfa;
+  --app-text-secondary: #e8edeb;
+  --app-text-muted: #b8c4c2;
+  --app-text-faint: #8a9a96;
+  --app-accent: #00ed64;
+  --app-accent-ink: #001e2b;
+  --app-accent-hover: #6bffb0;
+  --app-accent-dim: rgba(0, 237, 100, 0.14);
+  --app-accent-border: rgba(0, 237, 100, 0.42);
+  --app-highlight: #ff9f1c;
+  --app-highlight-hover: #ffb347;
+  --app-highlight-dim: rgba(255, 159, 28, 0.14);
+  --app-highlight-border: rgba(255, 159, 28, 0.4);
+  --app-danger: #ff6b81;
+  --app-warning: #ffc65c;
+  --app-shadow: 0 8px 28px -10px rgba(0, 0, 0, 0.55);
+  --app-radius: 0.75rem;
+
+  --site-nav-h: 3.5rem;
+  --app-sidebar-w: 15.5rem;
+  --shell-chrome-h: 0px;
+
+  --sticky-even: #001e2b;
+  --sticky-odd: #012733;
+  --sticky-hover: #0a3a32;
+  --sticky-special: #2a2410;
+  --sticky-special-alt: #332c12;
+  --sticky-special-hover: #3d3514;
+  --sticky-filled: #023430;
+  --sticky-filled-alt: #034838;
+  --sticky-rose: #3a1520;
+  --sticky-rose-alt: #451826;
+  --sticky-sky: #0c2a38;
+  --sticky-sky-alt: #103344;
+  --sticky-purple: #221838;
+  --sticky-prev: #00141d;
+  --sticky-foot-head: #00141d;
+  --sticky-foot-sub: #2a2410;
+  --sticky-shadow: 3px 0 12px -2px rgba(0, 0, 0, 0.55);
+
+  --history-head-bg: #00141d;
+  --history-head-fg: #b8c4c2;
+  --history-time-head-fg: #00ed64;
+  --history-border: rgba(0, 237, 100, 0.16);
+  --history-row-odd: #001e2b;
+  --history-row-even: #012733;
+  --history-row-fg: #e8edeb;
+  --history-row-hover: #0a3a32;
+  --history-row-selected: rgba(0, 237, 100, 0.12);
+  --history-row-active: rgba(0, 104, 74, 0.45);
+  --history-time-fg: #00ed64;
+  --history-time-hover-fg: #f9fbfa;
+
+  /* Calculator density (readable defaults) */
+  --calc-header-py: 0.625rem;
+  --calc-logo: 2.25rem;
+  --calc-title: 0.8125rem;
+  --calc-sub: 0.6875rem;
+  --calc-tag: 0.5625rem;
+  --calc-clock-py: 0.375rem;
+  --calc-clock-size: 0.75rem;
+  --calc-bus-py: 0.5rem;
+  --calc-bus-h: 2rem;
+  --calc-bus-label: 0.75rem;
+  --calc-bus-input: 0.875rem;
+  --calc-row-h: 2rem;
+  --calc-row-text: 0.8125rem;
+  --calc-th-py: 0.375rem;
+  --calc-th-size: 0.6875rem;
+  --calc-badge-h: 2.25rem;
+  --calc-badge-text: 0.9375rem;
+  --calc-badge-label: 0.625rem;
+  --calc-btn-h: 2.25rem;
+  --calc-btn-text: 0.6875rem;
+  --calc-hist-h: 2rem;
+  --calc-footer-py: 0.375rem;
+  --calc-footer-size: 0.625rem;
+  --calc-section-px: 0.75rem;
+  --calc-gap: 0.5rem;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  /*
+    Smart & professional light palette:
+    Clean, bright engineering dashboard with high-contrast text and crisp boundaries
+  */
+  --app-bg: #f8fafc;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f5f9;
+  --app-surface-3: #e2e8f0;
+  --app-elevated: #ffffff;
+  --app-border: #cbd5e1;
+  --app-border-strong: #94a3b8;
+  --app-text: #0f172a;
+  --app-text-secondary: #334155;
+  --app-text-muted: #64748b;
+  --app-text-faint: #94a3b8;
+  --app-accent: #059669;
+  --app-accent-ink: #ffffff;
+  --app-accent-hover: #047857;
+  --app-accent-dim: #ecfdf5;
+  --app-accent-border: #a7f3d0;
+  --app-highlight: #ea580c;
+  --app-highlight-hover: #c2410c;
+  --app-highlight-dim: #fff7ed;
+  --app-highlight-border: #fed7aa;
+  --app-navy: #0f172a;
+  --app-danger: #dc2626;
+  --app-warning: #d97706;
+  --app-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+  --app-radius: 0.75rem;
+
+  --site-nav-h: 3.5rem;
+  --app-sidebar-w: 15.5rem;
+  --shell-chrome-h: 0px;
+
+  --sticky-even: #ffffff;
+  --sticky-odd: #f8fafc;
+  --sticky-hover: #e0f2fe;
+  --sticky-special: #fef3c7;
+  --sticky-special-alt: #fde68a;
+  --sticky-special-hover: #fcd34d;
+  --sticky-filled: #ecfdf5;
+  --sticky-filled-alt: #d1fae5;
+  --sticky-rose: #fee2e2;
+  --sticky-rose-alt: #fecaca;
+  --sticky-sky: #e0f2fe;
+  --sticky-sky-alt: #bae6fd;
+  --sticky-purple: #f3e8ff;
+  --sticky-prev: #f3e8ff;
+  --sticky-foot-head: #e2e8f0;
+  --sticky-foot-sub: #fef3c7;
+  --sticky-shadow: 2px 0 6px rgba(15, 23, 42, 0.08);
+
+  --history-head-bg: #e2e8f0;
+  --history-head-fg: #0f172a;
+  --history-time-head-fg: #047857;
+  --history-border: #cbd5e1;
+  --history-row-odd: #ffffff;
+  --history-row-even: #f8fafc;
+  --history-row-fg: #0f172a;
+  --history-row-hover: #e0f2fe;
+  --history-row-selected: #d1fae5;
+  --history-row-active: #fef3c7;
+  --history-time-fg: #047857;
+  --history-time-hover-fg: #065f46;
+}
+
+/* Mild height-adaptive density for calculator (never unreadable) */
+@media (min-height: 850px) {
+  :root,
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --calc-header-py: 0.75rem;
+    --calc-logo: 2.75rem;
+    --calc-title: 0.9375rem;
+    --calc-sub: 0.75rem;
+    --calc-tag: 0.625rem;
+    --calc-clock-py: 0.5rem;
+    --calc-clock-size: 0.8125rem;
+    --calc-bus-py: 0.625rem;
+    --calc-bus-h: 2.25rem;
+    --calc-bus-label: 0.8125rem;
+    --calc-bus-input: 0.9375rem;
+    --calc-row-h: 2.25rem;
+    --calc-row-text: 0.875rem;
+    --calc-th-py: 0.4375rem;
+    --calc-th-size: 0.75rem;
+    --calc-badge-h: 2.75rem;
+    --calc-badge-text: 1.125rem;
+    --calc-badge-label: 0.6875rem;
+    --calc-btn-h: 2.5rem;
+    --calc-btn-text: 0.75rem;
+    --calc-hist-h: 2.25rem;
+    --calc-footer-py: 0.5rem;
+    --calc-footer-size: 0.6875rem;
+    --calc-section-px: 1rem;
+    --calc-gap: 0.625rem;
+  }
+}
+
+@media (max-height: 640px) {
+  :root,
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --calc-header-py: 0.375rem;
+    --calc-logo: 1.75rem;
+    --calc-title: 0.6875rem;
+    --calc-sub: 0.625rem;
+    --calc-tag: 0.5rem;
+    --calc-clock-py: 0.25rem;
+    --calc-clock-size: 0.6875rem;
+    --calc-bus-py: 0.375rem;
+    --calc-bus-h: 1.75rem;
+    --calc-bus-label: 0.6875rem;
+    --calc-bus-input: 0.75rem;
+    --calc-row-h: 1.75rem;
+    --calc-row-text: 0.75rem;
+    --calc-th-py: 0.25rem;
+    --calc-th-size: 0.625rem;
+    --calc-badge-h: 1.875rem;
+    --calc-badge-text: 0.8125rem;
+    --calc-badge-label: 0.5625rem;
+    --calc-btn-h: 1.875rem;
+    --calc-btn-text: 0.625rem;
+    --calc-hist-h: 1.75rem;
+    --calc-footer-py: 0.25rem;
+    --calc-footer-size: 0.5625rem;
+    --calc-section-px: 0.5rem;
+    --calc-gap: 0.375rem;
+  }
+}
+
+/* ── Base ── */
+html {
+  height: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  height: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  font-feature-settings: "ss01" on, "cv01" on;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--app-text-muted) 45%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--app-text-muted) 40%, transparent);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--app-text-muted) 65%, transparent);
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--app-accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* ── Semantic utility classes (thin layer over variables) ── */
+.bg-app {
+  background-color: var(--app-bg);
+}
+.bg-surface {
+  background-color: var(--app-surface);
+}
+.bg-surface-2 {
+  background-color: var(--app-surface-2);
+}
+.bg-surface-3 {
+  background-color: var(--app-surface-3);
+}
+.bg-elevated {
+  background-color: var(--app-elevated);
+}
+.bg-accent-dim {
+  background-color: var(--app-accent-dim);
+}
+
+.text-app {
+  color: var(--app-text);
+}
+.text-secondary {
+  color: var(--app-text-secondary);
+}
+.text-muted {
+  color: var(--app-text-muted);
+}
+.text-faint {
+  color: var(--app-text-faint);
+}
+.text-accent {
+  color: var(--app-accent);
+}
+
+.border-app {
+  border-color: var(--app-border);
+}
+.border-app-strong {
+  border-color: var(--app-border-strong);
+}
+.border-accent {
+  border-color: var(--app-accent-border);
+}
+
+.app-card {
+  background: color-mix(in srgb, var(--app-surface-3) 45%, transparent);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(8px);
+}
+
+.app-page-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+}
+.app-page-sub {
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  margin-top: 0.25rem;
+  line-height: 1.5;
+}
+
+/* Theme toggle */
+.btn-primary {
+  background: var(--app-accent);
+  color: var(--app-accent-ink);
+  border: 1px solid var(--app-accent-border);
+}
+.btn-primary:hover {
+  background: var(--app-accent-hover);
+  color: var(--app-accent-ink);
+}
+html[data-theme="light"] .btn-primary,
+html[data-theme="light"] .btn-primary:hover {
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] .btn-primary:hover {
+  color: #001e2b !important;
+}
+.theme-toggle-btn {
+  background: color-mix(in srgb, var(--app-surface-2) 85%, transparent);
+  border: 1px solid var(--app-border-strong);
+  color: var(--app-text-secondary);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--app-bg) 25%, transparent);
+}
+.theme-toggle-btn:hover {
+  background: var(--app-surface-3);
+  border-color: var(--app-accent-border);
+  color: var(--app-text);
+}
+
+/* Copy button */
+.calc-copy-btn {
+  background: linear-gradient(135deg, var(--app-surface-3) 0%, var(--app-elevated) 100%);
+  color: var(--app-text);
+  border: 1px solid var(--app-border-strong);
+  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--app-bg) 40%, transparent);
+}
+.calc-copy-btn:hover {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--app-surface-3) 80%, white) 0%, var(--app-surface-3) 100%);
+  border-color: var(--app-border-strong);
+}
+.calc-copy-btn--copied,
+.calc-copy-btn--copied:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+/* ── App grid shell ── */
+.app-grid-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: var(--app-bg);
+}
+
+.app-grid-1,
+.app-grid-2,
+.app-grid-3 {
+  display: none;
+}
+
+.app-grid-4 {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--app-bg);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --shell-chrome-h: var(--site-nav-h);
+  }
+
+  .app-grid-shell {
+    grid-template-columns: var(--app-sidebar-w) 1fr;
+    grid-template-rows: var(--site-nav-h) 1fr;
+  }
+
+  .app-grid-1 {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1;
+    border-right: 1px solid var(--app-border);
+    border-bottom: 1px solid var(--app-border);
+    background: color-mix(in srgb, var(--app-surface) 95%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .app-grid-2 {
+    display: flex;
+    grid-column: 2;
+    grid-row: 1;
+    border-bottom: 1px solid var(--app-border);
+    background: color-mix(in srgb, var(--app-surface) 90%, transparent);
+    backdrop-filter: blur(12px);
+    align-items: center;
+  }
+
+  .app-grid-3 {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1;
+    grid-row: 2;
+    border-right: 1px solid var(--app-border);
+    background: var(--app-surface);
+    min-height: 0;
+  }
+
+  .app-grid-4 {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+/* Calculator feeder table */
+.calc-feeder-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.calc-feeder-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.calc-feeder-table thead th {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calc-feeder-table tbody td {
+  vertical-align: middle;
+  text-align: center;
+  overflow: hidden;
+  height: var(--calc-row-h);
+}
+.calc-feeder-table tbody td.cell-input {
+  padding: 0;
+}
+.calc-feeder-table tbody input {
+  display: block;
+  width: 100%;
+  height: var(--calc-row-h);
+  min-height: var(--calc-row-h);
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+.calc-feeder-table tbody tr {
+  height: var(--calc-row-h);
+}
+
+/* History table */
+.history-table {
+  border-collapse: collapse;
+}
+.history-thead.sticky,
+.history-thead.sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.history-thead th {
+  background-color: var(--history-head-bg);
+  color: var(--history-head-fg);
+  font-weight: 700;
+  border-color: var(--history-border);
+}
+.history-thead .history-time-head {
+  color: var(--history-time-head-fg);
+  border-right: 1px solid var(--history-border);
+}
+.history-row > td {
+  background-color: var(--history-row-bg, var(--history-row-odd));
+  color: var(--history-row-fg);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.history-row:nth-child(odd) > td {
+  --history-row-bg: var(--history-row-odd);
+}
+.history-row:nth-child(even) > td {
+  --history-row-bg: var(--history-row-even);
+}
+.history-row[data-row-state="selected"] > td {
+  background-color: var(--history-row-selected) !important;
+}
+.history-row[data-row-state="active"] > td {
+  background-color: var(--history-row-active) !important;
+}
+.history-row:hover > td {
+  background-color: var(--history-row-hover) !important;
+}
+.history-row .history-time-cell {
+  color: var(--history-time-fg) !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border-right: 1px solid var(--history-border);
+  background-color: transparent;
+}
+.history-row:hover .history-time-cell {
+  color: var(--history-time-hover-fg) !important;
+}
+
+/* Sheet sticky helpers */
+.sheet-scroll-x {
+  overflow-x: auto;
+}
+.time-header-sticky,
+.sheet-scroll-x .sheet-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--sticky-foot-head);
+  box-shadow: var(--sticky-shadow);
+}
+
+/* Hero fade (home) */
+.hero-bottom-fade {
+  background: linear-gradient(to top, var(--app-bg), transparent);
+}
+
+/* Safe area helper */
+.safe-pb {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+/* ── Standardized sticky TIME column + sticky thead ── */
+:root {
+  --time-col-w: 4.75rem;
+}
+
+.sheet-scroll-x {
+  overflow: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheet-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Sticky header row */
+.sheet-table thead.sticky-head,
+.sheet-table thead.sticky-head th {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* Time column cells (body) */
+.sheet-table .time-col,
+.time-col-sticky {
+  position: sticky;
+  left: 0;
+  width: var(--time-col-w);
+  min-width: var(--time-col-w);
+  max-width: var(--time-col-w);
+  z-index: 20;
+  box-shadow: var(--sticky-shadow);
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  background: var(--sticky-even);
+  color: var(--app-text);
+}
+
+/* Corner cell: sticky top + left, highest z */
+.sheet-table .time-header-sticky,
+.time-header-sticky {
+  position: sticky !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: var(--time-col-w);
+  min-width: var(--time-col-w);
+  max-width: var(--time-col-w);
+  z-index: 50 !important;
+  box-shadow: var(--sticky-shadow);
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--sticky-foot-head) !important;
+  color: var(--app-text) !important;
+}
+
+/* Alternating sticky body backgrounds */
+.sheet-table tbody tr:nth-child(odd) .time-col-sticky,
+.sheet-table tbody tr:nth-child(odd) .time-col {
+  background: var(--sticky-odd);
+}
+.sheet-table tbody tr:nth-child(even) .time-col-sticky,
+.sheet-table tbody tr:nth-child(even) .time-col {
+  background: var(--sticky-even);
+}
+.sheet-table tbody tr:hover .time-col-sticky,
+.sheet-table tbody tr:hover .time-col {
+  background: var(--sticky-hover) !important;
+}
+
+/* Footer sticky time */
+.sheet-table tfoot .time-col-sticky {
+  position: sticky;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  background: var(--sticky-foot-head) !important;
+  color: var(--app-text) !important;
+  box-shadow: var(--sticky-shadow);
+}
+
+/* History list time column alignment with sheets */
+.history-table .history-time-head,
+.history-table .history-time-cell {
+  width: var(--time-col-w);
+  min-width: var(--time-col-w);
+  max-width: var(--time-col-w);
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Light theme typography baseline */
+html[data-theme="light"] .text-slate-50,
+html[data-theme="light"] .text-slate-100,
+html[data-theme="light"] .text-slate-200 {
+  color: var(--app-text) !important;
+}
+html[data-theme="light"] .text-slate-300 {
+  color: var(--app-text-secondary) !important;
+}
+html[data-theme="light"] .text-slate-400,
+html[data-theme="light"] .text-slate-500 {
+  color: var(--app-text-muted) !important;
+}
+html[data-theme="light"] .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* Page layout shells — full width on desktop */
+.page-frame {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  padding: 0.5rem 0.5rem 0.75rem;
+}
+@media (min-width: 640px) {
+  .page-frame {
+    padding: 0.75rem 0.75rem 1rem;
+  }
+}
+@media (min-width: 1024px) {
+  .page-frame {
+    padding: 0.75rem 1rem 1rem;
+  }
+}
+
+.page-panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--app-shadow);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Mongo palette bridge
+   Maps leftover Tailwind emerald/slate utilities onto tokens
+   so every page follows the same dark + light system.
+   ═══════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] .text-emerald-300,
+html[data-theme="dark"] .text-emerald-400,
+html[data-theme="dark"] .text-emerald-500,
+html[data-theme="dark"] .text-teal-300,
+html[data-theme="dark"] .text-teal-400 {
+  color: #00ed64 !important;
+}
+
+html[data-theme="dark"] .bg-emerald-500,
+html[data-theme="dark"] .bg-emerald-600,
+html[data-theme="dark"] .hover\:bg-emerald-500:hover,
+html[data-theme="dark"] .hover\:bg-emerald-600:hover {
+  background-color: #00ed64 !important;
+  color: #001e2b !important;
+}
+
+html[data-theme="dark"] .from-emerald-600 {
+  --tw-gradient-from: #00ed64 var(--tw-gradient-from-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+html[data-theme="dark"] .to-teal-600,
+html[data-theme="dark"] .to-emerald-600 {
+  --tw-gradient-to: #00684a var(--tw-gradient-to-position);
+}
+html[data-theme="dark"] [class*="from-emerald"] {
+  color: #001e2b;
+}
+html[data-theme="dark"] [class*="from-emerald"] .text-white,
+html[data-theme="dark"] .bg-emerald-600.text-white,
+html[data-theme="dark"] .bg-emerald-500.text-white {
+  color: #001e2b !important;
+}
+
+html[data-theme="dark"] .bg-emerald-950,
+html[data-theme="dark"] .bg-emerald-950\/80,
+html[data-theme="dark"] .bg-emerald-950\/60,
+html[data-theme="dark"] .bg-emerald-950\/40 {
+  background-color: #023430 !important;
+}
+html[data-theme="dark"] .border-emerald-500\/30,
+html[data-theme="dark"] .border-emerald-400\/30,
+html[data-theme="dark"] .border-emerald-500\/20 {
+  border-color: rgba(0, 237, 100, 0.35) !important;
+}
+html[data-theme="dark"] .ring-emerald-500\/30 {
+  --tw-ring-color: rgba(0, 237, 100, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Light Theme: High-Contrast Engineering & SCADA Palette Bridge
+   Ensures WCAG AA compliance across all tables, badges, headers, and controls.
+   ═══════════════════════════════════════════════════════════ */
+
+/* 1. White text preservation: keep crisp white on solid colorful buttons, pills, and badges */
+html[data-theme="light"] button[class*="bg-emerald-"],
+html[data-theme="light"] button[class*="bg-sky-"],
+html[data-theme="light"] button[class*="bg-amber-"],
+html[data-theme="light"] button[class*="bg-rose-"],
+html[data-theme="light"] button[class*="bg-teal-"],
+html[data-theme="light"] button.bg-emerald-600,
+html[data-theme="light"] button.bg-emerald-700,
+html[data-theme="light"] button.bg-sky-600,
+html[data-theme="light"] button.bg-rose-600,
+html[data-theme="light"] button.bg-rose-700,
+html[data-theme="light"] a[class*="bg-emerald-"],
+html[data-theme="light"] a[class*="bg-sky-"],
+html[data-theme="light"] .btn-primary,
+html[data-theme="light"] [class*="from-emerald-600"],
+html[data-theme="light"] [class*="from-emerald-700"],
+html[data-theme="light"] [class*="from-teal-600"],
+html[data-theme="light"] aside a .text-white,
+html[data-theme="light"] [data-keep-dark],
+html[data-theme="light"] [data-keep-dark] * {
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] button[class*="bg-emerald-"] *,
+html[data-theme="light"] button[class*="bg-sky-"] *,
+html[data-theme="light"] button[class*="bg-amber-"] *,
+html[data-theme="light"] button[class*="bg-rose-"] *,
+html[data-theme="light"] button[class*="bg-teal-"] *,
+html[data-theme="light"] a[class*="bg-emerald-"] *,
+html[data-theme="light"] a[class*="bg-sky-"] * {
+  color: #ffffff !important;
+}
+
+/* Static text-white outside of solid buttons becomes readable dark text */
+html[data-theme="light"] .text-white:not(
+  button,
+  button *,
+  a[class*="bg-emerald-"],
+  a[class*="bg-emerald-"] *,
+  a[class*="bg-sky-"],
+  a[class*="bg-sky-"] *,
+  [class*="bg-emerald-6"],
+  [class*="bg-emerald-7"],
+  [class*="bg-sky-6"],
+  [class*="bg-sky-7"],
+  [class*="bg-amber-6"],
+  [class*="bg-rose-6"],
+  [class*="bg-rose-7"],
+  [class*="bg-teal-6"],
+  [class*="bg-teal-7"],
+  [class*="from-emerald-6"],
+  [data-keep-dark],
+  [data-keep-dark] *
+) {
+  color: var(--app-text);
+}
+
+/* 2. Text colors in light theme — rich, dark, readable variants */
+/* Emerald */
+html[data-theme="light"] .text-emerald-200,
+html[data-theme="light"] .text-emerald-300,
+html[data-theme="light"] .text-emerald-400 {
+  color: #047857 !important;
+}
+html[data-theme="light"] .text-emerald-500 {
+  color: #065f46 !important;
+}
+
+/* Teal */
+html[data-theme="light"] .text-teal-200,
+html[data-theme="light"] .text-teal-300,
+html[data-theme="light"] .text-teal-400 {
+  color: #0f766e !important;
+}
+html[data-theme="light"] .text-teal-500 {
+  color: #115e59 !important;
+}
+
+/* Sky */
+html[data-theme="light"] .text-sky-200,
+html[data-theme="light"] .text-sky-300,
+html[data-theme="light"] .text-sky-400 {
+  color: #0369a1 !important;
+}
+html[data-theme="light"] .text-sky-500 {
+  color: #075985 !important;
+}
+
+/* Purple & Violet */
+html[data-theme="light"] .text-purple-200,
+html[data-theme="light"] .text-purple-300,
+html[data-theme="light"] .text-purple-400,
+html[data-theme="light"] .text-violet-200,
+html[data-theme="light"] .text-violet-300,
+html[data-theme="light"] .text-violet-400 {
+  color: #6b21a8 !important;
+}
+html[data-theme="light"] .text-purple-500,
+html[data-theme="light"] .text-violet-500 {
+  color: #581c87 !important;
+}
+
+/* Indigo */
+html[data-theme="light"] .text-indigo-200,
+html[data-theme="light"] .text-indigo-300,
+html[data-theme="light"] .text-indigo-400 {
+  color: #3730a3 !important;
+}
+
+/* Amber & Orange */
+html[data-theme="light"] .text-amber-200,
+html[data-theme="light"] .text-amber-300,
+html[data-theme="light"] .text-amber-400,
+html[data-theme="light"] .text-orange-300,
+html[data-theme="light"] .text-orange-400 {
+  color: #b45309 !important;
+}
+html[data-theme="light"] .text-amber-500,
+html[data-theme="light"] .text-orange-500 {
+  color: #92400e !important;
+}
+
+/* Rose & Red */
+html[data-theme="light"] .text-rose-200,
+html[data-theme="light"] .text-rose-300,
+html[data-theme="light"] .text-rose-400,
+html[data-theme="light"] .text-red-300,
+html[data-theme="light"] .text-red-400 {
+  color: #be123c !important;
+}
+html[data-theme="light"] .text-rose-500 {
+  color: #9f1239 !important;
+}
+
+/* Slate scales (ensure white text never appears on white surfaces) */
+html[data-theme="light"] .text-slate-50,
+html[data-theme="light"] .text-slate-100,
+html[data-theme="light"] .text-slate-200 {
+  color: #0f172a !important;
+}
+html[data-theme="light"] .text-slate-300 {
+  color: #334155 !important;
+}
+html[data-theme="light"] .text-slate-400 {
+  color: #475569 !important;
+}
+html[data-theme="light"] .text-slate-500 {
+  color: #64748b !important;
+}
+html[data-theme="light"] .text-slate-600 {
+  color: #64748b !important;
+}
+
+/* 3. Dark tint background overrides -> Crisp pastel backgrounds */
+/* Emerald */
+html[data-theme="light"] [class*="bg-emerald-950"] {
+  background-color: #ecfdf5 !important;
+  color: #047857 !important;
+}
+
+/* Teal */
+html[data-theme="light"] [class*="bg-teal-950"] {
+  background-color: #f0fdfa !important;
+  color: #0f766e !important;
+}
+
+/* Sky */
+html[data-theme="light"] [class*="bg-sky-950"] {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+}
+
+/* Purple & Violet */
+html[data-theme="light"] [class*="bg-purple-950"],
+html[data-theme="light"] [class*="bg-violet-950"] {
+  background-color: #faf5ff !important;
+  color: #6b21a8 !important;
+}
+
+/* Indigo */
+html[data-theme="light"] [class*="bg-indigo-950"] {
+  background-color: #eef2ff !important;
+  color: #3730a3 !important;
+}
+
+/* Amber & Orange */
+html[data-theme="light"] [class*="bg-amber-950"],
+html[data-theme="light"] [class*="bg-orange-950"] {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+}
+
+/* Rose & Red */
+html[data-theme="light"] [class*="bg-rose-950"],
+html[data-theme="light"] [class*="bg-red-950"] {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+}
+
+/* Slate dark backgrounds -> Clean surface colors */
+html[data-theme="light"] [class*="bg-slate-950"],
+html[data-theme="light"] [class*="bg-slate-900"],
+html[data-theme="light"] [class*="bg-slate-800"]:not(button):not(a) {
+  background-color: var(--app-surface-2) !important;
+  color: var(--app-text);
+}
+
+/* Slate buttons in toolbars */
+html[data-theme="light"] button.bg-slate-800,
+html[data-theme="light"] button.bg-slate-700,
+html[data-theme="light"] button.bg-slate-900 {
+  background-color: var(--app-surface-3) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+html[data-theme="light"] button.bg-slate-800:hover,
+html[data-theme="light"] button.bg-slate-700:hover,
+html[data-theme="light"] button.bg-slate-900:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* 4. Borders & subtle overlays */
+html[data-theme="light"] [class*="border-slate-800"],
+html[data-theme="light"] [class*="border-slate-700"],
+html[data-theme="light"] [class*="border-slate-900"] {
+  border-color: var(--app-border) !important;
+}
+
+html[data-theme="light"] .border-white\/5,
+html[data-theme="light"] .border-white\/10,
+html[data-theme="light"] .border-white\/15,
+html[data-theme="light"] .border-white\/20,
+html[data-theme="light"] .border-white\/\[0\.06\],
+html[data-theme="light"] .border-white\/\[0\.08\],
+html[data-theme="light"] .border-white\/\[0\.1\],
+html[data-theme="light"] .border-white\/\[0\.12\] {
+  border-color: var(--app-border) !important;
+}
+
+html[data-theme="light"] .bg-white\/5,
+html[data-theme="light"] .bg-white\/10,
+html[data-theme="light"] .bg-white\/\[0\.04\],
+html[data-theme="light"] .bg-white\/\[0\.06\],
+html[data-theme="light"] .bg-white\/\[0\.07\],
+html[data-theme="light"] .bg-white\/\[0\.08\] {
+  background-color: var(--app-surface-3) !important;
+}
+
+/* Gradients */
+html[data-theme="light"] .from-slate-900,
+html[data-theme="light"] .via-slate-900\/90,
+html[data-theme="light"] .to-slate-950 {
+  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);
+  --tw-gradient-to: #f1f5f9 var(--tw-gradient-to-position);
+}
+
+/* 5. Inputs, selects, and textareas */
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: var(--app-border) !important;
+}
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Professional UI system
+   ═══════════════════════════════════════════════════════════ */
+
+html, body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.font-display {
+  letter-spacing: -0.025em;
+}
+
+.btn-secondary {
+  background: color-mix(in srgb, var(--app-surface-3) 70%, transparent);
+  color: var(--app-text);
+  border: 1px solid var(--app-border-strong);
+}
+.btn-secondary:hover {
+  background: var(--app-surface-3);
+  border-color: var(--app-accent-border);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--app-text-muted);
+  border: 1px solid transparent;
+}
+.btn-ghost:hover {
+  color: var(--app-text);
+  background: color-mix(in srgb, var(--app-surface-3) 55%, transparent);
+}
+
+.field-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--app-border-strong);
+  background: var(--app-elevated);
+  color: var(--app-text);
+  font-size: 0.875rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.field-input::placeholder {
+  color: var(--app-text-faint);
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--app-accent-border);
+  box-shadow: 0 0 0 3px var(--app-accent-dim);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--app-text-secondary);
+}
+
+.panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  box-shadow: var(--app-shadow);
+}
+
+.module-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 1rem;
+  padding: 1.25rem 1.35rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--app-surface) 92%, var(--app-accent) 8%) 0%,
+    var(--app-surface) 100%
+  );
+  border: 1px solid var(--app-border);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+.module-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--app-accent-border);
+  box-shadow: 0 16px 40px -20px color-mix(in srgb, var(--app-accent) 35%, transparent);
+}
+.module-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--app-accent-dim);
+  color: var(--app-accent);
+  border: 1px solid var(--app-accent-border);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--app-accent-dim);
+  color: var(--app-accent);
+  border: 1px solid var(--app-accent-border);
+}
+
+.section-kicker {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--app-accent);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+.table-shell {
+  border: 1px solid var(--app-border);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+
+
+.text-highlight { color: var(--app-highlight); }
+.bg-highlight { background: var(--app-highlight); color: #fff; }
+.bg-highlight-dim { background: var(--app-highlight-dim); }
+.border-highlight { border-color: var(--app-highlight-border); }
+.chip-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--app-highlight-dim);
+  color: var(--app-highlight);
+  border: 1px solid var(--app-highlight-border);
+}
+
+/* Soften neon borders on large chrome surfaces */
+.app-grid-1,
+.app-grid-2,
+.app-grid-3 {
+  border-color: color-mix(in srgb, var(--app-border) 80%, transparent) !important;
+}
+
+html[data-theme="light"] .module-card {
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+html[data-theme="light"] .module-card:hover {
+  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.14);
+}
+html[data-theme="light"] .page-panel,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .table-shell {
+  box-shadow: var(--app-shadow);
+}
+html[data-theme="light"] aside {
+  background: var(--app-surface-2);
+}
