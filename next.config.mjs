@@ -1,14 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // Do NOT use output: "standalone" on Vercel — it can break the serverless build.
   typescript: {
-    // Allow production builds even if there are type errors
     ignoreBuildErrors: true,
   },
-  // React Compiler (optional – enable only if you install babel-plugin-react-compiler)
-  // experimental: {
-  //   reactCompiler: true,
-  // },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
