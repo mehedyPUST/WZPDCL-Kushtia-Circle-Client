@@ -2,10 +2,10 @@
 
 function Metric({ label, value, unit, tone = "neutral" }) {
   const tones = {
-    neutral: "bg-surface-2 dark:bg-slate-800/80 border-app text-app dark:text-white",
+    neutral: "bg-surface-2 bg-surface-3/80 border-app text-app dark:text-white",
     slate: "bg-purple-500/10 dark:bg-purple-950/50 border-purple-500/30 text-purple-800 dark:text-purple-200",
     danger: "bg-rose-500/10 dark:bg-rose-950/70 border-rose-500/30 text-rose-800 dark:text-rose-200",
-    ok: "bg-emerald-500/10 dark:bg-emerald-950/70 border-emerald-500/30 text-emerald-800 dark:text-emerald-200",
+    ok: "bg-emerald-500/10 dark:bg-emerald-950/70 border-accent text-emerald-800 dark:text-emerald-200",
     warn: "bg-amber-500/10 dark:bg-amber-950/70 border-amber-500/30 text-amber-800 dark:text-amber-200",
     accent: "bg-sky-500/10 dark:bg-sky-950/60 border-sky-500/30 text-sky-800 dark:text-sky-200",
   };
@@ -49,7 +49,7 @@ export default function LoadShedPanel({ plan, calculated }) {
 
   return (
     <section
-      className="border-b border-app bg-surface-2/60 dark:bg-slate-900/70"
+      className="border-b border-app bg-surface-2/60 bg-surface/70"
       style={{
         paddingLeft: "var(--calc-section-px)",
         paddingRight: "var(--calc-section-px)",

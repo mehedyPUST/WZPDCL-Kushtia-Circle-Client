@@ -77,7 +77,7 @@ export default function ActionBar({
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} bg-emerald-600 text-white border border-emerald-500/80 hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5 focus-visible:ring-emerald-400`}
+            className={`${btnBase} btn-primary border border-emerald-500/80 hover:opacity-95 hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5 focus-visible:ring-emerald-400`}
             style={btnStyle}
           >
             Calculate Only
@@ -120,7 +120,7 @@ export default function ActionBar({
       )}
       {isAuthenticated && isViewer && !isLS && (
         <p
-          className="w-full text-center font-medium text-slate-300 bg-slate-800/70 rounded-md border border-app"
+          className="w-full text-center font-medium text-secondary bg-surface-2 rounded-md border border-app"
           style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.25rem", paddingBottom: "0.25rem" }}
         >
           Viewer role — calculate only; saving is disabled

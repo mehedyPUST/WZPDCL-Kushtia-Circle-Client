@@ -2,7 +2,7 @@
  * Feeder definitions for Bottail 33/11 kV Substation
  * bus: 1 → BUS-1 voltage, 2 → BUS-2 voltage
  *
- * BRB, MRS → kept free during load shed (not shed)
+ * BRB, MRS → participate in load shed (same as other feeders)
  * H-3, T-3 → H3+T3 group (participate in LS)
  * Others → outgoing 33 kV to remote SS (participate in LS)
  *
@@ -20,11 +20,57 @@ export const FEEDERS = [
   { id: 9, name: "T-3", bus: 2 },
 ];
 
+/**
+ * Stable feeder colors (match CSS --feeder-N tokens).
+ * Use for charts, legends, and row accents in JS.
+ */
+export const FEEDER_COLORS = {
+  1: "#006cfa", // BRB
+  2: "#00ed64", // MRS
+  3: "#b794f6", // Mozompur
+  4: "#f472b6", // Housing
+  5: "#ff9f1c", // Rajbari
+  6: "#22d3ee", // Campus / GIS
+  7: "#ffc65c", // Koburhat
+  8: "#818cf8", // H-3
+  9: "#ff6b81", // T-3
+};
+
+/** Ordered series for Recharts / stats */
+export const CHART_COLORS = [
+  "#00ed64",
+  "#006cfa",
+  "#ff9f1c",
+  "#b794f6",
+  "#f472b6",
+  "#22d3ee",
+  "#ffc65c",
+  "#b8c4c2",
+];
+
+export const BUS_COLORS = {
+  1: "#006cfa",
+  2: "#ffc65c",
+};
+
+export const STATUS_COLORS = {
+  normal: "#00ed64",
+  high: "#ffc65c",
+  overload: "#ff6b81",
+  shed: "#ff9f1c",
+  offline: "#8a9a96",
+  live: "#00ed64",
+  ring: "#b794f6",
+};
+
 /** H3+T3 = sum of feeders H-3 (id 8) + T-3 (id 9) — included in load shed */
 export const BOTTAIL_11KV_IDS = [8, 9];
 
-/** Always free during LS — do not shed */
-export const LS_PROTECTED_IDS = [1, 2]; // BRB, MRS
+/**
+ * Feeders excluded from proportional load-shed.
+ * Empty = all feeders (including BRB & MRS) are loadshedable.
+ */
+export const LS_PROTECTED_IDS = [];
 
 /** Feeders that never operate a ring line */
 export const NO_RING_FEEDER_IDS = [1, 2]; // BRB, MRS

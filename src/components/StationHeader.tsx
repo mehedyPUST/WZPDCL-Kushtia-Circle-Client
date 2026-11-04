@@ -126,7 +126,7 @@ export default function StationHeader({ tagline }) {
               <button
                 type="button"
                 onClick={() => setShowLogin(true)}
-                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-2.5 py-1 btn-primary rounded-md font-semibold transition-colors cursor-pointer shadow-xs"
                 style={{ fontSize: "var(--calc-sub)" }}
               >
                 Login
@@ -158,11 +158,7 @@ export default function StationHeader({ tagline }) {
                       <Link
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`block px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                          active
-                            ? "bg-emerald-600 text-white font-semibold"
-                            : "text-secondary hover:bg-surface-2 hover:text-app"
-                        }`}
+                        className={`block px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${ active ? "btn-primary font-semibold" : "text-secondary hover:bg-surface-2 hover:text-app" }`}
                       >
                         {link.label}
                       </Link>

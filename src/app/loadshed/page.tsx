@@ -21,8 +21,8 @@ function LoadShedInner() {
   if (!isAuthenticated) {
     return (
       <div className="flex-1 min-h-0 max-w-lg mx-auto w-full px-4 py-16 text-center">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900/80 p-8 shadow-xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-400 mb-3">
+        <div className="rounded-2xl border border-app bg-surface p-8 shadow-[var(--app-shadow)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent mb-3">
             Restricted
           </p>
           <h1 className="text-xl font-semibold text-app tracking-tight">
@@ -35,7 +35,7 @@ function LoadShedInner() {
           <button
             type="button"
             onClick={() => setShowLogin(true)}
-            className="mt-6 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500 shadow-md transition-colors"
+            className="btn-primary mt-6 inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md transition-colors"
           >
             Sign in
           </button>

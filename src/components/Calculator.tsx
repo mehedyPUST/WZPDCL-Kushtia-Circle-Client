@@ -656,8 +656,8 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
                 <StationHeader />
               </div>
             )}
-            <div className="hidden md:flex flex-shrink-0 bg-elevated text-white text-center border-b border-app-strong py-2.5 px-3 items-center justify-center relative">
-              <h1 className="font-bold text-base tracking-tight text-slate-50 leading-tight">
+            <div className="hidden md:flex flex-shrink-0 bg-elevated text-app text-center border-b border-app py-2.5 px-3 items-center justify-center relative">
+              <h1 className="font-bold text-base tracking-tight text-app leading-tight">
                 {editRecord ? "Edit Calculation" : "Load Calculator"}
               </h1>
               <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
@@ -666,18 +666,14 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-2 py-1 rounded-md text-[11px] font-semibold bg-slate-700 hover:bg-slate-600 text-white"
+                    className="px-2 py-1 rounded-md text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-app border border-app"
                   >
                     Close
                   </button>
                 )}
               </div>
             </div>
-            <div className={`px-2 md:px-4 py-0.5 border-b flex justify-end shrink-0 ${
-              mode === "loadShed"
-                ? "bg-slate-900 border-amber-700/30"
-                : "bg-slate-900/80 border-slate-700/50"
-            }`}>
+            <div className={`px-2 md:px-4 py-0.5 border-b flex justify-end shrink-0 ${ mode === "loadShed" ? "bg-surface-2 border-[var(--app-highlight-border)]" : "bg-surface-2 border-app" }`}>
               <OfflineBadge
                 online={online}
                 pendingCount={pendingCount}
@@ -687,7 +683,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
             </div>
             <div className="shrink-0">
               {embedded && editRecord ? (
-                <div className="bg-slate-950/90 text-emerald-400 text-center font-semibold tracking-wide font-mono border-b border-app py-1.5 text-[12px] sm:text-[13px]">
+                <div className="bg-surface-2 text-accent text-center font-semibold tracking-wide font-mono border-b border-app py-1.5 text-[12px] sm:text-[13px]">
                   <span className="opacity-70 mr-1.5">📅</span>
                   <span suppressHydrationWarning>
                     {(() => {

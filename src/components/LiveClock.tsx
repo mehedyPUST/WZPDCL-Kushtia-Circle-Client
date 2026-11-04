@@ -8,11 +8,11 @@ export default function LiveClock({ time }) {
 
   return (
     <div
-      className="bg-slate-950/90 text-emerald-400 text-center font-extrabold tracking-widest font-mono border-b border-app uppercase"
+      className="bg-app text-accent text-center font-extrabold tracking-widest font-mono border-b border-app uppercase"
       style={{ paddingTop: "var(--calc-clock-py)", paddingBottom: "var(--calc-clock-py)", fontSize: "var(--calc-clock-size)" }}
     >
       <span
-        className="inline-block bg-slate-900/80 rounded-md border border-emerald-500/20 shadow-sm"
+        className="inline-block bg-surface rounded-md border border-accent shadow-sm"
         style={{ paddingLeft: "0.75rem", paddingRight: "0.75rem", paddingTop: "0.125rem", paddingBottom: "0.125rem" }}
         suppressHydrationWarning
       >

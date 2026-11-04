@@ -34,7 +34,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
-          className="font-bold tracking-wide uppercase text-muted dark:text-slate-300 truncate"
+          className="font-bold tracking-wide uppercase text-muted text-secondary truncate"
           style={{ fontSize: "var(--calc-badge-label)" }}
         >
           H3+T3
@@ -43,7 +43,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
           key={`bottail-${bottail}`}
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
-          className="font-black font-mono tabular-nums tracking-tight text-emerald-700 dark:text-emerald-400 shrink-0 ml-1"
+          className="font-black font-mono tabular-nums tracking-tight text-accent shrink-0 ml-1"
           style={{ fontSize: "var(--calc-badge-text)" }}
         >
           {bottail}{" "}
@@ -81,9 +81,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
       <button
         type="button"
         onClick={handleCopyClick}
-        className={`${btnBase} calc-copy-btn ${
-          copied ? "calc-copy-btn--copied" : ""
-        } flex items-center justify-center gap-1.5 hover:-translate-y-0.5`}
+        className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } flex items-center justify-center gap-1.5 hover:-translate-y-0.5`}
         style={{
           height: "var(--calc-badge-h)",
           fontSize: "var(--calc-btn-text)",

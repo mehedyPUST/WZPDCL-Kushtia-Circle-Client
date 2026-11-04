@@ -117,7 +117,7 @@ export function computeAmpsFromMW(mw, voltageKv) {
  *   - amps[id]           = current running amps
  *   - currentLsMW[id]    = LS already applied on that feeder (MW)
  *   - allotmentMW        = total allowed MW
- *   - excludeIds         = free feeders (BRB, MRS) — not shed further
+ *   - excludeIds         = feeders excluded from shed (empty = all shedable, incl. BRB/MRS)
  *
  * Outputs per feeder:
  *   - targetMW / targetAmps

@@ -59,7 +59,7 @@ function normalizeRoleClient(role) {
 function roleBadge(role) {
   const r = String(role || "").toLowerCase();
   if (r === "admin" || r === "superadmin")
-    return "text-emerald-700 bg-emerald-50 border-emerald-300 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20 border px-2 py-0.5 rounded-md font-semibold";
+    return "text-accent bg-emerald-50 border-emerald-300 text-accent dark:bg-emerald-500/10 dark:border-accent border px-2 py-0.5 rounded-md font-semibold";
   if (r === "circle-load-input")
     return "text-amber-700 bg-amber-50 border-amber-300 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20 border px-2 py-0.5 rounded-md font-semibold";
   if (r === "duty" || r === "duty-person" || r === "operator")
@@ -388,7 +388,7 @@ export default function AdminPanel() {
       <div className="page-frame">
         <div className="max-w-md mx-auto w-full py-16 text-center">
           <div className="rounded-2xl border border-app-strong bg-surface-2 p-8 shadow-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-400 mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent mb-3">
               Restricted
             </p>
             <h1 className="text-xl font-semibold text-app">Admin Panel</h1>
@@ -399,7 +399,7 @@ export default function AdminPanel() {
             <button
               type="button"
               onClick={() => setShowLogin(true)}
-              className="mt-6 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500"
+              className="mt-6 inline-flex items-center justify-center px-5 py-2.5 rounded-lg btn-primary text-sm font-semibold hover:opacity-95"
             >
               Sign in
             </button>
@@ -451,7 +451,7 @@ export default function AdminPanel() {
         </h1>
         <p className="text-[11px] sm:text-xs text-muted mt-0.5">
           Users & station settings ·{" "}
-          <span className="text-emerald-400 font-semibold">{admin?.username}</span>
+          <span className="text-accent font-semibold">{admin?.username}</span>
         </p>
       </div>
 
@@ -465,11 +465,7 @@ export default function AdminPanel() {
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`flex-1 sm:flex-none px-3 py-2.5 sm:py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors whitespace-nowrap min-h-[2.5rem] ${
-                tab === t.id
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-muted hover:text-app hover:bg-white/5"
-              }`}
+              className={`flex-1 sm:flex-none px-3 py-2.5 sm:py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors whitespace-nowrap min-h-[2.5rem] ${ tab === t.id ? "btn-primary shadow-sm" : "text-muted hover:text-app hover:bg-white/5" }`}
             >
               {t.label}
             </button>
@@ -492,19 +488,11 @@ export default function AdminPanel() {
                     key={f.id}
                     type="button"
                     onClick={() => setRoleFilter(f.id)}
-                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all min-h-[2.25rem] flex items-center gap-1.5 ${
-                      roleFilter === f.id
-                        ? "bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-500"
-                        : "bg-surface border border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50 dark:border-app dark:bg-surface-2 dark:text-muted dark:hover:text-app dark:hover:bg-surface-3"
-                    }`}
+                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all min-h-[2.25rem] flex items-center gap-1.5 ${ roleFilter === f.id ? "btn-primary shadow-sm ring-1 ring-emerald-500" : "bg-surface border border-app text-secondary hover:text-app hover:bg-surface-2 dark:border-app dark:bg-surface-2 dark:text-muted dark:hover:text-app dark:hover:bg-surface-3" }`}
                   >
                     <span>{f.label}</span>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${
-                        roleFilter === f.id
-                          ? "bg-white/20 text-white"
-                          : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-muted"
-                      }`}
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${ roleFilter === f.id ? "bg-white/20 text-white" : "bg-surface-3 text-muted" }`}
                     >
                       {roleCounts[f.id] || 0}
                     </span>
@@ -517,19 +505,15 @@ export default function AdminPanel() {
                   type="button"
                   onClick={loadUsers}
                   disabled={loadingUsers}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface border border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50 dark:border-app dark:bg-surface-3 dark:text-secondary dark:hover:text-app min-h-[2.25rem] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface border border-app text-secondary hover:text-app hover:bg-surface-2 dark:border-app dark:bg-surface-3 dark:text-secondary dark:hover:text-app min-h-[2.25rem] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin text-emerald-600 dark:text-emerald-400" : ""}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin text-emerald-600 text-accent" : ""}`} />
                   <span className="hidden sm:inline">Refresh</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCreateUser((v) => !v)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold min-h-[2.25rem] inline-flex items-center gap-1.5 transition-all shadow-sm ${
-                    showCreateUser
-                      ? "bg-surface border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-app-strong dark:bg-surface-3 dark:text-secondary"
-                      : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-700/20 active:scale-95"
-                  }`}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold min-h-[2.25rem] inline-flex items-center gap-1.5 transition-all shadow-sm ${ showCreateUser ? "bg-surface border border-app text-secondary hover:bg-surface-3 border-app bg-surface-3 text-secondary" : "btn-primary shadow-emerald-700/20 active:scale-95" }`}
                 >
                   {showCreateUser ? (
                     <>
@@ -550,12 +534,12 @@ export default function AdminPanel() {
             {showCreateUser && (
               <form
                 onSubmit={handleCreate}
-                className="rounded-xl border border-emerald-500/30 bg-surface-2 p-4 shadow-xl shadow-black/40 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
+                className="rounded-xl border border-accent bg-surface-2 p-4 shadow-xl shadow-black/40 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
               >
                 <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-app">
                   <div>
                     <h2 className="text-sm font-semibold text-app tracking-tight flex items-center gap-1.5">
-                      <UserPlus className="w-4 h-4 text-emerald-400" />
+                      <UserPlus className="w-4 h-4 text-accent" />
                       Create New Account
                     </h2>
                     <p className="text-[11px] text-muted mt-0.5">
@@ -668,14 +652,14 @@ export default function AdminPanel() {
                         setShowCreateUser(false);
                         setForm(emptyForm);
                       }}
-                      className="px-4 py-2 rounded-lg border border-slate-300 dark:border-app bg-slate-100 hover:bg-slate-200 dark:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-slate-700 dark:text-secondary transition-colors"
+                      className="px-4 py-2 rounded-lg border border-app bg-surface-3 hover:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-secondary transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={creating}
-                      className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold tracking-wide hover:bg-emerald-500 disabled:opacity-50 shadow-md shadow-emerald-950/20 dark:shadow-emerald-950 transition-colors whitespace-nowrap"
+                      className="px-5 py-2 rounded-lg btn-primary text-xs font-semibold tracking-wide hover:opacity-95 disabled:opacity-50 shadow-md shadow-emerald-950/20 dark:shadow-emerald-950 transition-colors whitespace-nowrap"
                     >
                       {creating ? "Creating…" : "Save User"}
                     </button>
@@ -735,9 +719,7 @@ export default function AdminPanel() {
                         </td>
                         <td className="px-3.5 py-2.5">
                           <span
-                            className={`text-xs font-semibold ${roleBadge(
-                              u.role
-                            )}`}
+                            className={`text-xs font-semibold ${roleBadge( u.role )}`}
                           >
                             {ROLE_LABEL[u.role] || u.role}
                           </span>
@@ -749,7 +731,7 @@ export default function AdminPanel() {
                         </td>
                         <td className="px-3.5 py-2.5">
                           {active ? (
-                            <span className="text-xs font-semibold text-emerald-400">
+                            <span className="text-xs font-semibold text-accent">
                               Active
                             </span>
                           ) : (
@@ -768,7 +750,7 @@ export default function AdminPanel() {
                             <button
                               type="button"
                               onClick={() => openEdit(u)}
-                              className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 dark:bg-surface-3 dark:hover:bg-surface-3 dark:text-secondary dark:border-app transition-colors whitespace-nowrap shadow-2xs"
+                              className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app bg-surface-3 text-secondary border-app transition-colors whitespace-nowrap shadow-2xs"
                             >
                               Edit
                             </button>
@@ -784,7 +766,7 @@ export default function AdminPanel() {
                               <button
                                 type="button"
                                 onClick={() => setBlocked(u, false)}
-                                className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/20 transition-colors whitespace-nowrap shadow-2xs"
+                                className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:opacity-95/20 text-accent dark:border-accent transition-colors whitespace-nowrap shadow-2xs"
                               >
                                 Activate
                               </button>
@@ -836,11 +818,7 @@ export default function AdminPanel() {
                         </p>
                       </div>
                       <span
-                        className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                          active
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                            : "bg-rose-500/15 text-rose-400 border border-rose-500/20"
-                        }`}
+                        className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${ active ? "bg-emerald-500/15 text-accent border border-accent" : "bg-rose-500/15 text-rose-400 border border-rose-500/20" }`}
                       >
                         {active ? "Active" : "Blocked"}
                       </span>
@@ -859,7 +837,7 @@ export default function AdminPanel() {
                       <button
                         type="button"
                         onClick={() => openEdit(u)}
-                        className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 dark:bg-surface-3 dark:hover:bg-surface-3 dark:text-secondary dark:border-app"
+                        className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app bg-surface-3 text-secondary border-app"
                       >
                         Edit
                       </button>
@@ -875,7 +853,7 @@ export default function AdminPanel() {
                         <button
                           type="button"
                           onClick={() => setBlocked(u, false)}
-                          className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/20"
+                          className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:opacity-95/20 text-accent dark:border-accent"
                         >
                           Activate
                         </button>
@@ -1010,7 +988,7 @@ export default function AdminPanel() {
               type="button"
               onClick={saveSettings}
               disabled={savingSettings}
-              className="h-10 px-5 rounded-xl bg-emerald-600 text-white text-xs font-semibold tracking-wide hover:bg-emerald-500 disabled:opacity-50 whitespace-nowrap"
+              className="h-10 px-5 rounded-xl btn-primary text-xs font-semibold tracking-wide hover:opacity-95 disabled:opacity-50 whitespace-nowrap"
             >
               {savingSettings ? "Saving…" : "Save settings"}
             </button>
@@ -1145,14 +1123,14 @@ export default function AdminPanel() {
               <button
                 type="button"
                 onClick={() => setEditUser(null)}
-                className="h-10 px-4 rounded-lg border border-slate-300 dark:border-app bg-slate-100 hover:bg-slate-200 dark:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-slate-700 dark:text-secondary whitespace-nowrap transition-colors"
+                className="h-10 px-4 rounded-lg border border-app bg-surface-3 hover:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-secondary whitespace-nowrap transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingEdit}
-                className="h-10 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold disabled:opacity-50 whitespace-nowrap shadow-sm shadow-emerald-900/20"
+                className="h-10 px-4 rounded-lg btn-primary text-xs font-semibold disabled:opacity-50 whitespace-nowrap shadow-sm shadow-emerald-900/20"
               >
                 {savingEdit ? "Saving…" : "Save changes"}
               </button>

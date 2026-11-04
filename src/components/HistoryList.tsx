@@ -311,16 +311,12 @@ export default function HistoryList({
   return (
     <>
       <aside
-        className={`${pageMode
-          ? "w-full h-full flex flex-col bg-surface-2 shadow-xl shrink-0 overflow-hidden rounded-xl border border-app"
-          : "w-full sm:w-[440px] xl:w-[480px] h-full flex flex-col bg-surface-2 border-r border-app shadow-2xl shrink-0 overflow-hidden rounded-none md:rounded-2xl md:border md:border-app"
-          }`}
+        className={`${pageMode ? "w-full h-full flex flex-col bg-surface-2 shadow-xl shrink-0 overflow-hidden rounded-xl border border-app" : "w-full sm:w-[440px] xl:w-[480px] h-full flex flex-col bg-surface-2 border-r border-app shadow-2xl shrink-0 overflow-hidden rounded-none md:rounded-2xl md:border md:border-app" }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-3.5 py-2.5 bg-elevated border-b border-app text-app shrink-0">
           <h2
-            className={`text-xs md:text-sm font-semibold tracking-tight ${isTrash ? "text-rose-400" : "text-emerald-400"
-              }`}
+            className={`text-xs md:text-sm font-semibold tracking-tight ${isTrash ? "text-rose-400" : "text-accent" }`}
           >
             {isTrash ? "Trash" : "Saved History"}
           </h2>
@@ -368,10 +364,7 @@ export default function HistoryList({
           <button
             type="button"
             onClick={() => switchFolder("inbox")}
-            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${!isTrash
-              ? "text-emerald-400 border-b-2 border-emerald-500 bg-surface-2"
-              : "text-muted hover:text-secondary hover:bg-surface-2/40"
-              }`}
+            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${!isTrash ? "text-accent border-b-2 border-emerald-500 bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
           >
             History
             <span className="ml-1.5 text-[11px] font-mono tabular-nums text-muted">
@@ -381,15 +374,11 @@ export default function HistoryList({
           <button
             type="button"
             onClick={() => switchFolder("trash")}
-            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${isTrash
-              ? "text-rose-400 border-b-2 border-rose-500 bg-surface-2"
-              : "text-muted hover:text-secondary hover:bg-surface-2/40"
-              }`}
+            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${isTrash ? "text-rose-400 border-b-2 border-rose-500 bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
           >
             Trash
             <span
-              className={`ml-1.5 text-[11px] font-mono tabular-nums ${trashCount > 0 ? "text-rose-400" : "text-faint"
-                }`}
+              className={`ml-1.5 text-[11px] font-mono tabular-nums ${trashCount > 0 ? "text-rose-400" : "text-faint" }`}
             >
               ({trashCount})
             </span>
@@ -460,7 +449,7 @@ export default function HistoryList({
                   : filterDate}
               </span>
               {" · "}
-              <span className="font-semibold text-emerald-400">{total}</span> record{total === 1 ? "" : "s"}
+              <span className="font-semibold text-accent">{total}</span> record{total === 1 ? "" : "s"}
             </p>
           ) : null}
         </div>
@@ -474,7 +463,7 @@ export default function HistoryList({
               checked={allSelected}
               onChange={toggleAll}
               disabled={filtered.length === 0 || loading || !isAuthenticated}
-              className="w-4 h-4 rounded border-slate-600 bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40"
+              className="w-4 h-4 rounded border-app bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40"
             />
             <span className="text-[11px] font-medium text-muted tabular-nums">
               {someSelected ? `${selected.size} selected` : "Select all"}
@@ -514,7 +503,7 @@ export default function HistoryList({
                     message: `${selected.size} item(s) will return to History.`,
                   })
                 }
-                className="h-7 px-2.5 rounded-lg text-[11px] font-semibold bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                className="h-7 px-2.5 rounded-lg text-[11px] font-semibold btn-primary hover:opacity-95 shadow-sm active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
               >
                 Restore
               </button>
@@ -550,7 +539,7 @@ export default function HistoryList({
               <button
                 type="button"
                 onClick={load}
-                className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline"
+                className="text-xs font-semibold text-accent hover:text-accent underline"
               >
                 Try again
               </button>
@@ -631,7 +620,7 @@ export default function HistoryList({
                           checked={checked}
                           onChange={() => toggleOne(r._id)}
                           disabled={!isAuthenticated}
-                          className="w-4 h-4 rounded border-slate-600 bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-4 h-4 rounded border-app bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
                         />
                       </td>
                       <td className="py-2 text-center text-xs font-semibold text-muted font-mono tabular-nums">
@@ -655,8 +644,7 @@ export default function HistoryList({
                           )}
                         {isTrash && left != null && (
                           <span
-                            className={`block text-[9px] font-semibold ${left <= 3 ? "text-rose-400" : "text-amber-400"
-                              }`}
+                            className={`block text-[9px] font-semibold ${left <= 3 ? "text-rose-400" : "text-amber-400" }`}
                           >
                             {left === 0 ? "Expires today" : `${left}d left`}
                           </span>
@@ -734,7 +722,7 @@ export default function HistoryList({
                                         message: "This calculation will appear in History again.",
                                       })
                                     }
-                                    className="min-w-[2.6rem] px-2 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                    className="min-w-[2.6rem] px-2 py-1 rounded-md btn-primary text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                   >
                                     Restore
                                   </button>
@@ -784,7 +772,7 @@ export default function HistoryList({
             <p className="text-[11px] font-medium text-muted text-center tabular-nums">
               Page <span className="font-semibold text-app">{page}</span> of{" "}
               <span className="font-semibold text-app">{pages}</span>
-              <span className="text-slate-600"> · </span>
+              <span className="text-muted"> · </span>
               <span className="font-semibold text-secondary">{total}</span> total
             </p>
             <button

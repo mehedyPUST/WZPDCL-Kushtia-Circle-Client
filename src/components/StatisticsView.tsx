@@ -618,13 +618,13 @@ export default function StatisticsView() {
               <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
                 WZPDCL Substation 33/11 kV
               </span>
-              <span className="text-slate-500 text-xs">·</span>
-              <span className="text-slate-400 text-xs font-mono font-medium">Bottail Grid</span>
+              <span className="text-app text-xs">·</span>
+              <span className="text-muted text-xs font-mono font-medium">Bottail Grid</span>
             </div>
             <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
               Substation Operational Analytics
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl leading-relaxed">
               Active power dispatch (<span className="text-emerald-400 font-semibold">Demand = Total Supplied + Load Shed</span>),
               transformer bus balance, voltage stability, and feeder loading analysis.
             </p>
@@ -635,10 +635,10 @@ export default function StatisticsView() {
               type="button"
               onClick={loadData}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 border border-app hover:bg-slate-700 hover:text-white disabled:opacity-50 transition-all shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-3 text-secondary border border-app hover:bg-surface-3 hover:text-white disabled:opacity-50 transition-all shadow-sm"
             >
               <svg
-                className={`w-3.5 h-3.5 ${loading ? "animate-spin text-emerald-400" : "text-slate-400"}`}
+                className={`w-3.5 h-3.5 ${loading ? "animate-spin text-emerald-400" : "text-muted"}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -661,7 +661,7 @@ export default function StatisticsView() {
         <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl bg-surface-2/60 border border-app">
           {/* Preset Buttons */}
           <div className="flex flex-wrap items-center gap-1">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-2 mr-1 hidden sm:inline">
+            <span className="text-[11px] font-semibold text-app uppercase tracking-wider px-2 mr-1 hidden sm:inline">
               Period:
             </span>
             {PRESET_RANGES.map((r) => (
@@ -669,10 +669,7 @@ export default function StatisticsView() {
                 key={r.id}
                 type="button"
                 onClick={() => setRangeId(r.id)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id
-                    ? "bg-emerald-600 text-white shadow-sm font-semibold"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                  }`}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id ? "bg-emerald-600 text-white shadow-sm font-semibold" : "text-muted hover:text-secondary hover:bg-white/5" }`}
               >
                 {r.label}
               </button>
@@ -681,20 +678,20 @@ export default function StatisticsView() {
 
           {/* Custom Date Pickers (if Custom is chosen) */}
           {rangeId === "custom" && (
-            <div className="flex items-center gap-2 text-xs bg-slate-800/80 px-2.5 py-1 rounded-lg border border-app">
-              <label className="text-slate-400">From:</label>
+            <div className="flex items-center gap-2 text-xs bg-surface-3/80 px-2.5 py-1 rounded-lg border border-app">
+              <label className="text-muted">From:</label>
               <input
                 type="date"
                 value={customFrom}
                 onChange={(e) => setCustomFrom(e.target.value)}
-                className="bg-surface-2 text-slate-200 border border-app rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-emerald-500"
+                className="bg-surface-2 text-secondary border border-app rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-emerald-500"
               />
-              <label className="text-slate-400">To:</label>
+              <label className="text-muted">To:</label>
               <input
                 type="date"
                 value={customTo}
                 onChange={(e) => setCustomTo(e.target.value)}
-                className="bg-surface-2 text-slate-200 border border-app rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-emerald-500"
+                className="bg-surface-2 text-secondary border border-app rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-emerald-500"
               />
               <button
                 type="button"
@@ -708,7 +705,7 @@ export default function StatisticsView() {
 
           {/* Ring Line Toggle */}
           <div className="flex items-center gap-1 bg-elevated/60 p-1 rounded-lg border border-white/5">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-1.5 hidden md:inline">
+            <span className="text-[10px] font-semibold text-app uppercase tracking-wider px-1.5 hidden md:inline">
               Ring:
             </span>
             {[
@@ -720,12 +717,7 @@ export default function StatisticsView() {
                 key={rf.id}
                 type="button"
                 onClick={() => setRingFilter(rf.id)}
-                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ringFilter === rf.id
-                    ? rf.id === "with"
-                      ? "bg-amber-600 text-white font-semibold"
-                      : "bg-slate-700 text-white font-semibold"
-                    : "text-slate-400 hover:text-slate-200"
-                  }`}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ringFilter === rf.id ? rf.id === "with" ? "bg-amber-600 text-white font-semibold" : "bg-surface-3 text-white font-semibold" : "text-muted hover:text-secondary" }`}
               >
                 {rf.label}
               </button>
@@ -764,7 +756,7 @@ export default function StatisticsView() {
           <button
             type="button"
             onClick={loadData}
-            className="mt-3 px-4 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-semibold border border-app-strong hover:bg-slate-700"
+            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-3 text-white text-xs font-semibold border border-app-strong hover:bg-surface-3"
           >
             Retry Connection
           </button>
@@ -774,13 +766,13 @@ export default function StatisticsView() {
       {/* ── Empty State ── */}
       {!loading && !error && analytics.empty && (
         <div className="rounded-2xl border border-app bg-surface-2/40 p-12 text-center">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-surface-3 flex items-center justify-center text-muted">
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <h2 className="text-base font-semibold text-slate-200">No calculation records found</h2>
-          <p className="text-slate-400 text-xs sm:text-sm mt-1.5 max-w-md mx-auto leading-relaxed">
+          <h2 className="text-base font-semibold text-secondary">No calculation records found</h2>
+          <p className="text-muted text-xs sm:text-sm mt-1.5 max-w-md mx-auto leading-relaxed">
             There are no logsheet calculations recorded for the selected date range ({activeRange.label}).
             Record hourly samples in Calculator or Manual Entry.
           </p>
@@ -793,7 +785,7 @@ export default function StatisticsView() {
             </Link>
             <Link
               href="/calculator"
-              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-app transition-colors"
+              className="px-4 py-2 rounded-lg bg-surface-3 hover:bg-surface-3 text-secondary text-xs font-semibold border border-app transition-colors"
             >
               Open Calculator
             </Link>
@@ -815,95 +807,91 @@ export default function StatisticsView() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               {/* Insight 1: Peak Demand Event */}
-              <div className="p-3 rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-1">
+                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
                     <span className="font-semibold text-[11px]">System Peak Demand</span>
                     <span className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 font-mono text-[10px] border border-purple-200 dark:border-transparent">
                       {analytics.peakDemandRecord?.slot || "—"}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-app">
                     {formatMW(analytics.peakDemand)} MW
                   </p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-snug">
+                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
                     {analytics.peakDemandRecord?.ls > 0 ? (
-                      <>Supplied: <span className="text-slate-900 dark:text-slate-200 font-medium">{formatMW(analytics.peakDemandRecord?.total)} MW</span> + Shed: <span className="text-rose-600 dark:text-rose-400 font-semibold">{formatMW(analytics.peakDemandRecord?.ls)} MW</span></>
+                      <>Supplied: <span className="text-slate-900 text-secondary font-medium">{formatMW(analytics.peakDemandRecord?.total)} MW</span> + Shed: <span className="text-rose-600 dark:text-rose-400 font-semibold">{formatMW(analytics.peakDemandRecord?.ls)} MW</span></>
                     ) : (
                       <span className="text-emerald-700 dark:text-emerald-400 font-medium">100% supplied without curtailment</span>
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-2 font-mono">
+                <span className="text-[10px] text-app mt-2 font-mono">
                   {analytics.peakDemandRecord?.day ? formatDayLabel(analytics.peakDemandRecord.day) : "—"}
                 </span>
               </div>
 
               {/* Insight 2: Load Shedding & Curtailment */}
-              <div className="p-3 rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-1">
+                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
                     <span className="font-semibold text-[11px]">Load Shedding Status</span>
-                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${analytics.peakLs > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-transparent" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent"
-                      }`}>
+                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${analytics.peakLs > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-transparent" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" }`}>
                       {analytics.peakLs > 0 ? `${analytics.hoursWithLS} slots with LS` : "Zero LS"}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-app">
                     {analytics.peakLs > 0 ? `${formatMW(analytics.peakLs)} MW Peak Cut` : "0.0 MW (Full Supply)"}
                   </p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-snug">
+                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
                     {analytics.peakLs > 0 ? (
-                      <>Average cut: <span className="text-slate-900 dark:text-slate-200 font-mono font-medium">{formatMW(analytics.meanLS)} MW</span> across active slots</>
+                      <>Average cut: <span className="text-slate-900 text-secondary font-mono font-medium">{formatMW(analytics.meanLS)} MW</span> across active slots</>
                     ) : (
                       <span className="text-emerald-700 dark:text-emerald-400 font-medium">100% grid demand met without curtailment</span>
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-2 font-mono">
+                <span className="text-[10px] text-app mt-2 font-mono">
                   {analytics.peakLsRecord?.slot ? `Peak cut slot: ${analytics.peakLsRecord.slot}` : "Compliant continuous supply"}
                 </span>
               </div>
 
               {/* Insight 3: 33/11 kV Transformer Balance */}
-              <div className="p-3 rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-1">
+                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
                     <span className="font-semibold text-[11px]">Bus 1 vs Bus 2 Loading</span>
-                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10
-                        ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent"
-                        : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-transparent"
-                      }`}>
+                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-transparent" }`}>
                       {Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "Balanced" : "Asymmetric"}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-app">
                     B1: {analytics.bus1SharePct}% · B2: {analytics.bus2SharePct}%
                   </p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-snug">
+                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
                     B1 (MRS, Housing, Rajbari, H-3)
                     <br />
                     B2 (BRB, Mozompur, Campus/GIS, Kobur, T-3)
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-2 font-mono">
+                <span className="text-[10px] text-app mt-2 font-mono">
                   Δ: {formatMW(Math.abs(analytics.bus1SharePct - analytics.bus2SharePct))}% variance
                 </span>
               </div>
 
               {/* Insight 4: 33 kV Voltage Profile */}
-              <div className="p-3 rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-1">
+                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
                     <span className="font-semibold text-[11px]">33 kV Incoming Voltage</span>
                     <span className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-mono text-[10px] border border-sky-200 dark:border-transparent">
                       Nominal: 33.0 kV
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-app">
                     B1: {formatKV(analytics.bus1AvgVolt)} kV · B2: {formatKV(analytics.bus2AvgVolt)} kV
                   </p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-snug">
+                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
                     Range: {formatKV(Math.min(analytics.bus1MinVolt, analytics.bus2MinVolt))} – {formatKV(Math.max(analytics.bus1MaxVolt, analytics.bus2MaxVolt))} kV
                     {analytics.bus1MinVolt < 30.5 || analytics.bus2MinVolt < 30.5 ? (
                       <span className="text-amber-600 dark:text-amber-400 block font-semibold">Under-voltage detected (&lt;30.5 kV)</span>
@@ -912,7 +900,7 @@ export default function StatisticsView() {
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-500 mt-2 font-mono">
+                <span className="text-[10px] text-app mt-2 font-mono">
                   WZPDCL Kushtia Incomer
                 </span>
               </div>
@@ -979,10 +967,7 @@ export default function StatisticsView() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`pb-3 px-3 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id
-                      ? "border-emerald-500 text-emerald-400"
-                      : "border-transparent text-slate-400 hover:text-slate-200"
-                    }`}
+                  className={`pb-3 px-3 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted hover:text-secondary" }`}
                 >
                   {tab.label}
                 </button>
@@ -998,7 +983,7 @@ export default function StatisticsView() {
                   <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                     24-Hour Diurnal Load Profile & Grid Allotment
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-muted mt-0.5">
                     Chronological progression across 26 logsheet slots (00:00 to 23:00, including 18:30 and 19:30).
                     Visualizes <span className="text-purple-400 font-semibold">Demand</span> vs{" "}
                     <span className="text-emerald-400 font-semibold">Supplied Consumption</span> vs{" "}
@@ -1008,19 +993,19 @@ export default function StatisticsView() {
                 <div className="flex items-center gap-4 text-xs font-mono">
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-purple-500/80" />
-                    <span className="text-slate-300">Demand (MW)</span>
+                    <span className="text-secondary">Demand (MW)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-emerald-500/80" />
-                    <span className="text-slate-300">Supplied (MW)</span>
+                    <span className="text-secondary">Supplied (MW)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-rose-500/80" />
-                    <span className="text-slate-300">Load Shed (MW)</span>
+                    <span className="text-secondary">Load Shed (MW)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-0.5 border-t-2 border-dashed border-amber-400" />
-                    <span className="text-slate-300">Allotment (MW)</span>
+                    <span className="text-secondary">Allotment (MW)</span>
                   </div>
                 </div>
               </div>
@@ -1109,33 +1094,33 @@ export default function StatisticsView() {
 
               {/* Slot Data Cards Ribbon */}
               <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-slate-800/40 p-2.5 rounded-lg border border-white/5">
-                  <span className="text-slate-400 block text-[11px]">Evening Peak Slot (19:00/20:00)</span>
+                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                  <span className="text-muted block text-[11px]">Evening Peak Slot (19:00/20:00)</span>
                   <span className="text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "19:00" || d.slot === "20:00")?.demand || 0)} MW
                   </span>
-                  <span className="text-slate-500 text-[10px] block mt-0.5">Maximum residential & commercial load</span>
+                  <span className="text-app text-[10px] block mt-0.5">Maximum residential & commercial load</span>
                 </div>
-                <div className="bg-slate-800/40 p-2.5 rounded-lg border border-white/5">
-                  <span className="text-slate-400 block text-[11px]">Day Peak Slot (13:00/14:00)</span>
+                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                  <span className="text-muted block text-[11px]">Day Peak Slot (13:00/14:00)</span>
                   <span className="text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "13:00" || d.slot === "14:00")?.demand || 0)} MW
                   </span>
-                  <span className="text-slate-500 text-[10px] block mt-0.5">Industrial & commercial operations</span>
+                  <span className="text-app text-[10px] block mt-0.5">Industrial & commercial operations</span>
                 </div>
-                <div className="bg-slate-800/40 p-2.5 rounded-lg border border-white/5">
-                  <span className="text-slate-400 block text-[11px]">Night Base Load (03:00)</span>
+                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                  <span className="text-muted block text-[11px]">Night Base Load (03:00)</span>
                   <span className="text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "03:00")?.supplied || 0)} MW
                   </span>
-                  <span className="text-slate-500 text-[10px] block mt-0.5">Minimum nighttime grid draw</span>
+                  <span className="text-app text-[10px] block mt-0.5">Minimum nighttime grid draw</span>
                 </div>
-                <div className="bg-slate-800/40 p-2.5 rounded-lg border border-white/5">
-                  <span className="text-slate-400 block text-[11px]">Peak Load Shed Slot</span>
+                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                  <span className="text-muted block text-[11px]">Peak Load Shed Slot</span>
                   <span className="text-rose-400 font-bold font-mono text-sm">
                     {formatMW(analytics.peakLs)} MW
                   </span>
-                  <span className="text-slate-500 text-[10px] block mt-0.5">
+                  <span className="text-app text-[10px] block mt-0.5">
                     {analytics.peakLsRecord?.slot ? `Occurred at ${analytics.peakLsRecord.slot}` : "No shedding recorded"}
                   </span>
                 </div>
@@ -1153,55 +1138,49 @@ export default function StatisticsView() {
                   return (
                     <div
                       key={shift.key}
-                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-xs ${isEvening
-                          ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-purple-500/30"
-                          : isDay
-                            ? "bg-gradient-to-br from-sky-50/80 via-white to-sky-50/30 border-sky-200 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-sky-500/30"
-                            : "bg-surface border-app"
-                        }`}
+                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-xs ${isEvening ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-purple-500/30" : isDay ? "bg-gradient-to-br from-sky-50/80 via-white to-sky-50/30 border-sky-200 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-sky-500/30" : "bg-surface border-app" }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-400" : isDay ? "text-sky-700 dark:text-sky-400" : "text-slate-700 dark:text-slate-400"
-                            }`}>
+                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-400" : isDay ? "text-sky-700 dark:text-sky-400" : "text-slate-700 text-muted" }`}>
                             {shift.name}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-transparent px-2 py-0.5 rounded">
+                          <span className="text-[11px] font-mono text-slate-600 text-muted bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-transparent px-2 py-0.5 rounded">
                             {shift.time}
                           </span>
                         </div>
                         <div className="mt-3 grid grid-cols-2 gap-3">
                           <div>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 block">Peak Supplied</span>
-                            <span className="text-xl font-bold font-mono text-slate-900 dark:text-white">
-                              {formatMW(shift.peakMW)} <span className="text-xs text-slate-500 dark:text-slate-400">MW</span>
+                            <span className="text-[11px] text-app text-muted block">Peak Supplied</span>
+                            <span className="text-xl font-bold font-mono text-app">
+                              {formatMW(shift.peakMW)} <span className="text-xs text-app text-muted">MW</span>
                             </span>
                           </div>
                           <div>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 block">Average Load</span>
-                            <span className="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">
-                              {formatMW(shift.avgMW)} <span className="text-xs text-slate-500 dark:text-slate-400">MW</span>
+                            <span className="text-[11px] text-app text-muted block">Average Load</span>
+                            <span className="text-xl font-bold font-mono text-slate-800 text-secondary">
+                              {formatMW(shift.avgMW)} <span className="text-xs text-app text-muted">MW</span>
                             </span>
                           </div>
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-app grid grid-cols-2 gap-3 text-xs">
                           <div>
-                            <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Peak Load Shed</span>
+                            <span className="text-app text-muted block text-[11px]">Peak Load Shed</span>
                             <span className={`font-mono font-bold ${shift.peakShedMW > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}>
                               {formatMW(shift.peakShedMW)} MW
                             </span>
                           </div>
                           <div>
-                            <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Average Shed</span>
-                            <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
+                            <span className="text-app text-muted block text-[11px]">Average Shed</span>
+                            <span className="font-mono font-semibold text-slate-700 text-secondary">
                               {formatMW(shift.avgLS)} MW
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-4 text-[11px] text-slate-600 dark:text-slate-500">
+                      <div className="mt-4 text-[11px] text-slate-600 dark:text-app">
                         {isEvening && "Highest thermal stress on 33/11kV transformers & switchgear"}
                         {isDay && "Driven by BRB Cable Industries, MRS, and commercial shops"}
                         {!isEvening && !isDay && "Lowest ambient temperature; stable base grid conditions"}
@@ -1216,7 +1195,7 @@ export default function StatisticsView() {
                 <h3 className="text-sm font-semibold text-white tracking-tight mb-1">
                   Shift Load & Curtailment Comparison
                 </h3>
-                <p className="text-xs text-slate-400 mb-4">
+                <p className="text-xs text-muted mb-4">
                   Comparison of Peak Supplied Load (MW), Mean Load (MW), and Peak Load Shed (MW) across operational shifts.
                 </p>
                 <div className="h-64 w-full">
@@ -1247,7 +1226,7 @@ export default function StatisticsView() {
                     <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                       Feeder Average & Peak Power Dispatch
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-muted mt-0.5">
                       Ranked by mean MW delivered. Feeders on Bus 1 vs Bus 2 with protection status.
                     </p>
                   </div>
@@ -1295,16 +1274,16 @@ export default function StatisticsView() {
                   <h3 className="text-sm font-semibold text-white">
                     Feeder Technical Ledger & Load Shed Audit
                   </h3>
-                  <span className="text-xs text-slate-400 font-mono">
+                  <span className="text-xs text-muted font-mono">
                     9 Feeders Total (2 Protected, 2 Local 11kV)
                   </span>
                 </div>
                 <div className="overflow-x-auto relative sheet-scroll-x">
                   <table className="w-full text-left text-xs min-w-[720px]">
                     <thead className="sticky top-0 z-30 shadow-sm">
-                      <tr className="text-slate-900 dark:text-slate-200 bg-slate-200 dark:bg-elevated border-b border-slate-300 dark:border-app text-[11px] uppercase tracking-wider">
+                      <tr className="text-slate-900 text-secondary bg-slate-200 dark:bg-elevated border-b border-slate-300 dark:border-app text-[11px] uppercase tracking-wider">
                         <th
-                          className="py-2.5 px-3 font-bold bg-slate-200 text-slate-900 dark:bg-elevated dark:text-slate-100 border-r border-slate-300 dark:border-app/80"
+                          className="py-2.5 px-3 font-bold bg-slate-200 text-slate-900 dark:bg-elevated text-app border-r border-slate-300 dark:border-app/80"
                           style={{ position: "sticky", left: 0, top: 0, zIndex: 40, boxShadow: "var(--sticky-shadow)" }}
                         >
                           Feeder Name
@@ -1320,9 +1299,9 @@ export default function StatisticsView() {
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-white/5 font-mono">
                       {analytics.feederList.map((f) => (
-                        <tr key={f.name} className="hover:bg-slate-100/60 dark:hover:bg-white/[0.02] text-slate-800 dark:text-slate-200 transition-colors">
+                        <tr key={f.name} className="hover:bg-slate-100/60 dark:hover:bg-white/[0.02] text-slate-800 text-secondary transition-colors">
                           <td
-                            className="py-2.5 px-3 font-sans font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-app/80 bg-slate-50 dark:bg-surface"
+                            className="py-2.5 px-3 font-sans font-bold text-app border-r border-slate-200 dark:border-app/80 bg-slate-50 dark:bg-surface"
                             style={{ position: "sticky", left: 0, zIndex: 20, boxShadow: "var(--sticky-shadow)" }}
                           >
                             <span className="inline-flex items-center gap-2">
@@ -1330,9 +1309,8 @@ export default function StatisticsView() {
                               <span>{f.name}</span>
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-slate-300">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${f.bus === 1 ? "bg-sky-950 text-sky-400 border border-sky-800/40" : "bg-purple-950 text-purple-400 border border-purple-800/40"
-                              }`}>
+                          <td className="py-2.5 px-3 text-secondary">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${f.bus === 1 ? "bg-sky-950 text-sky-400 border border-sky-800/40" : "bg-purple-950 text-purple-400 border border-purple-800/40" }`}>
                               BUS-{f.bus}
                             </span>
                           </td>
@@ -1347,23 +1325,23 @@ export default function StatisticsView() {
                             ) : BOTTAIL_11KV_IDS.includes(f.id) ? (
                               <span className="text-amber-400">Local 11kV (H3+T3)</span>
                             ) : (
-                              <span className="text-slate-400">33kV Outgoing (Sheddable)</span>
+                              <span className="text-muted">33kV Outgoing (Sheddable)</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-right font-semibold">
                             {formatMW(f.avgMW)} MW
                           </td>
-                          <td className="py-2.5 px-3 text-right text-slate-300">
+                          <td className="py-2.5 px-3 text-right text-secondary">
                             {formatMW(f.peakMW)} MW
                           </td>
-                          <td className="py-2.5 px-3 text-right text-slate-300">
+                          <td className="py-2.5 px-3 text-right text-secondary">
                             {f.share}%
                           </td>
                           <td className="py-2.5 px-3 text-right">
                             {f.peakShedMW > 0 ? (
                               <span className="text-rose-400 font-bold">{formatMW(f.peakShedMW)} MW</span>
                             ) : (
-                              <span className="text-slate-500">0.0 MW</span>
+                              <span className="text-app">0.0 MW</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-center">
@@ -1376,7 +1354,7 @@ export default function StatisticsView() {
                                 Shed Active
                               </span>
                             ) : (
-                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400">
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-surface-3 text-muted">
                                 Normal
                               </span>
                             )}
@@ -1400,18 +1378,18 @@ export default function StatisticsView() {
                     <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                       33 kV Bus Voltage Stability Profile
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-muted mt-0.5">
                       Bus 1 & Bus 2 voltage telemetry across logsheet hours. Nominal grid target is 33.0 kV.
                     </p>
                   </div>
                   <div className="flex items-center gap-4 text-xs font-mono">
                     <div className="flex items-center gap-1.5">
                       <span className="w-3 h-0.5 bg-sky-400" />
-                      <span className="text-slate-300">Bus 1 Voltage (kV)</span>
+                      <span className="text-secondary">Bus 1 Voltage (kV)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-3 h-0.5 bg-purple-400" />
-                      <span className="text-slate-300">Bus 2 Voltage (kV)</span>
+                      <span className="text-secondary">Bus 2 Voltage (kV)</span>
                     </div>
                   </div>
                 </div>
@@ -1470,23 +1448,23 @@ export default function StatisticsView() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 py-3 border-y border-app text-xs font-mono">
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Average kV</span>
-                      <span className="text-base font-bold text-slate-900 dark:text-white">{formatKV(analytics.bus1AvgVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Average kV</span>
+                      <span className="text-base font-bold text-app">{formatKV(analytics.bus1AvgVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Minimum kV</span>
-                      <span className="text-base font-bold text-slate-700 dark:text-slate-300">{formatKV(analytics.bus1MinVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Minimum kV</span>
+                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus1MinVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Maximum kV</span>
-                      <span className="text-base font-bold text-slate-700 dark:text-slate-300">{formatKV(analytics.bus1MaxVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Maximum kV</span>
+                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus1MaxVolt)} kV</span>
                     </div>
                   </div>
-                  <div className="mt-3 text-xs text-slate-600 dark:text-slate-400">
-                    <span className="font-semibold text-slate-800 dark:text-slate-300 block mb-1">Connected Feeders:</span>
+                  <div className="mt-3 text-xs text-slate-600 text-muted">
+                    <span className="font-semibold text-slate-800 text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 1).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] border border-slate-200 dark:border-transparent">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 bg-surface-3 text-slate-700 text-secondary text-[11px] border border-slate-200 dark:border-transparent">
                           {f.name}
                         </span>
                       ))}
@@ -1506,23 +1484,23 @@ export default function StatisticsView() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 py-3 border-y border-app text-xs font-mono">
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Average kV</span>
-                      <span className="text-base font-bold text-slate-900 dark:text-white">{formatKV(analytics.bus2AvgVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Average kV</span>
+                      <span className="text-base font-bold text-app">{formatKV(analytics.bus2AvgVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Minimum kV</span>
-                      <span className="text-base font-bold text-slate-700 dark:text-slate-300">{formatKV(analytics.bus2MinVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Minimum kV</span>
+                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus2MinVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Maximum kV</span>
-                      <span className="text-base font-bold text-slate-700 dark:text-slate-300">{formatKV(analytics.bus2MaxVolt)} kV</span>
+                      <span className="text-app text-muted block text-[10px]">Maximum kV</span>
+                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus2MaxVolt)} kV</span>
                     </div>
                   </div>
-                  <div className="mt-3 text-xs text-slate-600 dark:text-slate-400">
-                    <span className="font-semibold text-slate-800 dark:text-slate-300 block mb-1">Connected Feeders:</span>
+                  <div className="mt-3 text-xs text-slate-600 text-muted">
+                    <span className="font-semibold text-slate-800 text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 2).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] border border-slate-200 dark:border-transparent">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 bg-surface-3 text-slate-700 text-secondary text-[11px] border border-slate-200 dark:border-transparent">
                           {f.name}
                         </span>
                       ))}
@@ -1541,22 +1519,22 @@ export default function StatisticsView() {
                   <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                     Daily Peak & Average Demand Trend
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-muted mt-0.5">
                     Day-by-day evolution of Peak Demand (MW), Peak Supplied (MW), and Daily Mean Load (MW).
                   </p>
                 </div>
                 <div className="flex items-center gap-4 text-xs font-mono">
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-purple-500" />
-                    <span className="text-slate-300">Peak Demand (MW)</span>
+                    <span className="text-secondary">Peak Demand (MW)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-emerald-500" />
-                    <span className="text-slate-300">Peak Supplied (MW)</span>
+                    <span className="text-secondary">Peak Supplied (MW)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-sky-500" />
-                    <span className="text-slate-300">Daily Average (MW)</span>
+                    <span className="text-secondary">Daily Average (MW)</span>
                   </div>
                 </div>
               </div>
@@ -1621,8 +1599,8 @@ export default function StatisticsView() {
           )}
 
           {/* ── Engineering Context & Formula References ── */}
-          <div className="rounded-xl bg-surface-2/40 border border-white/5 p-4 text-xs text-slate-400 space-y-2">
-            <p className="font-semibold text-slate-300">
+          <div className="rounded-xl bg-surface-2/40 border border-white/5 p-4 text-xs text-muted space-y-2">
+            <p className="font-semibold text-secondary">
               Technical Calculation Methodology (WZPDCL Standards):
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] leading-relaxed">
@@ -1668,21 +1646,21 @@ function SubstationKpi({ label, value, unit, sub, accent = "slate" }) {
     rose: "text-rose-900 dark:text-rose-200",
     amber: "text-amber-900 dark:text-amber-200",
     teal: "text-teal-900 dark:text-teal-200",
-    slate: "text-slate-900 dark:text-white",
+    slate: "text-app",
   };
 
   return (
     <div className={`rounded-xl border p-3.5 sm:p-4 bg-gradient-to-br ${accentClasses[accent] || accentClasses.slate} shadow-xs dark:shadow-sm flex flex-col justify-between`}>
       <div>
-        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 text-muted">
           {label}
         </p>
         <p className={`mt-1.5 text-lg sm:text-xl font-bold tabular-nums tracking-tight font-mono ${valueClasses[accent] || valueClasses.slate}`}>
           {value}
-          {unit ? <span className="text-xs font-sans font-medium text-slate-500 dark:text-slate-400 ml-1">{unit}</span> : null}
+          {unit ? <span className="text-xs font-sans font-medium text-app text-muted ml-1">{unit}</span> : null}
         </p>
       </div>
-      {sub ? <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-2 leading-tight">{sub}</p> : null}
+      {sub ? <p className="text-[10px] text-slate-600 text-muted mt-2 leading-tight">{sub}</p> : null}
     </div>
   );
 }

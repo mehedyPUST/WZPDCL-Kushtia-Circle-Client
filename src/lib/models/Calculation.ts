@@ -36,6 +36,11 @@ const calculationSchema = new mongoose.Schema(
       ref: "Admin",
       default: null,
     },
+    /** Denormalized for history / dashboard without populate */
+    createdByUsername: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -44,6 +49,7 @@ calculationSchema.index({ deletedAt: 1, createdAt: -1 });
 calculationSchema.index({ deletedAt: 1 });
 calculationSchema.index({ deletedAt: 1, isHourly: 1, calculatedAt: -1 });
 calculationSchema.index({ deletedAt: 1, hasActiveRing: 1, calculatedAt: -1 });
+calculationSchema.index({ createdBy: 1, deletedAt: 1, createdAt: -1 });
 
 export default mongoose.models.Calculation ||
   mongoose.model("Calculation", calculationSchema);

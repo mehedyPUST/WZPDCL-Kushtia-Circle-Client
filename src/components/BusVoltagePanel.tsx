@@ -22,7 +22,7 @@ function Field({
         ? "bg-purple-500/10 dark:bg-purple-950/25 border-purple-500/30 hover:border-purple-500/60"
         : tone === "sky"
           ? "bg-sky-500/10 dark:bg-sky-950/25 border-sky-500/30 hover:border-sky-500/60"
-          : "bg-surface-2 dark:bg-slate-800/70 border-app hover:border-emerald-500/50";
+          : "bg-surface-2 bg-surface-3/70 border-app hover:border-emerald-500/50";
 
   const labelCls =
     tone === "amber"
@@ -31,16 +31,16 @@ function Field({
         ? "text-purple-800 dark:text-purple-300"
         : tone === "sky"
           ? "text-sky-800 dark:text-sky-300"
-          : "text-slate-800 dark:text-slate-200";
+          : "text-slate-800 text-secondary";
 
   const inputCls =
     tone === "amber"
-      ? "bg-surface dark:bg-slate-950/90 border-amber-500/40 text-amber-950 dark:text-amber-100 focus:ring-amber-500/35 focus:border-amber-500"
+      ? "bg-app border-[var(--app-highlight-border)] text-app focus:ring-[var(--app-highlight)]/35 focus:border-[var(--app-highlight)]"
       : tone === "purple"
-        ? "bg-surface dark:bg-slate-950/90 border-purple-500/40 text-purple-950 dark:text-white focus:ring-purple-500/35 focus:border-purple-500"
+        ? "bg-app border-[var(--app-violet-border)] text-app focus:ring-[var(--app-violet)]/35 focus:border-[var(--app-violet)]"
         : tone === "sky"
-          ? "bg-surface dark:bg-slate-950/90 border-sky-500/40 text-sky-950 dark:text-white focus:ring-sky-500/35 focus:border-sky-500"
-          : "bg-surface dark:bg-slate-950/90 border-app text-app focus:ring-emerald-500/35 focus:border-emerald-500";
+          ? "bg-app border-[var(--bus-1-border)] text-app focus:ring-[var(--bus-1)]/35 focus:border-[var(--bus-1)]"
+          : "bg-app border-app text-app focus:ring-[var(--app-focus-ring)] focus:border-accent";
 
   return (
     <div
@@ -80,7 +80,7 @@ function Field({
             if (navigateInputsByArrow(e)) return;
             handleKeyDown?.(e);
           }}
-          className={`border rounded-md text-center font-bold placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:ring-2 focus:bg-surface dark:focus:bg-slate-950 transition-all font-mono tabular-nums ${inputCls}`}
+          className={`border rounded-md text-center font-bold placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:ring-2 focus:bg-surface transition-all font-mono tabular-nums ${inputCls}`}
           style={{
             width: "calc(var(--calc-bus-h) * 2.1)",
             height: "var(--calc-bus-h)",
@@ -115,7 +115,7 @@ export default function BusVoltagePanel({
 
   return (
     <section
-      className="border-b border-app bg-surface-2/70 dark:bg-slate-900/60"
+      className="border-b border-app bg-surface-2"
       style={{
         paddingLeft: "var(--calc-section-px)",
         paddingRight: "var(--calc-section-px)",

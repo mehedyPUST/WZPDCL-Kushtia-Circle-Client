@@ -27,15 +27,11 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
   return (
     <aside className="w-full h-full flex flex-col bg-surface-2 border border-app shadow-xl overflow-hidden rounded-none md:rounded-xl">
       <div
-        className={`flex items-center gap-2 px-3.5 py-2.5 text-app shrink-0 ${record.isOffline
-            ? "bg-amber-100 dark:bg-amber-950/80 border-b border-amber-300 dark:border-amber-500/30"
-            : "bg-surface-3 border-b border-app"
-          }`}
+        className={`flex items-center gap-2 px-3.5 py-2.5 text-app shrink-0 ${record.isOffline ? "bg-amber-100 dark:bg-amber-950/80 border-b border-amber-300 dark:border-amber-500/30" : "bg-surface-3 border-b border-app" }`}
       >
         <div className="flex-1 min-w-0">
           <p
-            className={`text-xs font-semibold tracking-tight ${record.isOffline ? "text-amber-800 dark:text-amber-300" : "text-app"
-              }`}
+            className={`text-xs font-semibold tracking-tight ${record.isOffline ? "text-amber-800 dark:text-amber-300" : "text-app" }`}
           >
             {record.isOffline ? "Offline (pending sync)" : "Calculation Detail"}
           </p>
@@ -85,7 +81,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
                   <th className="w-[34%] py-2 text-center font-semibold text-secondary text-xs border-x border-app">
                     Feeder
                   </th>
-                  <th className="w-[33%] py-2 text-center font-semibold text-emerald-700 dark:text-emerald-400 text-xs">
+                  <th className="w-[33%] py-2 text-center font-semibold text-accent text-xs">
                     Load (MW)
                   </th>
                 </tr>
@@ -102,8 +98,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
                     <td className="text-center font-semibold text-app py-2.5 border-r border-app text-sm">
                       {f.name === "Campus" || f.name === "GIS" ? "Campus / GIS" : f.name}
                       <span
-                        className={`ml-1 text-[10px] font-semibold ${Number(f.bus) === 2 ? "text-purple-700 dark:text-purple-300" : "text-sky-700 dark:text-sky-300"
-                          }`}
+                        className={`ml-1 text-[10px] font-semibold ${Number(f.bus) === 2 ? "text-purple-700 dark:text-purple-300" : "text-sky-700 dark:text-sky-300" }`}
                       >
                         B{f.bus}
                       </span>
@@ -116,7 +111,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
                         </span>
                       )}
                     </td>
-                    <td className="text-center font-bold text-emerald-700 dark:text-emerald-400 py-2.5 font-mono tabular-nums text-sm">
+                    <td className="text-center font-bold text-accent py-2.5 font-mono tabular-nums text-sm">
                       {(Math.round((Number(f.mw || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}
                     </td>
                   </tr>
@@ -134,8 +129,8 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
           )}
 
         <div className="px-3 pb-4 grid grid-cols-2 gap-2">
-          <div className="bg-teal-50 dark:bg-slate-950/80 rounded-xl h-12 flex items-center justify-between px-3 border border-teal-300 dark:border-teal-500/35">
-            <span className="text-xs font-semibold text-teal-800 dark:text-slate-300">
+          <div className="bg-teal-50 bg-app rounded-xl h-12 flex items-center justify-between px-3 border border-teal-300 dark:border-teal-500/35">
+            <span className="text-xs font-semibold text-teal-800 text-secondary">
               H3+T3
             </span>
             <span className="text-sm font-bold font-mono tabular-nums text-teal-800 dark:text-teal-300">
@@ -147,9 +142,9 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
             <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
               Total
             </span>
-            <span className="text-sm font-bold font-mono tabular-nums text-emerald-800 dark:text-emerald-300">
+            <span className="text-sm font-bold font-mono tabular-nums text-accent">
               {(Math.round((Number(record.totalMW || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
-              <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300/80">MW</span>
+              <span className="text-[10px] font-medium text-accent text-accent/80">MW</span>
             </span>
           </div>
         </div>

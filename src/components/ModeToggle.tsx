@@ -5,11 +5,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
 
   return (
     <div
-      className={`flex flex-col border-b ${
-        isLS
-          ? "border-amber-500/30 bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-950/30 dark:to-slate-900/90"
-          : "border-app bg-surface-2/60 dark:bg-slate-900/80"
-      }`}
+      className={`flex flex-col border-b ${isLS ? "border-[var(--app-highlight-border)] bg-[var(--app-highlight-dim)]" : "border-app bg-surface-2"}`}
       style={{
         paddingTop: "calc(var(--calc-gap) * 0.45)",
         paddingBottom: "calc(var(--calc-gap) * 0.45)",
@@ -19,15 +15,11 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
       }}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="inline-flex rounded-lg border border-app bg-surface dark:bg-slate-950/80 p-0.5 shadow-xs shrink-0">
+        <div className="inline-flex rounded-lg border border-app bg-surface bg-app p-0.5 shadow-xs shrink-0">
           <button
             type="button"
             onClick={() => onChange("normal")}
-            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${
-              mode === "normal"
-                ? "bg-emerald-600 text-white shadow-xs"
-                : "text-muted hover:bg-surface-3 hover:text-app"
-            }`}
+            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${ mode === "normal" ? "btn-primary shadow-xs" : "text-muted hover:bg-surface-3 hover:text-app" }`}
             style={{
               fontSize: "var(--calc-btn-text)",
               height: "calc(var(--calc-btn-h) * 0.8)",
@@ -38,11 +30,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
           <button
             type="button"
             onClick={() => onChange("loadShed")}
-            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${
-              isLS
-                ? "bg-amber-600 text-white shadow-xs"
-                : "text-muted hover:bg-surface-3 hover:text-app"
-            }`}
+            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${ isLS ? "bg-amber-600 text-white shadow-xs" : "text-muted hover:bg-surface-3 hover:text-app" }`}
             style={{
               fontSize: "var(--calc-btn-text)",
               height: "calc(var(--calc-btn-h) * 0.8)",
@@ -69,9 +57,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
         )}
       </div>
       <p
-        className={`text-[10px] font-medium leading-tight ${
-          isLS ? "text-amber-800 dark:text-amber-300" : "text-muted"
-        }`}
+        className={`text-[10px] font-medium leading-tight ${ isLS ? "text-warning" : "text-muted" }`}
       >
         {isLS
           ? "Set allotment · enter amps & current LS · plan shows target A & more LS"

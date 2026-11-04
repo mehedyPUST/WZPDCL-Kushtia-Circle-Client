@@ -99,15 +99,15 @@ const COL_WIDTH = 68;
 const STICKY_TIME_W = "4.75rem";
 
 const FEEDER_COL = {
-  1: { head: "bg-purple-100 text-purple-900 dark:bg-purple-950/85 dark:text-purple-200", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
-  2: { head: "bg-sky-100 text-sky-900 dark:bg-sky-950/85 dark:text-sky-200", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
-  3: { head: "bg-purple-100 text-purple-900 dark:bg-purple-950/85 dark:text-purple-200", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
-  4: { head: "bg-sky-100 text-sky-900 dark:bg-sky-950/85 dark:text-sky-200", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
-  5: { head: "bg-sky-100 text-sky-900 dark:bg-sky-950/85 dark:text-sky-200", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
-  6: { head: "bg-purple-100 text-purple-900 dark:bg-purple-950/85 dark:text-purple-200", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
-  7: { head: "bg-purple-100 text-purple-900 dark:bg-purple-950/85 dark:text-purple-200", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
-  8: { head: "bg-sky-100 text-sky-900 dark:bg-sky-950/85 dark:text-sky-200", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
-  9: { head: "bg-purple-100 text-purple-900 dark:bg-purple-950/85 dark:text-purple-200", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
+  1: { head: "bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
+  2: { head: "bg-bus-1-soft text-app dark:bg-[var(--bus-1-bg)] dark:text-app", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
+  3: { head: "bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
+  4: { head: "bg-bus-1-soft text-app dark:bg-[var(--bus-1-bg)] dark:text-app", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
+  5: { head: "bg-bus-1-soft text-app dark:bg-[var(--bus-1-bg)] dark:text-app", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
+  6: { head: "bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
+  7: { head: "bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
+  8: { head: "bg-bus-1-soft text-app dark:bg-[var(--bus-1-bg)] dark:text-app", input: "border-app focus:border-sky-400 focus:ring-sky-500/40" },
+  9: { head: "bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app", input: "border-app focus:border-purple-400 focus:ring-purple-500/40" },
 };
 
 export default function LoadShedEntryView() {
@@ -440,18 +440,18 @@ export default function LoadShedEntryView() {
           <button
             type="button"
             onClick={saveAllDirty}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm transition-colors"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg btn-primary hover:opacity-95 shadow-sm transition-colors"
           >
             Save all
           </button>
         </div>
       </div>
 
-      <p className="flex-shrink-0 px-3 sm:px-4 py-1.5 text-[11px] text-slate-400 leading-snug border-b border-app bg-elevated/50">
+      <p className="flex-shrink-0 px-3 sm:px-4 py-1.5 text-[11px] text-muted leading-snug border-b border-app bg-elevated/50">
         <strong className="text-amber-300">Allot</strong> = grid allotment (empty = unlimited).{" "}
         <strong className="text-purple-300">Demand</strong> = Total + LS.{" "}
-        <strong className="text-emerald-300">Total (Consumption)</strong> = running load. Enter <strong className="text-rose-300">LS MW</strong> per
-        feeder after unlocking a row. BRB &amp; MRS stay free.
+        <strong className="text-accent">Total (Consumption)</strong> = running load. Enter <strong className="text-rose-300">LS MW</strong> per
+        feeder after unlocking a row. All feeders including BRB &amp; MRS can be shed.
       </p>
 
       {/* Sheet — scroll container is here so sticky works */}
@@ -466,7 +466,7 @@ export default function LoadShedEntryView() {
             style={{ borderCollapse: "separate", borderSpacing: 0 }}
           >
             <thead className="sticky top-0 z-40">
-              <tr className="bg-elevated text-slate-200 text-[10px] uppercase tracking-wider">
+              <tr className="bg-elevated text-secondary text-[10px] uppercase tracking-wider">
                 <th className="time-header-sticky px-1 py-2.5 font-bold font-mono text-center text-[11px] uppercase tracking-wider">
                   Time
                 </th>
@@ -485,7 +485,7 @@ export default function LoadShedEntryView() {
                   Demand
                 </th>
                 <th
-                  className="px-1 py-2 font-semibold text-center border-b border-r border-app bg-emerald-950/90 text-emerald-300 leading-tight"
+                  className="px-1 py-2 font-semibold text-center border-b border-r border-app bg-emerald-950/90 text-accent leading-tight"
                   title="Running load / actual consumption MW"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
@@ -502,23 +502,22 @@ export default function LoadShedEntryView() {
                   Σ LS
                 </th>
                 {FEEDERS.map((f) => {
-                  const col = FEEDER_COL[f.id] || { head: "bg-surface-2 text-slate-200" };
+                  const col = FEEDER_COL[f.id] || { head: "bg-surface-2 text-secondary" };
                   const isProt = protectedSet.has(f.id);
                   return (
                     <th
                       key={f.id}
-                      className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${isProt ? "bg-cyan-950/75 text-cyan-200" : col.head
-                        }`}
+                      className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${isProt ? "bg-cyan-950/75 text-cyan-200" : col.head }`}
                       title={
                         isProt
-                          ? `${f.name} (protected — free during LS)`
+                          ? `${f.name} (excluded from LS plan)`
                           : `LS MW · ${f.name}`
                       }
                       style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                     >
                       {f.name}
                       {isProt && (
-                        <span className="block text-[8px] font-normal normal-case tracking-normal text-emerald-400">
+                        <span className="block text-[8px] font-normal normal-case tracking-normal text-accent">
                           free
                         </span>
                       )}
@@ -570,13 +569,10 @@ export default function LoadShedEntryView() {
                 return (
                   <tr
                     key={slot.label}
-                    className={`group transition-colors duration-150 ${rowBg} hover:!bg-slate-800/80`}
+                    className={`group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/80`}
                   >
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial
-                          ? "text-amber-300 font-extrabold"
-                          : "text-slate-100"
-                        }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-300 font-extrabold" : "text-app" }`}
                       style={{ backgroundColor: stickyBg }}
                     >
                       <div className="inline-flex items-center justify-center gap-1">
@@ -605,7 +601,7 @@ export default function LoadShedEntryView() {
                               allotment: e.target.value,
                             })
                           }
-                          className="w-full min-w-0 rounded border border-amber-500/35 bg-elevated px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold text-amber-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                          className="w-full min-w-0 rounded border border-amber-500/35 bg-elevated px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold text-amber-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-amber-400"
                           title="Grid allotment (MW). Empty = unlimited"
                         />
                       ) : (
@@ -621,16 +617,13 @@ export default function LoadShedEntryView() {
                     </td>
 
                     {/* Total */}
-                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-semibold text-emerald-400 border-b border-r border-app bg-emerald-950/20 group-hover:bg-emerald-950/35">
+                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-semibold text-accent border-b border-r border-app bg-emerald-950/20 group-hover:bg-emerald-950/35">
                       {st.hasLoad ? formatMW(t.consumption) : "—"}
                     </td>
 
                     {/* Σ LS */}
                     <td
-                      className={`px-1.5 py-1 text-center font-mono tabular-nums font-bold border-b border-r border-app ${t.totalLs > 0.05
-                          ? "bg-rose-950/35 text-rose-400"
-                          : "text-slate-600"
-                        } group-hover:bg-rose-950/45`}
+                      className={`px-1.5 py-1 text-center font-mono tabular-nums font-bold border-b border-r border-app ${t.totalLs > 0.05 ? "bg-rose-950/35 text-rose-400" : "text-muted" } group-hover:bg-rose-950/45`}
                     >
                       {formatMW(t.totalLs)}
                     </td>
@@ -642,10 +635,7 @@ export default function LoadShedEntryView() {
                       return (
                         <td
                           key={f.id}
-                          className={`px-0.5 py-1 border-b border-r border-app align-middle text-center ${isProt
-                              ? "bg-elevated/60 text-slate-600"
-                              : "text-slate-200"
-                            } group-hover:bg-slate-800/60`}
+                          className={`px-0.5 py-1 border-b border-r border-app align-middle text-center ${isProt ? "bg-elevated/60 text-muted" : "text-secondary" } group-hover:bg-surface-3/60`}
                         >
                           {isEditing && !isProt ? (
                             <input
@@ -658,17 +648,11 @@ export default function LoadShedEntryView() {
                               onChange={(e) =>
                                 setLs(slot.label, f.id, e.target.value)
                               }
-                              className={`w-full min-w-0 rounded border px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold focus:outline-none focus:ring-1 bg-elevated text-white placeholder:text-slate-600 ${col.input || "border-app focus:ring-emerald-500"
-                                }`}
+                              className={`w-full min-w-0 rounded border px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold focus:outline-none focus:ring-1 bg-elevated text-white placeholder:text-muted ${col.input || "border-app focus:ring-emerald-500" }`}
                             />
                           ) : (
                             <span
-                              className={`block text-center font-mono text-[11px] tabular-nums px-0.5 ${isProt
-                                  ? "text-slate-600 font-normal"
-                                  : st.ls[f.id]
-                                    ? "font-bold text-rose-300"
-                                    : "text-slate-600 font-normal"
-                                }`}
+                              className={`block text-center font-mono text-[11px] tabular-nums px-0.5 ${isProt ? "text-muted font-normal" : st.ls[f.id] ? "font-bold text-rose-300" : "text-muted font-normal" }`}
                             >
                               {isProt
                                 ? "—"
@@ -687,7 +671,7 @@ export default function LoadShedEntryView() {
                     </td>
 
                     {/* Action */}
-                    <td className="px-0.5 py-0.5 align-middle text-center border-b border-app group-hover:bg-slate-800/60">
+                    <td className="px-0.5 py-0.5 align-middle text-center border-b border-app group-hover:bg-surface-3/60">
                       <div className="flex flex-col gap-0.5 items-center justify-center">
                         {!isEditing ? (
                           <button
@@ -702,7 +686,7 @@ export default function LoadShedEntryView() {
                             <button
                               type="button"
                               onClick={() => clearSlotLs(slot.label)}
-                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-app"
+                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-semibold bg-surface-3 text-secondary hover:bg-surface-3 border border-app"
                             >
                               Clear
                             </button>
@@ -710,7 +694,7 @@ export default function LoadShedEntryView() {
                               type="button"
                               onClick={() => saveSlot(slot.label)}
                               disabled={savingSlot === slot.label}
-                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-bold bg-emerald-600 text-white border border-emerald-500 hover:bg-emerald-500"
+                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-bold btn-primary border border-emerald-500 hover:opacity-95"
                             >
                               {savingSlot === slot.label ? "…" : "Save"}
                             </button>

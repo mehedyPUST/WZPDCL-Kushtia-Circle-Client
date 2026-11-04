@@ -72,6 +72,15 @@ export async function GET(request) {
 
     const trash =
       searchParams.get("trash") === "1" || searchParams.get("trash") === "true";
+    const mine =
+      searchParams.get("mine") === "1" || searchParams.get("mine") === "true";
+
+    let mineUserId = null;
+    if (mine) {
+      const auth = requireAuth(request);
+      if (!auth.ok) return auth.response;
+      mineUserId = auth.admin?.id || null;
+    }
 
     if (!isDbConnected()) {
       const store = getMockStore();
@@ -79,6 +88,9 @@ export async function GET(request) {
       const activeDocs = store.calculations.filter((d) => !d.deletedAt);
       const trashedDocs = store.calculations.filter((d) => !!d.deletedAt);
       let matched = (trash ? trashedDocs : activeDocs).filter((d) => {
+        if (mineUserId && String(d.createdBy || "") !== String(mineUserId)) {
+          return false;
+        }
         if (!bounds) return true;
         const ev = new Date(d.calculatedAt || d.createdAt).getTime();
         if (Number.isNaN(ev)) return false;
@@ -116,9 +128,15 @@ export async function GET(request) {
 
     const baseFilter = trash ? trashFilter : activeFilter;
     const dateFilter = buildEventDateFilter(searchParams);
-    const filter = dateFilter
-      ? { $and: [baseFilter, dateFilter] }
-      : baseFilter;
+    const mineFilter =
+      mineUserId != null
+        ? { createdBy: mineUserId }
+        : null;
+    const filterParts = [baseFilter];
+    if (dateFilter) filterParts.push(dateFilter);
+    if (mineFilter) filterParts.push(mineFilter);
+    const filter =
+      filterParts.length === 1 ? filterParts[0] : { $and: filterParts };
 
     const sort = trash ? { deletedAt: -1 } : { createdAt: -1 };
 
@@ -264,6 +282,9 @@ export async function POST(request) {
       isHourly,
       hasActiveRing,
       deletedAt: null,
+      createdBy: auth.admin?.id || null,
+      createdByUsername:
+        auth.admin?.displayName || auth.admin?.username || null,
     };
 
     if (!isDbConnected()) {

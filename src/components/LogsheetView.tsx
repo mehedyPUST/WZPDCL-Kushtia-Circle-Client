@@ -45,15 +45,15 @@ const COL_COUNT = 14;
 const COL_WIDTH = 70;
 
 const FEEDER_COL = {
-  1: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  2: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  3: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  4: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  5: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  6: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  7: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  8: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
-  9: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-slate-600 bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  1: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  2: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  3: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  4: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  5: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  6: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  7: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  8: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
+  9: { head: "bg-surface-2 text-secondary", cell: "text-app bg-transparent", empty: "text-muted bg-transparent", foot: "bg-surface-2 text-secondary", max: "text-amber-300 bg-amber-950/25" },
 };
 
 export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
@@ -294,7 +294,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
             ›
           </button>
         </div>
-        <span className="text-xs text-slate-300 font-medium hidden sm:inline">
+        <span className="text-xs text-secondary font-medium hidden sm:inline">
           {formatDayLabel(selectedDay)}
         </span>
         <span className="text-xs text-muted tabular-nums">
@@ -309,10 +309,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
             onClick={() => setRoundTotal((v) => !v)}
             aria-pressed={roundTotal}
             title="Show Total column as rounded whole numbers (no decimal point)"
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${roundTotal
-                ? "bg-emerald-600 border-emerald-500 text-white hover:bg-emerald-500 shadow-sm"
-                : "bg-surface-3 border-app text-app hover:bg-surface-3"
-              }`}
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${roundTotal ? "bg-emerald-600 border-emerald-500 text-white hover:opacity-95 shadow-sm" : "bg-surface-3 border-app text-app hover:bg-surface-3" }`}
           >
             <Hash className="w-3.5 h-3.5 shrink-0" />
             <span>Round Total</span>
@@ -358,7 +355,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                   Time
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-surface-2/95 text-emerald-400"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-surface-2/95 text-accent"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                 >
                   Total
@@ -422,10 +419,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                     className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/70`}
                   >
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${row.isSpecial
-                          ? "text-amber-300 font-extrabold"
-                          : "text-app"
-                        }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${row.isSpecial ? "text-amber-300 font-extrabold" : "text-app" }`}
                       style={{
                         ...stickyTime,
                         backgroundColor: stickyBg,
@@ -435,10 +429,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                       {row.time}
                     </td>
                     <td
-                      className={`px-2 py-1.5 text-center align-middle font-mono font-bold tabular-nums border-b border-r border-app ${has
-                          ? "text-emerald-400 bg-emerald-950/25 group-hover:bg-emerald-950/40"
-                          : "text-slate-600 bg-emerald-950/10 group-hover:bg-emerald-950/20"
-                        }`}
+                      className={`px-2 py-1.5 text-center align-middle font-mono font-bold tabular-nums border-b border-r border-app ${has ? "text-accent bg-emerald-950/25 group-hover:bg-emerald-950/40" : "text-muted bg-emerald-950/10 group-hover:bg-emerald-950/20" }`}
                       title={row.hasRing ? "Ring line active on one or more feeders" : undefined}
                     >
                       <span className="inline-flex items-center justify-center gap-0.5">
@@ -456,7 +447,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                     {FEEDERS.map((f) => {
                       const col = FEEDER_COL[f.id] || {
                         cell: "text-app",
-                        empty: "text-slate-600",
+                        empty: "text-muted",
                       };
                       return (
                         <td
@@ -486,26 +477,17 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                       );
                     })}
                     <td
-                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums font-semibold border-b border-r border-app ${has
-                          ? "text-teal-300 bg-teal-950/25 group-hover:bg-teal-950/40"
-                          : "text-slate-600 bg-teal-950/10 group-hover:bg-teal-950/20"
-                        }`}
+                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums font-semibold border-b border-r border-app ${has ? "text-teal-300 bg-teal-950/25 group-hover:bg-teal-950/40" : "text-muted bg-teal-950/10 group-hover:bg-teal-950/20" }`}
                     >
                       {fmtBottail(row)}
                     </td>
                     <td
-                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums border-b border-r border-app ${has
-                          ? "text-purple-300 bg-purple-950/20 group-hover:bg-purple-950/35"
-                          : "text-slate-600 bg-purple-950/10 group-hover:bg-purple-950/20"
-                        }`}
+                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums border-b border-r border-app ${has ? "text-purple-300 bg-purple-950/20 group-hover:bg-purple-950/35" : "text-muted bg-purple-950/10 group-hover:bg-purple-950/20" }`}
                     >
                       {has ? formatKv(row.bus2) : "—"}
                     </td>
                     <td
-                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums border-b border-app ${has
-                          ? "text-sky-300 bg-sky-950/20 group-hover:bg-sky-950/35"
-                          : "text-slate-600 bg-sky-950/10 group-hover:bg-sky-950/20"
-                        }`}
+                      className={`px-1.5 py-1.5 text-center align-middle font-mono tabular-nums border-b border-app ${has ? "text-sky-300 bg-sky-950/20 group-hover:bg-sky-950/35" : "text-muted bg-sky-950/10 group-hover:bg-sky-950/20" }`}
                     >
                       {has ? formatKv(row.bus1) : "—"}
                     </td>
@@ -541,7 +523,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                   >
                     Day max
                   </td>
-                  <td className="px-1 py-1 text-center font-semibold border-t-2 border-app-strong border-r border-app bg-emerald-950 text-emerald-300">
+                  <td className="px-1 py-1 text-center font-semibold border-t-2 border-app-strong border-r border-app bg-emerald-950 text-accent">
                     Total
                   </td>
                   {FEEDERS.map((f) => {
@@ -576,7 +558,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                   >
                     Max
                   </td>
-                  <td className="px-1 py-1.5 text-center font-mono font-bold text-emerald-300 border-b border-r border-app bg-emerald-950/70">
+                  <td className="px-1 py-1.5 text-center font-mono font-bold text-accent border-b border-r border-app bg-emerald-950/70">
                     {columnMaxes.total
                       ? isAmps
                         ? formatAmps(columnMaxes.total.value)
@@ -628,7 +610,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                   >
                     At
                   </td>
-                  <td className="px-1 py-1 text-center font-mono text-emerald-400/90 border-r border-app bg-emerald-950/40">
+                  <td className="px-1 py-1 text-center font-mono text-accent/90 border-r border-app bg-emerald-950/40">
                     {columnMaxes.total?.slot || "—"}
                   </td>
                   {FEEDERS.map((f) => (

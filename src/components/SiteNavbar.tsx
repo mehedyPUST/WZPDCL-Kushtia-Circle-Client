@@ -143,11 +143,7 @@ export default function SiteNavbar() {
               key={link.href}
               href={link.href}
               onClick={onNavigate}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
-                active
-                  ? "bg-emerald-600 text-white shadow-md font-semibold"
-                  : "text-muted hover:text-app hover:bg-surface-3"
-              }`}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${ active ? "btn-primary shadow-md font-semibold" : "text-muted hover:text-app hover:bg-surface-3" }`}
             >
               <NavIcon name={link.icon} className="w-4 h-4 shrink-0 opacity-90" />
               <span>{link.label}</span>
@@ -171,7 +167,7 @@ export default function SiteNavbar() {
           <button
             type="button"
             onClick={() => setShowLogin(true)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-md transition-colors"
           >
             Sign in
           </button>
@@ -234,7 +230,7 @@ export default function SiteNavbar() {
               <button
                 type="button"
                 onClick={() => setShowLogin(true)}
-                className="px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition-colors"
+                className="px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-md transition-colors"
               >
                 Sign in
               </button>

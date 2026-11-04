@@ -16,12 +16,12 @@ import {
   TrendingUp,
   BarChart3,
   Shield,
-  Clock,
   LogOut,
   LogIn,
   Menu,
   X,
   Radio,
+  LayoutDashboard,
 } from "lucide-react";
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,6 +33,7 @@ import { useLiveClock } from "@/hooks/useLiveClock";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, authOnly: true },
   { href: "/calculator", label: "Calculator", icon: Calculator },
   { href: "/loadshed", label: "Loadshed", icon: Zap },
   { href: "/manual", label: "Manual Input", icon: ClipboardEdit },
@@ -65,7 +66,8 @@ export default function AppShell({ children }) {
   const router = useRouter();
   const [showLogin, setShowLogin] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isAuthenticated, login, logout, loading, canWrite, isAdmin } = useAuth();
+  const { isAuthenticated, login, logout, loading, canWrite, isAdmin, admin } =
+    useAuth();
   const isCalculator =
     pathname === "/calculator" || pathname.startsWith("/calculator/");
   const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
@@ -113,6 +115,7 @@ export default function AppShell({ children }) {
     if (!isAuthenticated) {
       return href === "/" || href === "/calculator";
     }
+    if (link.authOnly && !isAuthenticated) return false;
     if (href === "/admin") return isAdmin;
     if (
       href === "/manual" ||
@@ -173,14 +176,30 @@ export default function AppShell({ children }) {
           {loading ? (
             <div className="h-8 w-24 rounded-lg bg-surface-3 animate-pulse" />
           ) : isAuthenticated ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-secondary hover:text-app hover:bg-surface-3/80 border border-app transition-all hover:border-app-strong shadow-sm whitespace-nowrap"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign out
-            </button>
+            <>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] font-semibold text-app hover:bg-surface-3/80 border border-app transition-all hover:border-accent/40 shadow-sm max-w-[11rem]"
+                title="My Dashboard"
+              >
+                <span className="w-6 h-6 rounded-md bg-accent/15 text-accent flex items-center justify-center text-[11px] font-bold font-mono shrink-0">
+                  {String(admin?.displayName || admin?.username || "U")
+                    .charAt(0)
+                    .toUpperCase()}
+                </span>
+                <span className="truncate">
+                  {admin?.displayName || admin?.username || "Account"}
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-secondary hover:text-app hover:bg-surface-3/80 border border-app transition-all hover:border-app-strong shadow-sm whitespace-nowrap"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign out
+              </button>
+            </>
           ) : (
             <button
               type="button"
@@ -207,10 +226,7 @@ export default function AppShell({ children }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${active
-                    ? "font-semibold"
-                    : "text-muted hover:text-app hover:bg-surface-3/50"
-                  }`}
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${active ? "font-semibold" : "text-muted hover:text-app hover:bg-surface-3/50" }`}
               >
                 {active && (
                   <motion.div
@@ -225,10 +241,7 @@ export default function AppShell({ children }) {
                   style={active ? { color: "var(--app-accent-ink)" } : undefined}
                 >
                   <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${active
-                        ? ""
-                        : "text-muted group-hover:text-accent"
-                      }`}
+                    className={`w-4 h-4 shrink-0 transition-colors ${active ? "" : "text-muted group-hover:text-accent" }`}
                   />
                   <span className="truncate">{link.label}</span>
                 </span>
@@ -274,7 +287,7 @@ export default function AppShell({ children }) {
               className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-app bg-surface-3/60 active:bg-surface-3 border border-app shadow-sm transition-transform active:scale-95"
               aria-label="Open menu"
             >
-              <Menu className="w-5 h-5 text-emerald-400" />
+              <Menu className="w-5 h-5 text-accent" />
             </button>
             <Link href="/" className="min-w-0 flex-1">
               <div className="text-[13px] font-semibold text-app tracking-tight leading-tight truncate">
@@ -288,7 +301,7 @@ export default function AppShell({ children }) {
             {isAuthenticated ? (
               <Link
                 href="/"
-                className="shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/35 hover:bg-emerald-900/50"
+                className="shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-accent bg-emerald-950/60 border border-emerald-500/35 hover:bg-emerald-900/50"
               >
                 Home
               </Link>
@@ -353,10 +366,7 @@ export default function AppShell({ children }) {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all ${active
-                            ? "btn-primary font-semibold shadow-md"
-                            : "text-muted hover:text-app hover:bg-surface-3"
-                          }`}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all ${active ? "btn-primary font-semibold shadow-md" : "text-muted hover:text-app hover:bg-surface-3" }`}
                       >
                         <Icon className="w-4 h-4 shrink-0" />
                         <span>{link.label}</span>

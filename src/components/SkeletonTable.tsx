@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 export function SkeletonShimmer({ className = "" }) {
   return (
     <div
-      className={`relative overflow-hidden bg-slate-800/60 rounded-md ${className}`}
+      className={`relative overflow-hidden bg-surface-3/60 rounded-md ${className}`}
     >
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
@@ -34,7 +34,7 @@ export function SkeletonStatCard({ count = 3 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-3"
+          className="p-4 rounded-xl bg-surface/60 border border-slate-800/80 space-y-3"
         >
           <div className="flex items-center justify-between">
             <SkeletonLine className="h-3 w-24" />
@@ -50,9 +50,9 @@ export function SkeletonStatCard({ count = 3 }) {
 
 export function SkeletonLogsheet({ rows = 12 }) {
   return (
-    <div className="w-full h-full flex flex-col min-h-0 bg-slate-900/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
+    <div className="w-full h-full flex flex-col min-h-0 bg-surface/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
       {/* Skeleton Toolbar */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-3 px-4 py-3 bg-slate-950/80 border-b border-app">
+      <div className="flex-shrink-0 flex items-center justify-between gap-3 px-4 py-3 bg-app/80 border-b border-app">
         <div className="flex items-center gap-2">
           <SkeletonShimmer className="h-8 w-28 rounded-lg" />
           <SkeletonShimmer className="h-8 w-24 rounded-lg hidden sm:block" />
@@ -66,7 +66,7 @@ export function SkeletonLogsheet({ rows = 12 }) {
       {/* Skeleton Sheet Grid */}
       <div className="flex-1 min-h-0 p-3 overflow-hidden">
         <div className="w-full overflow-hidden rounded-xl border border-slate-800 bg-surface">
-          <div className="grid grid-cols-12 gap-1 px-3 py-2.5 bg-slate-950 border-b border-slate-800">
+          <div className="grid grid-cols-12 gap-1 px-3 py-2.5 bg-app border-b border-slate-800">
             <SkeletonShimmer className="h-4 w-12 rounded" />
             <SkeletonShimmer className="h-4 w-14 rounded" />
             {Array.from({ length: 9 }).map((_, i) => (
@@ -78,9 +78,7 @@ export function SkeletonLogsheet({ rows = 12 }) {
             {Array.from({ length: rows }).map((_, r) => (
               <div
                 key={r}
-                className={`grid grid-cols-12 gap-2 px-3 py-2 items-center ${
-                  r % 2 === 0 ? "bg-slate-900/20" : "bg-slate-900/40"
-                }`}
+                className={`grid grid-cols-12 gap-2 px-3 py-2 items-center ${ r % 2 === 0 ? "bg-surface/20" : "bg-surface/40" }`}
               >
                 <SkeletonShimmer className="h-3.5 w-10 rounded" />
                 <SkeletonShimmer className="h-3.5 w-12 rounded bg-emerald-950/40" />
@@ -116,7 +114,7 @@ export function SkeletonAdmin() {
       </div>
 
       {/* User list table skeleton */}
-      <div className="rounded-xl border border-app bg-slate-900/50 p-4 space-y-3">
+      <div className="rounded-xl border border-app bg-surface-2 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <SkeletonShimmer className="h-4 w-28 rounded" />
           <div className="flex gap-1">
@@ -139,28 +137,22 @@ export default function SkeletonTable({
 }) {
   return (
     <div
-      className={`w-full overflow-hidden rounded-xl border ${
-        dark
-          ? "border-slate-800/80 bg-slate-900/40"
-          : "border-slate-200 bg-white"
-      } shadow-sm backdrop-blur-sm`}
+      className={`w-full overflow-hidden rounded-xl border ${ dark ? "border-slate-800/80 bg-surface/40" : "border-app bg-white" } shadow-sm backdrop-blur-sm`}
     >
       <table className="w-full table-fixed border-collapse">
         {showHeader && (
           <thead
             className={
               dark
-                ? "bg-slate-800/60 border-b border-slate-800 text-slate-400"
-                : "bg-slate-100 border-b border-slate-200 text-slate-600"
+                ? "bg-surface-3/60 border-b border-slate-800 text-muted"
+                : "bg-surface-3 border-b border-app text-muted"
             }
           >
             <tr>
               {Array.from({ length: columns }).map((_, i) => (
                 <th key={i} className="py-2.5 px-3 text-center">
                   <SkeletonShimmer
-                    className={`h-3.5 mx-auto rounded ${
-                      i === 0 ? "w-8" : i === 1 ? "w-28" : "w-16"
-                    } ${dark ? "bg-slate-700/60" : "bg-slate-300"}`}
+                    className={`h-3.5 mx-auto rounded ${ i === 0 ? "w-8" : i === 1 ? "w-28" : "w-16" } ${dark ? "bg-surface-3/60" : "bg-slate-300"}`}
                   />
                 </th>
               ))}
@@ -174,25 +166,17 @@ export default function SkeletonTable({
               className={
                 dark
                   ? rowIndex % 2 === 0
-                    ? "bg-slate-900/20"
-                    : "bg-slate-900/50"
+                    ? "bg-surface/20"
+                    : "bg-surface-2"
                   : rowIndex % 2 === 0
                   ? "bg-white"
-                  : "bg-slate-50/70"
+                  : "bg-surface-2/70"
               }
             >
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <td key={colIndex} className="py-2.5 px-3 text-center">
                   <SkeletonShimmer
-                    className={`h-4 mx-auto rounded ${
-                      colIndex === 0
-                        ? "w-6"
-                        : colIndex === 1
-                        ? "w-24"
-                        : colIndex === columns - 1
-                        ? "w-20"
-                        : "w-14"
-                    } ${dark ? "bg-slate-800/70" : "bg-slate-200"}`}
+                    className={`h-4 mx-auto rounded ${ colIndex === 0 ? "w-6" : colIndex === 1 ? "w-24" : colIndex === columns - 1 ? "w-20" : "w-14" } ${dark ? "bg-surface-2" : "bg-slate-200"}`}
                   />
                 </td>
               ))}

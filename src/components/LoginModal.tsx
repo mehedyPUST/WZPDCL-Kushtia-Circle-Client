@@ -132,7 +132,7 @@ export default function LoginModal({
             type="button"
             onClick={onClose}
             disabled={disabled}
-            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-40"
+            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-xl text-muted hover:text-white hover:bg-white/10 transition-colors disabled:opacity-40"
             aria-label="Close"
           >
             <svg className="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -206,7 +206,7 @@ export default function LoginModal({
                     type="button"
                     tabIndex={-1}
                     onClick={() => setShowPass((s) => !s)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-white/10"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-muted hover:text-secondary hover:bg-white/10"
                     aria-label={showPass ? "Hide password" : "Show password"}
                   >
                     {showPass ? (
@@ -226,7 +226,7 @@ export default function LoginModal({
               <button
                 type="submit"
                 disabled={disabled}
-                className="w-full h-11 mt-1 rounded-xl text-[14px] font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none"
+                className="w-full h-11 mt-1 rounded-xl text-[14px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-lg shadow-emerald-600/20 transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 {disabled ? (
                   <span className="inline-flex items-center gap-2">
@@ -239,9 +239,9 @@ export default function LoginModal({
               </button>
             </form>
 
-            <p className="mt-6 text-center text-[12px] text-slate-400 leading-relaxed">
+            <p className="mt-6 text-center text-[12px] text-muted leading-relaxed">
               Need an account? Contact{" "}
-              <span className="font-semibold text-slate-200">Bottail SS</span>{" "}
+              <span className="font-semibold text-secondary">Bottail SS</span>{" "}
               administration.
             </p>
           </div>

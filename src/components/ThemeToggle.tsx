@@ -13,9 +13,7 @@ export default function ThemeToggle({ compact = false, className = "" }) {
       suppressHydrationWarning
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className={`theme-toggle-btn inline-flex items-center justify-center gap-1.5 rounded-lg font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-        compact ? "h-8 w-8 p-0" : "h-8 px-2.5 text-[12px]"
-      } ${className}`}
+      className={`theme-toggle-btn inline-flex items-center justify-center gap-1.5 rounded-lg font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer ${ compact ? "h-8 w-8 p-0" : "h-8 px-2.5 text-[12px]" } ${className}`}
     >
       {isDark ? (
         <>

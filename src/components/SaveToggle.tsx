@@ -5,11 +5,7 @@ export default function SaveToggle({ saveToDb, onChange }) {
     <div className="px-2 md:px-4 pb-2">
       <label
         htmlFor="save-toggle"
-        className={`flex items-center gap-3 cursor-pointer select-none rounded-xl border px-3 py-2.5 transition-colors ${
-          saveToDb
-            ? "bg-emerald-50 border-emerald-400"
-            : "bg-slate-50 border-slate-200 hover:border-slate-300"
-        }`}
+        className={`flex items-center gap-3 cursor-pointer select-none rounded-xl border px-3 py-2.5 transition-colors ${ saveToDb ? "bg-emerald-50 border-emerald-400" : "bg-surface-2 border-app hover:border-app" }`}
       >
         <div className="relative flex-shrink-0">
           <input
@@ -24,13 +20,11 @@ export default function SaveToggle({ saveToDb, onChange }) {
         </div>
         <div className="flex flex-col min-w-0">
           <span
-            className={`text-xs md:text-sm font-bold ${
-              saveToDb ? "text-emerald-800" : "text-slate-600"
-            }`}
+            className={`text-xs md:text-sm font-bold ${ saveToDb ? "text-emerald-800" : "text-muted" }`}
           >
             {saveToDb ? "Save to database" : "Calculate only (no save)"}
           </span>
-          <span className="text-[10px] md:text-xs text-slate-400 font-medium">
+          <span className="text-[10px] md:text-xs text-muted font-medium">
             {saveToDb
               ? "Result will be stored in MongoDB Atlas when you calculate"
               : "Results stay on this device only"}

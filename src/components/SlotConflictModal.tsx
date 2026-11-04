@@ -80,7 +80,7 @@ export default function SlotConflictModal({
                 <p className="mt-2.5 text-xs text-muted bg-surface-2 rounded-lg px-3 py-2 border border-app tabular-nums">
                   Previous:{" "}
                   {existingTotalMW != null && (
-                    <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="font-mono font-semibold text-emerald-600 text-accent">
                       {(Math.round((Number(existingTotalMW) + Number.EPSILON) * 10) / 10).toFixed(1)} MW
                     </span>
                   )}
@@ -101,7 +101,7 @@ export default function SlotConflictModal({
             type="button"
             disabled={loading}
             onClick={onProceed}
-            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm active:scale-[0.98] transition-all disabled:opacity-60 cursor-pointer"
+            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-sm active:scale-[0.98] transition-all disabled:opacity-60 cursor-pointer"
           >
             {loading ? "Saving…" : "Proceed — replace existing data"}
           </button>

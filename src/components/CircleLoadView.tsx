@@ -77,16 +77,10 @@ function StationTable({
     <div className="shrink-0">
       {title ? (
         <div
-          className={`px-3 py-2 border-b flex items-center gap-2 ${
-            isPbs
-              ? "bg-sky-100 dark:bg-sky-950/60 border-sky-300 dark:border-sky-500/25"
-              : "bg-elevated/90 border-app"
-          }`}
+          className={`px-3 py-2 border-b flex items-center gap-2 ${ isPbs ? "bg-sky-100 dark:bg-sky-950/60 border-sky-300 dark:border-sky-500/25" : "bg-elevated/90 border-app" }`}
         >
           <p
-            className={`text-[11px] font-extrabold uppercase tracking-[0.14em] ${
-              isPbs ? "text-sky-800 dark:text-sky-300" : "text-app"
-            }`}
+            className={`text-[11px] font-extrabold uppercase tracking-[0.14em] ${ isPbs ? "text-sky-800 dark:text-sky-300" : "text-app" }`}
           >
             {title}
           </p>
@@ -113,18 +107,14 @@ function StationTable({
           </colgroup>
           <thead className="table-header-sticky">
             <tr
-              className={`text-[9px] sm:text-[10px] uppercase tracking-wider ${
-                isPbs ? "bg-sky-100 dark:bg-sky-950/90" : "bg-elevated"
-              }`}
+              className={`text-[9px] sm:text-[10px] uppercase tracking-wider ${ isPbs ? "bg-sky-100 dark:bg-sky-950/90" : "bg-elevated" }`}
             >
               <th
-                className={`time-header-sticky px-2.5 py-2.5 border-b border-r border-app font-bold text-left ${
-                  isPbs ? "text-sky-800 dark:text-sky-200" : "text-app"
-                }`}
+                className={`time-header-sticky px-2.5 py-2.5 border-b border-r border-app font-bold text-left ${ isPbs ? "text-bus-1" : "text-app" }`}
               >
                 Grid SS
               </th>
-              <th className="px-1 py-2.5 border-b border-r border-app font-semibold text-center text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60">
+              <th className="px-1 py-2.5 border-b border-r border-app font-semibold text-center text-accent bg-emerald-100 dark:bg-emerald-950/60">
                 Consumption
               </th>
               <th className="px-1 py-2.5 border-b border-r border-app font-semibold text-center text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/60">
@@ -174,8 +164,7 @@ function StationTable({
                   className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/80`}
                 >
                   <td
-                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-teal-950/80" : ""
-                      }`}
+                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-teal-950/80" : "" }`}
                     style={
                       isBottail
                         ? {}
@@ -186,14 +175,7 @@ function StationTable({
                       {s.name.replace(" (Kushtia)", "")}
                     </div>
                     <div
-                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked
-                          ? "text-amber-400"
-                          : isBottail
-                            ? "text-teal-400"
-                            : can
-                              ? "text-emerald-400"
-                              : "text-slate-500"
-                        }`}
+                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked ? "text-amber-400" : isBottail ? "text-teal-400" : can ? "text-accent" : "text-app0" }`}
                     >
                       {s.editLocked
                         ? `locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`
@@ -217,7 +199,7 @@ function StationTable({
                         inputMode="decimal"
                       />
                     ) : (
-                      <span className={`${readCls} text-emerald-300`}>{fmt(d[consKey])}</span>
+                      <span className={`${readCls} text-accent`}>{fmt(d[consKey])}</span>
                     )}
                   </td>
                   <td className="px-1.5 py-1.5 border-b border-r border-app align-middle">
@@ -265,7 +247,7 @@ function StationTable({
                         type="button"
                         disabled={savingId === s.id || !editable}
                         onClick={() => onSubmit(s.id)}
-                        className="w-full min-h-[1.85rem] sm:min-h-[2.15rem] px-0.5 rounded-lg bg-emerald-600 text-white text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide shadow-sm shadow-emerald-950/40 transition-all hover:bg-emerald-500 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
+                        className="w-full min-h-[1.85rem] sm:min-h-[2.15rem] px-0.5 rounded-lg btn-primary text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide shadow-sm shadow-emerald-950/40 transition-all hover:opacity-95 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
                       >
                         {savingId === s.id ? "…" : "Submit"}
                       </button>
@@ -287,7 +269,7 @@ function StationTable({
                         Locked
                       </span>
                     ) : (
-                      <span className="text-[9px] text-slate-500 font-bold">
+                      <span className="text-[9px] text-app0 font-bold">
                         {isBottail && mode === "main" ? "AUTO" : "—"}
                       </span>
                     )}
@@ -317,8 +299,7 @@ function StationTable({
             return (
               <tfoot>
                 <tr
-                  className={`text-[10px] uppercase tracking-wide ${isPbs ? "bg-sky-950/90" : "bg-elevated"
-                    }`}
+                  className={`text-[10px] uppercase tracking-wide ${isPbs ? "bg-sky-950/90" : "bg-elevated" }`}
                 >
                   <td
                     className="time-col-sticky px-2.5 py-2 border-t-2 border-app-strong border-r border-app font-bold text-app"
@@ -326,13 +307,13 @@ function StationTable({
                   >
                     {totalLabel}
                   </td>
-                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-emerald-300 border-t-2 border-app-strong border-r border-app bg-emerald-950/40">
+                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-accent border-t-2 border-app-strong border-r border-app bg-emerald-950/40">
                     {fmt(cons)}
                   </td>
                   <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-rose-300 border-t-2 border-app-strong border-r border-app bg-rose-950/40">
                     {fmt(ls)}
                   </td>
-                  <td className="px-1.5 py-2 text-center font-mono font-bold tabular-nums text-purple-200 border-t-2 border-app-strong border-r border-app bg-purple-950/70">
+                  <td className="px-1.5 py-2 text-center font-mono font-bold tabular-nums text-app border-t-2 border-app-strong border-r border-app bg-[var(--app-violet-dim)]">
                     {fmt(demand)}
                   </td>
                   <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-amber-300 border-t-2 border-app-strong border-r border-app bg-amber-950/40">
@@ -352,7 +333,7 @@ function StationTable({
 function SubstationClockStrip() {
   const liveClock = useLiveClock();
   return (
-    <div className="shrink-0 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-emerald-400 text-center font-semibold tracking-wide font-mono border-b border-app/80 py-2 text-[11px] sm:text-[12px] shadow-sm">
+    <div className="shrink-0 bg-surface-2 text-accent text-center font-semibold tracking-wide font-mono border-b border-app/80 py-2 text-[11px] sm:text-[12px] shadow-sm">
       <span className="opacity-60 mr-1.5">⏱</span>
       <span suppressHydrationWarning>{liveClock || "—"}</span>
     </div>
@@ -546,10 +527,7 @@ export default function CircleLoadView() {
               Slot
             </span>
             <div
-              className={`flex flex-1 items-center gap-0.5 sm:gap-1 min-w-0 rounded-lg border p-0.5 transition-all ${isActive
-                  ? "border-emerald-500/60 bg-emerald-950/40 ring-1 ring-emerald-500/30"
-                  : "border-app bg-surface-2"
-                }`}
+              className={`flex flex-1 items-center gap-0.5 sm:gap-1 min-w-0 rounded-lg border p-0.5 transition-all ${isActive ? "border-emerald-500/60 bg-emerald-950/40 ring-1 ring-emerald-500/30" : "border-app bg-surface-2" }`}
             >
               <button
                 type="button"
@@ -588,7 +566,7 @@ export default function CircleLoadView() {
 
         <div className="flex flex-wrap items-center gap-2">
           {isActive && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-600/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wide border border-emerald-500/30">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-600/20 text-accent text-[10px] font-bold uppercase tracking-wide border border-accent">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Active
             </span>
@@ -599,15 +577,12 @@ export default function CircleLoadView() {
             </span>
           )}
           <span
-            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${data?.editable
-                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                : "bg-amber-500/15 text-amber-200 border-amber-500/25"
-              }`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${data?.editable ? "bg-emerald-500/15 text-accent border-accent" : "bg-amber-500/15 text-amber-200 border-amber-500/25" }`}
           >
             {data?.editable ? "OPEN" : "CLOSED"}
           </span>
           {!isRelaxed && (
-            <span className="hidden md:inline text-[10px] text-slate-500">
+            <span className="hidden md:inline text-[10px] text-app0">
               Hour ±30m · 19:00 18:30–19:30 · half-slots 60m
             </span>
           )}
@@ -618,7 +593,7 @@ export default function CircleLoadView() {
                 type="checkbox"
                 checked={needPbs}
                 onChange={(e) => setNeedPbs(e.target.checked)}
-                className="rounded-md border-slate-600 accent-sky-500 focus:ring-sky-500/30"
+                className="rounded-md border-app accent-sky-500 focus:ring-sky-500/30"
               />
               Need PBS
             </label>
@@ -626,7 +601,7 @@ export default function CircleLoadView() {
               type="button"
               onClick={load}
               disabled={loading}
-              className="h-8 sm:h-9 px-3 sm:px-4 rounded-lg text-[11px] sm:text-xs font-semibold bg-surface-3 border border-app text-app hover:bg-slate-700 disabled:opacity-50 transition-colors shrink-0"
+              className="h-8 sm:h-9 px-3 sm:px-4 rounded-lg text-[11px] sm:text-xs font-semibold bg-surface-3 border border-app text-app hover:bg-surface-3 disabled:opacity-50 transition-colors shrink-0"
             >
               {loading ? "…" : "Refresh"}
             </button>

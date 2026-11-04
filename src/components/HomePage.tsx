@@ -21,6 +21,15 @@ import { useAuth } from "@/hooks/useAuth";
 
 const FEATURES = [
   {
+    href: "/dashboard",
+    title: "My Dashboard",
+    desc: "Your personal action centre — recent saves, role summary, quick tools, and manage your own records.",
+    step: "00",
+    icon: Activity,
+    authOnly: true,
+    highlight: "Personal activity hub",
+  },
+  {
     href: "/calculator",
     title: "Load Calculator",
     desc: "Compute feeder MW from bus voltages and amperes. Save readings with hourly time slots.",
@@ -116,7 +125,7 @@ export default function HomePage() {
       <section className="relative border-b border-app overflow-hidden">
         <div
           data-keep-dark="true"
-          className="relative w-full h-[240px] sm:h-[300px] md:h-[360px] lg:h-[400px] overflow-hidden bg-slate-950"
+          className="relative w-full h-[240px] sm:h-[300px] md:h-[360px] lg:h-[400px] overflow-hidden bg-app"
         >
           <img
             src="/hero-banner.jpg"
@@ -145,7 +154,7 @@ export default function HomePage() {
                   className="flex items-center gap-2 mb-2.5"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/80" />
-                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-emerald-400 font-mono">
+                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-accent font-mono">
                     West Zone Power Distribution Co. Ltd.
                   </p>
                 </motion.div>
@@ -163,7 +172,7 @@ export default function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.35, delay: 0.1 }}
-                  className="mt-1 text-sm sm:text-base text-slate-300 font-medium"
+                  className="mt-1 text-sm sm:text-base text-secondary font-medium"
                 >
                   33/11 kV Substation · SBA-Bottail
                 </motion.p>
@@ -172,7 +181,7 @@ export default function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.35, delay: 0.15 }}
-                  className="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg hidden sm:block"
+                  className="mt-3 text-xs sm:text-sm text-muted leading-relaxed max-w-lg hidden sm:block"
                 >
                   High-precision electrical load calculations, hourly logsheet records,
                   peak feeder analysis, and district intelligence in one workspace.
@@ -195,7 +204,7 @@ export default function HomePage() {
                     href="/max-load"
                     className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md text-white text-xs sm:text-sm font-medium hover:bg-white/15 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <TrendingUp className="w-4 h-4 text-emerald-400" />
+                    <TrendingUp className="w-4 h-4 text-accent" />
                     Max Load Report
                   </Link>
                 </motion.div>
@@ -302,15 +311,12 @@ export default function HomePage() {
             {FEEDERS.map((f) => (
               <span
                 key={f.id}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-app text-[13px] font-medium text-app hover:border-accent transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-app text-[13px] font-medium text-app hover:border-accent transition-colors shadow-sm"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
                 {f.name}
                 <span
-                  className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${f.bus === 1
-                    ? "bg-sky-950/80 text-sky-300 border border-sky-800/60"
-                    : "bg-violet-950/80 text-violet-300 border border-violet-800/60"
-                    }`}
+                  className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${f.bus === 1 ? "bg-bus-1-soft text-bus-1 border-bus-1" : "bg-bus-2-soft text-bus-2 border-bus-2" }`}
                 >
                   BUS-{f.bus}
                 </span>

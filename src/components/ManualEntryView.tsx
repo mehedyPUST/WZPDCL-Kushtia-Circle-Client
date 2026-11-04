@@ -712,7 +712,7 @@ export default function ManualEntryView({
               ›
             </button>
           </div>
-          <span className="text-xs text-slate-300 font-medium hidden sm:inline">
+          <span className="text-xs text-secondary font-medium hidden sm:inline">
             {formatDayLabel(day)}
           </span>
 
@@ -726,8 +726,7 @@ export default function ManualEntryView({
               role="tab"
               aria-selected={isAmps}
               onClick={() => switchUnitMode("amps")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${isAmps ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary"
-                }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${isAmps ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
             >
               Amps
             </button>
@@ -736,8 +735,7 @@ export default function ManualEntryView({
               role="tab"
               aria-selected={!isAmps}
               onClick={() => switchUnitMode("mw")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${!isAmps ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary"
-                }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${!isAmps ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
             >
               MW
             </button>
@@ -753,10 +751,7 @@ export default function ManualEntryView({
               role="tab"
               aria-selected={sheetMode === "general"}
               onClick={() => setSheetMode("general")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "general"
-                ? "bg-slate-700 text-white shadow-sm"
-                : "text-muted hover:text-secondary"
-                }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "general" ? "bg-surface-3 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
             >
               General
             </button>
@@ -779,10 +774,7 @@ export default function ManualEntryView({
                   return next;
                 });
               }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-muted hover:text-secondary"
-                }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-amber-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
               title="Enter ring ON/OFF for each feeder"
             >
               Ring mode
@@ -797,7 +789,7 @@ export default function ManualEntryView({
             type="button"
             onClick={() => load(day)}
             disabled={loading}
-            className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg bg-surface-3 border border-app text-app hover:bg-slate-700 disabled:opacity-50 transition-colors"
+            className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg bg-surface-3 border border-app text-app hover:bg-surface-3 disabled:opacity-50 transition-colors"
           >
             {loading ? "…" : "Refresh"}
           </button>
@@ -827,7 +819,7 @@ export default function ManualEntryView({
                   Time
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-emerald-950/80 text-emerald-300"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-emerald-950/80 text-accent"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                 >
                   Total
@@ -846,7 +838,7 @@ export default function ManualEntryView({
                   );
                 })}
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-slate-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-secondary border-b border-r border-app"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                   title="H-3 + T-3"
                 >
@@ -867,7 +859,7 @@ export default function ManualEntryView({
                   Bus 1
                 </th>
                 <th
-                  className="px-0.5 py-2.5 font-semibold text-center bg-surface-2/95 text-slate-300 border-b border-app col-action"
+                  className="px-0.5 py-2.5 font-semibold text-center bg-surface-2/95 text-secondary border-b border-app col-action"
                   style={{ width: "5.5rem", minWidth: "5.5rem", maxWidth: "5.5rem" }}
                 >
                   Action
@@ -966,21 +958,17 @@ export default function ManualEntryView({
                 const dataRow = (
                   <tr
                     key={slot.label}
-                    className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/70 ${isEditTarget ? "ring-2 ring-inset ring-emerald-500" : ""
-                      }`}
+                    className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/70 ${isEditTarget ? "ring-2 ring-inset ring-emerald-500" : "" }`}
                   >
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial
-                          ? "text-amber-300 font-extrabold"
-                          : "text-app"
-                        }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-300 font-extrabold" : "text-app" }`}
                       style={{ backgroundColor: stickyBg }}
                     >
                       <div className="inline-flex items-center justify-center gap-1 leading-tight">
                         <span className="tabular-nums">{slot.label}</span>
                         {filled && (
                           <span
-                            className="inline-flex items-center justify-center text-emerald-400 shrink-0"
+                            className="inline-flex items-center justify-center text-accent shrink-0"
                             title="Recorded & saved"
                             aria-label="Saved"
                           >
@@ -1001,7 +989,7 @@ export default function ManualEntryView({
                       </div>
                     </td>
                     <td
-                      className="px-2 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-emerald-400 bg-emerald-950/15"
+                      className="px-2 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-950/15"
                     >
                       {getTotalDisplay(slot.label, rec)}
                     </td>
@@ -1016,10 +1004,7 @@ export default function ManualEntryView({
                       return (
                         <td
                           key={f.id}
-                          className={`px-0.5 py-0.5 text-center border-b border-r border-app ${col.cell} ${showRing && ringOn
-                            ? "ring-1 ring-inset ring-amber-400/80"
-                            : ""
-                            }`}
+                          className={`px-0.5 py-0.5 text-center border-b border-r border-app ${col.cell} ${showRing && ringOn ? "ring-1 ring-inset ring-amber-400/80" : "" }`}
                         >
                           <div className="flex flex-col items-center gap-0.5">
                             {isEditing ? (
@@ -1035,10 +1020,10 @@ export default function ManualEntryView({
                                   )
                                 }
                                 placeholder="—"
-                                className={`w-full min-w-0 px-0.5 py-1.5 text-center font-mono text-[11px] tabular-nums rounded border bg-elevated text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 ${col.input}`}
+                                className={`w-full min-w-0 px-0.5 py-1.5 text-center font-mono text-[11px] tabular-nums rounded border bg-app text-app placeholder:text-muted focus:outline-none focus:ring-1 ${col.input}`}
                               />
                             ) : (
-                              <span className={`font-mono text-[11px] tabular-nums ${val !== "" ? "text-app" : "text-slate-600"}`}>
+                              <span className={`font-mono text-[11px] tabular-nums ${val !== "" ? "text-app" : "text-muted"}`}>
                                 {val !== "" ? val : "—"}
                                 {showRing && ringOn ? (
                                   <span className="text-amber-400 font-black text-[8px] ml-0.5">
@@ -1054,16 +1039,13 @@ export default function ManualEntryView({
                                   onClick={() =>
                                     toggleRingDraft(slot.label, f.id)
                                   }
-                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn
-                                    ? "bg-amber-600 text-white border-amber-500"
-                                    : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-300"
-                                    }`}
+                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-300" }`}
                                   title={(RING_BY_FEEDER[f.id]?.partner || f.name) + ` · ring ${ringOn ? "ON" : "OFF"}`}
                                 >
                                   {ringOn ? "R ON" : "R OFF"}
                                 </button>
                               ) : (
-                                <span className="text-[8px] text-slate-600 font-bold" title="No ring line">—</span>
+                                <span className="text-[8px] text-muted font-bold" title="No ring line">—</span>
                               )
                             ) : null}
                           </div>
@@ -1083,7 +1065,7 @@ export default function ManualEntryView({
                             setDraftField(slot.label, "bus2", e.target.value)
                           }
                           placeholder="kV"
-                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-500/35 bg-elevated text-purple-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-500/35 bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                       ) : (
                         <span className="font-mono text-[11px] font-semibold text-purple-300">
@@ -1101,7 +1083,7 @@ export default function ManualEntryView({
                             setDraftField(slot.label, "bus1", e.target.value)
                           }
                           placeholder="kV"
-                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-500/35 bg-elevated text-sky-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-500/35 bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
                         />
                       ) : (
                         <span className="font-mono text-[11px] font-semibold text-sky-300">
@@ -1125,10 +1107,7 @@ export default function ManualEntryView({
                               type="button"
                               disabled={savingSlot === slot.label}
                               onClick={() => handleSaveSlot(slot)}
-                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled
-                                ? "bg-amber-600 hover:bg-amber-500"
-                                : "bg-emerald-600 hover:bg-emerald-500"
-                                }`}
+                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled ? "bg-amber-600 hover:bg-amber-500" : "bg-emerald-600 hover:opacity-95" }`}
                             >
                               {savingSlot === slot.label
                                 ? "…"
@@ -1139,7 +1118,7 @@ export default function ManualEntryView({
                             <button
                               type="button"
                               onClick={() => disableRowEdit(slot.label)}
-                              className="w-full max-w-full px-1.5 py-0.5 rounded text-[8px] font-bold uppercase text-slate-300 border border-app bg-surface-3 hover:bg-slate-700"
+                              className="w-full max-w-full px-1.5 py-0.5 rounded text-[8px] font-bold uppercase text-secondary border border-app bg-surface-3 hover:bg-surface-3"
                             >
                               Done
                             </button>

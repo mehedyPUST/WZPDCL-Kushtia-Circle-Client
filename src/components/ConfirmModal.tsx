@@ -40,10 +40,7 @@ export default function ConfirmModal({
             type="button"
             disabled={loading}
             onClick={onCancel}
-            className="px-4 py-2 rounded-xl text-sm font-semibold text-secondary bg-surface-2 border border-app
-              hover:bg-surface-3
-              active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer
-              disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-secondary bg-surface-2 border border-app hover:bg-surface-3 active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {cancelLabel}
           </button>
@@ -51,14 +48,7 @@ export default function ConfirmModal({
             type="button"
             disabled={loading}
             onClick={onConfirm}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold text-white shadow-sm
-              active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer
-              disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap
-              ${
-                danger
-                  ? "bg-rose-600 hover:bg-rose-500 hover:shadow-md hover:shadow-rose-600/25"
-                  : "bg-emerald-600 hover:bg-emerald-500 hover:shadow-md hover:shadow-emerald-600/25"
-              }`}
+            className={`px-4 py-2 rounded-xl text-sm font-semibold text-white shadow-sm active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap ${ danger ? "bg-rose-600 hover:bg-rose-500 hover:shadow-md hover:shadow-rose-600/25" : "btn-primary hover:opacity-95 hover:shadow-md" }`}
           >
             {loading ? "Please wait…" : confirmLabel}
           </button>

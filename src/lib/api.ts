@@ -198,6 +198,7 @@ export async function fetchCalculationById(id) {
  */
 export async function fetchCalculations(opts = {}) {
   const trash = opts.trash === true;
+  const mine = opts.mine === true;
   const limit = opts.limit === undefined || opts.limit === null ? 50 : opts.limit;
   const page = opts.page ?? 1;
   try {
@@ -205,6 +206,7 @@ export async function fetchCalculations(opts = {}) {
       limit: String(limit),
       page: String(page),
       ...(trash ? { trash: "1" } : {}),
+      ...(mine ? { mine: "1" } : {}),
     });
     if (opts.date) qs.set("date", String(opts.date));
     if (opts.from) qs.set("from", String(opts.from));

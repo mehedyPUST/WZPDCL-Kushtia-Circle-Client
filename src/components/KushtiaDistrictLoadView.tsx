@@ -46,8 +46,8 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
       demand: "text-amber-200 bg-amber-950/60",
     },
     slate: {
-      bar: "bg-slate-600",
-      head: "text-slate-300",
+      bar: "bg-surface-3",
+      head: "text-secondary",
       demand: "text-emerald-200 bg-emerald-950/60",
     },
   };
@@ -69,15 +69,13 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
         ].map((c) => (
           <div
             key={c.label}
-            className={`px-1 py-1.5 text-center ${c.strong ? t.demand : "bg-surface-2/60"
-              }`}
+            className={`px-1 py-1.5 text-center ${c.strong ? t.demand : "bg-surface-2/60" }`}
           >
             <p className="text-[8px] font-semibold uppercase text-muted tracking-wide">
               {c.label}
             </p>
             <p
-              className={`font-mono text-[11px] font-semibold tabular-nums ${c.strong ? "font-bold" : "text-secondary"
-                }`}
+              className={`font-mono text-[11px] font-semibold tabular-nums ${c.strong ? "font-bold" : "text-secondary" }`}
             >
               {fmt(c.value)}
             </p>
@@ -94,10 +92,7 @@ const MobileSlotCard = memo(function MobileSlotCard({ row }) {
   const t = row.total || {};
   return (
     <article
-      className={`rounded-2xl border shadow-sm overflow-hidden ${row.isPreviousDay
-          ? "border-violet-500/30 bg-violet-950/40"
-          : "border-app bg-surface-2/60"
-        }`}
+      className={`rounded-2xl border shadow-sm overflow-hidden ${row.isPreviousDay ? "border-violet-500/30 bg-violet-950/40" : "border-app bg-surface-2/60" }`}
     >
       <div className="flex items-center justify-between px-3 py-2 border-b border-app">
         <div className="flex items-center gap-2">
@@ -117,7 +112,7 @@ const MobileSlotCard = memo(function MobileSlotCard({ row }) {
           <p className="text-[9px] font-semibold uppercase text-muted">
             Total demand
           </p>
-          <p className="font-mono text-sm font-bold text-emerald-300 tabular-nums">
+          <p className="font-mono text-sm font-bold text-accent tabular-nums">
             {fmt(t.demand)}
             <span className="text-[10px] text-muted font-semibold ml-0.5">
               MW
@@ -170,17 +165,12 @@ const DesktopRow = memo(function DesktopRow({ row, isAlt }) {
   const cell =
     "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs tabular-nums text-app";
   const demand =
-    "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs font-bold tabular-nums text-emerald-700 bg-emerald-500/10";
+    "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs font-bold tabular-nums text-accent bg-emerald-500/10";
 
   return (
     <tr className={`${base} group hover:!bg-[var(--sticky-hover)] transition-colors`}>
       <td
-        className={`time-col-sticky px-1 py-1.5 border-b border-r border-app text-center group-hover:!bg-[var(--sticky-hover)] ${prev
-            ? "bg-[var(--sticky-purple)] text-violet-700 dark:text-violet-200"
-            : isAlt
-              ? "bg-[var(--sticky-odd)]"
-              : "bg-[var(--sticky-even)]"
-          }`}
+        className={`time-col-sticky px-1 py-1.5 border-b border-r border-app text-center group-hover:!bg-[var(--sticky-hover)] ${prev ? "bg-[var(--sticky-purple)] text-violet-700 dark:text-violet-200" : isAlt ? "bg-[var(--sticky-odd)]" : "bg-[var(--sticky-even)]" }`}
       >
         <span className="block text-xs sm:text-[13px] font-bold tabular-nums font-mono">
           {row.hourSlot}
@@ -283,7 +273,7 @@ export default function KushtiaDistrictLoadView() {
       <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2 border-b border-app bg-elevated/60">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-400">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent">
               Kushtia district
             </p>
             <h2 className="text-[15px] sm:text-base font-semibold text-app tracking-tight">
@@ -338,22 +328,14 @@ export default function KushtiaDistrictLoadView() {
               <button
                 type="button"
                 onClick={() => setMobileView("table")}
-                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-colors ${
-                  mobileView === "table"
-                    ? "bg-surface-3 text-app dark:bg-slate-700 dark:text-white shadow-sm"
-                    : "text-muted hover:text-secondary"
-                }`}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-colors ${ mobileView === "table" ? "bg-surface-3 text-app shadow-sm" : "text-muted hover:text-secondary" }`}
               >
                 Table
               </button>
               <button
                 type="button"
                 onClick={() => setMobileView("cards")}
-                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-colors ${
-                  mobileView === "cards"
-                    ? "bg-surface-3 text-app dark:bg-slate-700 dark:text-white shadow-sm"
-                    : "text-muted hover:text-secondary"
-                }`}
+                className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-colors ${ mobileView === "cards" ? "bg-surface-3 text-app shadow-sm" : "text-muted hover:text-secondary" }`}
               >
                 Cards
               </button>
@@ -368,7 +350,7 @@ export default function KushtiaDistrictLoadView() {
               label: "Peak demand",
               value: summary.peakDemand,
               slot: summary.peakDemandSlot,
-              accent: "text-emerald-300",
+              accent: "text-accent",
             },
             {
               label: "Peak consumption",
@@ -491,7 +473,7 @@ export default function KushtiaDistrictLoadView() {
                     <th className="px-1 py-2 border-b border-r border-teal-500/30 bg-teal-950/70 text-teal-300 text-center">
                       LS
                     </th>
-                    <th className="px-1 py-2 border-b border-r border-emerald-500/30 bg-emerald-950/80 text-emerald-300 text-center">
+                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
                       Demand
                     </th>
                     <th className="px-1 py-2 border-b border-r border-teal-500/30 bg-teal-950/70 text-teal-300 text-center">
@@ -503,7 +485,7 @@ export default function KushtiaDistrictLoadView() {
                     <th className="px-1 py-2 border-b border-r border-amber-500/30 bg-amber-950/70 text-amber-300 text-center">
                       LS
                     </th>
-                    <th className="px-1 py-2 border-b border-r border-emerald-500/30 bg-emerald-950/80 text-emerald-300 text-center">
+                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
                       Demand
                     </th>
                     <th className="px-1 py-2 border-b border-r border-amber-500/30 bg-amber-950/70 text-amber-300 text-center">
@@ -512,7 +494,7 @@ export default function KushtiaDistrictLoadView() {
                     <th className="px-1 py-2 border-b border-r border-app-strong bg-surface-2 text-secondary text-center">
                       Consumption
                     </th>
-                    <th className="px-1 py-2 border-b border-r border-emerald-500/30 bg-emerald-950/80 text-emerald-300 text-center">
+                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
                       Demand
                     </th>
                     <th className="px-1 py-2 border-b border-r border-app-strong bg-surface-2 text-secondary text-center">
