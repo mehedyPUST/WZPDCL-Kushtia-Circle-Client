@@ -22,6 +22,7 @@ import {
   X,
   Radio,
   LayoutDashboard,
+  CalendarDays,
 } from "lucide-react";
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,6 +45,7 @@ const NAV_LINKS = [
   { href: "/max-load", label: "MAX Load", icon: TrendingUp },
   { href: "/statistics", label: "Statistics", icon: BarChart3 },
   { href: "/admin", label: "Admin", icon: Shield },
+  { href: "/admin/duty", label: "Duty Roster", icon: CalendarDays, adminOnly: true },
 ];
 
 function TopbarLiveClock() {
@@ -96,6 +98,8 @@ export default function AppShell({ children }) {
 
   const isActive = (href) => {
     if (href === "/") return pathname === "/";
+    // Exact match for /admin so /admin/duty does not highlight Admin
+    if (href === "/admin") return pathname === "/admin";
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -116,7 +120,9 @@ export default function AppShell({ children }) {
       return href === "/" || href === "/calculator";
     }
     if (link.authOnly && !isAuthenticated) return false;
-    if (href === "/admin") return isAdmin;
+    if (link.adminOnly || href === "/admin" || href.startsWith("/admin/")) {
+      return isAdmin;
+    }
     if (
       href === "/manual" ||
       href === "/loadshed" ||
@@ -231,24 +237,35 @@ export default function AppShell({ children }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${active ? "font-semibold" : "text-muted hover:text-app hover:bg-surface-3/50" }`}
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+                  active
+                    ? "font-semibold text-[var(--app-accent-ink)]"
+                    : "text-secondary hover:text-app hover:bg-surface-3/50"
+                }`}
               >
                 {active && (
                   <motion.div
                     layoutId="sidebar-active-tab"
-                    className="absolute inset-0 rounded-xl shadow-md border border-accent"
-                    style={{ background: "var(--app-accent)", color: "var(--app-accent-ink)" }}
+                    className="absolute inset-0 rounded-xl shadow-md border border-[var(--app-accent-border)]"
+                    style={{ background: "var(--app-accent)" }}
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                <span
-                  className="relative z-10 flex items-center gap-3 min-w-0 flex-1"
-                  style={active ? { color: "var(--app-accent-ink)" } : undefined}
-                >
+                <span className="relative z-10 flex items-center gap-3 min-w-0 flex-1">
                   <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${active ? "" : "text-muted group-hover:text-accent" }`}
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      active
+                        ? "text-[var(--app-accent-ink)]"
+                        : "text-muted group-hover:text-accent"
+                    }`}
                   />
-                  <span className="truncate">{link.label}</span>
+                  <span
+                    className={`truncate ${
+                      active ? "text-[var(--app-accent-ink)]" : ""
+                    }`}
+                  >
+                    {link.label}
+                  </span>
                 </span>
               </Link>
             );
@@ -371,9 +388,17 @@ export default function AppShell({ children }) {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all ${active ? "btn-primary font-semibold shadow-md" : "text-muted hover:text-app hover:bg-surface-3" }`}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all ${
+                          active
+                            ? "font-semibold shadow-md border border-[var(--app-accent-border)] bg-[var(--app-accent)] text-[var(--app-accent-ink)]"
+                            : "text-secondary hover:text-app hover:bg-surface-3 border border-transparent"
+                        }`}
                       >
-                        <Icon className="w-4 h-4 shrink-0" />
+                        <Icon
+                          className={`w-4 h-4 shrink-0 ${
+                            active ? "text-[var(--app-accent-ink)]" : "text-muted"
+                          }`}
+                        />
                         <span>{link.label}</span>
                       </Link>
                     );

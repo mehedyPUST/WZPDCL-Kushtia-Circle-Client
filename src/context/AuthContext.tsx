@@ -78,6 +78,13 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  /** Apply updated profile fields after self-service edit (keeps session). */
+  const applyAdminUpdate = useCallback((next) => {
+    if (!next) return;
+    setAdmin((prev) => ({ ...(prev || {}), ...next }));
+    setAuthenticated(true);
+  }, []);
+
   const role = (() => {
     const r = String(admin?.role || "")
       .toLowerCase()
@@ -113,8 +120,9 @@ export function AuthProvider({ children }) {
       login,
       logout,
       refresh,
+      applyAdminUpdate,
     }),
-    [admin, loading, authenticated, role, login, logout, refresh]
+    [admin, loading, authenticated, role, login, logout, refresh, applyAdminUpdate]
   );
 
   return (

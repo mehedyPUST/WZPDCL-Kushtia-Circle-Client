@@ -154,7 +154,7 @@ export default function HomePage() {
                   className="flex items-center gap-2 mb-2.5"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/80" />
-                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-accent font-mono">
+                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-[#6bffb0] font-mono">
                     West Zone Power Distribution Co. Ltd.
                   </p>
                 </motion.div>
@@ -172,7 +172,7 @@ export default function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.35, delay: 0.1 }}
-                  className="mt-1 text-sm sm:text-base text-secondary font-medium"
+                  className="mt-1 text-sm sm:text-base text-white/90 font-medium"
                 >
                   33/11 kV Substation · SBA-Bottail
                 </motion.p>
@@ -181,7 +181,7 @@ export default function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.35, delay: 0.15 }}
-                  className="mt-3 text-xs sm:text-sm text-muted leading-relaxed max-w-lg hidden sm:block"
+                  className="mt-3 text-xs sm:text-sm text-white/75 leading-relaxed max-w-lg hidden sm:block"
                 >
                   High-precision electrical load calculations, hourly logsheet records,
                   peak feeder analysis, and district intelligence in one workspace.
@@ -195,16 +195,16 @@ export default function HomePage() {
                 >
                   <Link
                     href="/calculator"
-                    className="btn-primary inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#00ed64] text-[#001e2b] hover:bg-[#6bffb0] border border-transparent"
                   >
                     <Calculator className="w-4 h-4" />
                     Open Calculator
                   </Link>
                   <Link
                     href="/max-load"
-                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md text-white text-xs sm:text-sm font-medium hover:bg-white/15 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl border border-white/35 bg-white/12 backdrop-blur-md text-white text-xs sm:text-sm font-medium hover:bg-white/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <TrendingUp className="w-4 h-4 text-accent" />
+                    <TrendingUp className="w-4 h-4 text-[#6bffb0]" />
                     Max Load Report
                   </Link>
                 </motion.div>
@@ -214,20 +214,20 @@ export default function HomePage() {
         </div>
 
         {/* Substation Telemetry Banner Strip */}
-        <div className="w-full bg-surface-2 border-y border-app px-4 sm:px-6 lg:px-8 py-3">
+        <div className="home-telemetry w-full bg-surface-2 border-y border-app px-4 sm:px-6 lg:px-8 py-3">
           <div className="w-full max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-2 text-secondary">
-              <Activity className="w-4 h-4 text-accent" />
+              <Activity className="w-4 h-4 text-success" />
               <span className="font-semibold text-app">System Status:</span>
-              <span className="text-accent font-mono font-medium">Nominal / Online</span>
+              <span className="text-success font-mono font-medium">Nominal / Online</span>
             </div>
-            <div className="flex items-center gap-2 text-muted">
-              <Layers className="w-4 h-4 text-sky-400" />
+            <div className="flex items-center gap-2 text-secondary">
+              <Layers className="w-4 h-4 text-info" />
               <span>Bus Configuration:</span>
               <span className="text-app font-mono font-semibold">BUS-1 &amp; BUS-2</span>
             </div>
-            <div className="flex items-center gap-2 text-muted">
-              <Cpu className="w-4 h-4 text-amber-400" />
+            <div className="flex items-center gap-2 text-secondary">
+              <Cpu className="w-4 h-4 text-warning" />
               <span>Power Factor:</span>
               <span className="text-app font-mono font-semibold">0.95 Standard</span>
             </div>
@@ -236,7 +236,7 @@ export default function HomePage() {
       </section>
 
       {/* Modules Grid */}
-      <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <section className="home-modules-section w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <div className="mb-8">
           <p className="section-kicker mb-1.5">
             Operations &amp; Control

@@ -122,6 +122,7 @@ export function requireAuth(request) {
         id: payload.id,
         username: payload.username,
         displayName: payload.displayName || "",
+        email: payload.email || "",
         role: payload.role,
         assignedStation: payload.assignedStation || "",
       },

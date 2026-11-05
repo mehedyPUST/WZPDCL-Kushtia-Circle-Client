@@ -83,7 +83,7 @@ export default function LoginModal({
         {/* Brand panel */}
         <aside
           data-keep-dark
-          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001e2b] via-[#023430] to-[#00684a]/50 border-b sm:border-b-0 sm:border-r border-app text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
+          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001e2b] via-[#023430] to-[#00684a]/50 border-b sm:border-b-0 sm:border-r border-white/10 text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-[rgba(0,237,100,0.18)] blur-3xl" />
@@ -92,36 +92,36 @@ export default function LoginModal({
           </div>
 
           <div className="relative">
-            <p className="text-xs font-semibold tracking-wide text-accent mb-3">
+            <p className="text-xs font-semibold tracking-wide text-[#6bffb0] mb-3">
               WZPDCL · Bottail Control Room
             </p>
-            <h2 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight text-white">
               Bottail Substation
             </h2>
-            <p className="mt-2 text-sm text-secondary leading-relaxed max-w-[18rem]">
+            <p className="mt-2 text-sm text-white/85 leading-relaxed max-w-[18rem]">
               Load management for control-room operators — calculate, log, and
               coordinate feeder data.
             </p>
           </div>
 
-          <ul className="relative mt-8 sm:mt-0 space-y-3 text-[12px] text-secondary">
+          <ul className="relative mt-8 sm:mt-0 space-y-3 text-[12px] text-white/80">
             {[
               "Hourly load & bus voltage logs",
               "Loadshed planning with allotment",
               "History, MAX load & night logs",
             ].map((line) => (
               <li key={line} className="flex items-start gap-2.5">
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-accent-dim text-accent border border-accent">
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-400/20 text-[#6bffb0] border border-emerald-400/40">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </span>
-                <span className="leading-snug font-medium">{line}</span>
+                <span className="leading-snug font-medium text-white/90">{line}</span>
               </li>
             ))}
           </ul>
 
-          <p className="relative hidden sm:block mt-8 text-[11px] text-faint font-medium">
+          <p className="relative hidden sm:block mt-8 text-[11px] text-white/55 font-medium">
             Authorized personnel only · Contact Bottail SS for access
           </p>
         </aside>

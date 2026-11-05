@@ -689,6 +689,50 @@ export async function getCurrentAdmin() {
 }
 
 /**
+ * Self-service profile update (displayName, email).
+ * @param {{ displayName?: string, email?: string }} payload
+ */
+export async function updateProfile(payload) {
+  const res = await fetchWithCredentials(url("/api/auth/profile"), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload || {}),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to update profile");
+  }
+  if (data.token) {
+    setStoredSession(data.token, data.data || null);
+  } else if (data.data) {
+    setStoredSession(getStoredToken(), data.data);
+  }
+  return data;
+}
+
+/**
+ * Change password for the signed-in user.
+ * @param {{ currentPassword: string, newPassword: string }} payload
+ */
+export async function changePassword(payload) {
+  const res = await fetchWithCredentials(url("/api/auth/change-password"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload || {}),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to change password");
+  }
+  if (data.token) {
+    setStoredSession(data.token, data.data || null);
+  } else if (data.data) {
+    setStoredSession(getStoredToken(), data.data);
+  }
+  return data;
+}
+
+/**
  * Register a new admin (first admin only or with secret)
  * @param {Object} adminData - { username, password, email, secret? }
  * @returns {Promise<Object>}
@@ -752,6 +796,26 @@ export async function fetchAdminUsers() {
   const data = await parseJson(res);
   if (!res.ok || !data.success) {
     throw new Error(data.message || "Failed to load users");
+  }
+  return data;
+}
+
+/**
+ * Monthly duty roster (admin) — max calculation entries per shift/day.
+ * @param {{ year: number, month: number }} opts month is 1–12
+ */
+export async function fetchDutyRoster({ year, month }) {
+  const q = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+  });
+  const res = await fetchWithCredentials(url(`/api/admin/duty-roster?${q}`), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to load duty roster");
   }
   return data;
 }

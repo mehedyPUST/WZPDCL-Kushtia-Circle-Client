@@ -9,6 +9,7 @@ function sanitizeUser(u) {
     id: u.id,
     username: u.username,
     displayName: u.displayName || "",
+    email: u.email || "",
     role: u.role || "viewer",
     assignedStation: u.assignedStation || "",
     isActive: u.isActive !== false,

@@ -445,14 +445,22 @@ export default function AdminPanel() {
 
   return (
     <div className="page-frame">
-      <div className="mb-1.5 sm:mb-2 shrink-0 px-0.5">
-        <h1 className="text-base sm:text-lg font-semibold text-app tracking-tight">
-          Admin Panel
-        </h1>
-        <p className="text-[11px] sm:text-xs text-muted mt-0.5">
-          Users & station settings ·{" "}
-          <span className="text-accent font-semibold">{admin?.username}</span>
-        </p>
+      <div className="mb-1.5 sm:mb-2 shrink-0 px-0.5 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-app tracking-tight">
+            Admin Panel
+          </h1>
+          <p className="text-[11px] sm:text-xs text-muted mt-0.5">
+            Users & station settings ·{" "}
+            <span className="text-accent font-semibold">{admin?.username}</span>
+          </p>
+        </div>
+        <a
+          href="/admin/duty"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-app text-secondary hover:text-app hover:border-accent/40 hover:bg-accent/5 transition-all"
+        >
+          Monthly duty roster
+        </a>
       </div>
 
       <div className="page-panel flex flex-col min-h-0 overflow-hidden">

@@ -24,9 +24,20 @@ import {
   LogOut,
   FileText,
   CheckCircle2,
+  Settings2,
+  KeyRound,
+  Mail,
+  Save,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchCalculations, trashCalculation } from "@/lib/api";
+import {
+  fetchCalculations,
+  trashCalculation,
+  updateProfile,
+  changePassword,
+} from "@/lib/api";
 import toast from "react-hot-toast";
 import ConfirmModal from "./ConfirmModal";
 
@@ -154,6 +165,7 @@ export default function UserDashboard() {
     canWrite,
     isAdmin,
     logout,
+    applyAdminUpdate,
   } = useAuth();
 
   const [rows, setRows] = useState([]);
@@ -162,6 +174,17 @@ export default function UserDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [trashId, setTrashId] = useState(null);
   const [trashing, setTrashing] = useState(false);
+
+  // Profile / account form state
+  const [displayNameDraft, setDisplayNameDraft] = useState("");
+  const [emailDraft, setEmailDraft] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
 
   const loadMine = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -187,6 +210,12 @@ export default function UserDashboard() {
     }
     loadMine();
   }, [authLoading, isAuthenticated, loadMine, router]);
+
+  useEffect(() => {
+    if (!admin) return;
+    setDisplayNameDraft(admin.displayName || "");
+    setEmailDraft(admin.email || "");
+  }, [admin]);
 
   const stats = useMemo(() => {
     const today = todayYmdDhaka();
@@ -229,6 +258,50 @@ export default function UserDashboard() {
     }
   };
 
+  const handleSaveProfile = async (e) => {
+    e?.preventDefault?.();
+    setSavingProfile(true);
+    try {
+      const res = await updateProfile({
+        displayName: displayNameDraft.trim(),
+        email: emailDraft.trim(),
+      });
+      if (applyAdminUpdate) applyAdminUpdate(res.data);
+      toast.success("Profile updated");
+    } catch (err) {
+      toast.error(err.message || "Could not update profile");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e?.preventDefault?.();
+    if (newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New password and confirmation do not match");
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Password changed");
+    } catch (err) {
+      toast.error(err.message || "Could not change password");
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
   const confirmTrash = async () => {
     if (!trashId) return;
     setTrashing(true);
@@ -254,6 +327,13 @@ export default function UserDashboard() {
             title: "Admin Panel",
             desc: "Users & app settings",
             icon: Shield,
+            write: false,
+          },
+          {
+            href: "/admin/duty",
+            title: "Monthly Duty",
+            desc: "A / B / C shift operators by day",
+            icon: Clock,
             write: false,
           },
         ]
@@ -451,6 +531,193 @@ export default function UserDashboard() {
             );
           })}
         </div>
+      </section>
+
+      {/* Account settings */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSaveProfile}
+          className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm space-y-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+              <Settings2 className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-app">Profile details</h2>
+              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                Update how your name appears on saves and reports. Username and
+                role are controlled by administrators.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Username
+              </span>
+              <input
+                type="text"
+                value={admin?.username || ""}
+                disabled
+                className="mt-1 w-full rounded-xl border border-app bg-surface-2/60 px-3 py-2 text-sm text-muted cursor-not-allowed"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Display name
+              </span>
+              <div className="relative mt-1">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
+                <input
+                  type="text"
+                  value={displayNameDraft}
+                  onChange={(e) => setDisplayNameDraft(e.target.value)}
+                  maxLength={80}
+                  placeholder="e.g. Duty Operator — Bottail"
+                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pl-9 text-sm text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
+                />
+              </div>
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Email
+              </span>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
+                <input
+                  type="email"
+                  value={emailDraft}
+                  onChange={(e) => setEmailDraft(e.target.value)}
+                  placeholder="you@wzpdcl.gov.bd"
+                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pl-9 text-sm text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
+                />
+              </div>
+            </label>
+            {admin?.assignedStation ? (
+              <p className="text-xs text-muted flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                Assigned station:{" "}
+                <span className="font-semibold text-app">
+                  {admin.assignedStation}
+                </span>
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
+            >
+              <Save className="w-4 h-4" />
+              {savingProfile ? "Saving…" : "Save profile"}
+            </button>
+          </div>
+        </form>
+
+        <form
+          onSubmit={handleChangePassword}
+          className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm space-y-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+              <KeyRound className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-app">Change password</h2>
+              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                Use a strong password (min. 8 characters). You stay signed in
+                after a successful change.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Current password
+              </span>
+              <div className="relative mt-1">
+                <input
+                  type={showCurrentPw ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pr-10 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPw((v) => !v)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-faint hover:text-app"
+                  tabIndex={-1}
+                >
+                  {showCurrentPw ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                New password
+              </span>
+              <div className="relative mt-1">
+                <input
+                  type={showNewPw ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pr-10 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPw((v) => !v)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-faint hover:text-app"
+                  tabIndex={-1}
+                >
+                  {showNewPw ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                Confirm new password
+              </span>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+                className="mt-1 w-full rounded-xl border border-app bg-surface px-3 py-2 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
+              />
+            </label>
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="submit"
+              disabled={savingPassword}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-app text-app hover:border-accent/40 hover:bg-accent/5 transition-all disabled:opacity-60"
+            >
+              <KeyRound className="w-4 h-4 text-accent" />
+              {savingPassword ? "Updating…" : "Update password"}
+            </button>
+          </div>
+        </form>
       </section>
 
       {/* My recent activity */}

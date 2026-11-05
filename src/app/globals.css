@@ -208,10 +208,10 @@ html[data-theme="light"] {
   --app-elevated: #ffffff;
   --app-border: #d4e0ee;
   --app-border-strong: #b7cadf;
-  --app-text: #0c1938;
-  --app-text-secondary: #22355c;
-  --app-text-muted: #51678d;
-  --app-text-faint: #859bb8;
+  --app-text: #0a152e;
+  --app-text-secondary: #1a2f55;
+  --app-text-muted: #3d5278;
+  --app-text-faint: #6b82a6;
   --app-accent: #162d82;
   --app-accent-ink: #ffffff;
   --app-accent-hover: #0f2061;
@@ -1225,12 +1225,34 @@ html[data-theme="light"] [data-keep-dark] .text-white {
 
 html[data-theme="light"] .hero-dark-overlay .text-secondary,
 html[data-theme="light"] [data-keep-dark] .text-secondary {
-  color: rgba(255, 255, 255, 0.88) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
 
 html[data-theme="light"] .hero-dark-overlay .text-muted,
 html[data-theme="light"] [data-keep-dark] .text-muted {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+/* Accent on dark hero must stay bright (navy accent is unreadable on photo) */
+html[data-theme="light"] .hero-dark-overlay .text-accent,
+html[data-theme="light"] [data-keep-dark] .text-accent {
+  color: #6bffb0 !important;
+}
+
+html[data-theme="light"] .hero-dark-overlay .text-faint,
+html[data-theme="light"] [data-keep-dark] .text-faint {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+html[data-theme="light"] [data-keep-dark] .btn-primary,
+html[data-theme="light"] [data-keep-dark] .btn-primary * {
+  color: #001e2b !important;
+  background: #00ed64 !important;
+  border-color: transparent !important;
+}
+
+html[data-theme="light"] [data-keep-dark] .btn-primary:hover {
+  background: #6bffb0 !important;
 }
 
 /* Static text-white outside of dark/colorful containers becomes readable dark text */
@@ -1647,10 +1669,33 @@ html, body {
 
 html[data-theme="light"] .module-card {
   background: var(--app-surface);
-  box-shadow: var(--app-shadow);
+  border-color: #c5d4e8;
+  box-shadow:
+    0 1px 2px rgba(12, 25, 56, 0.04),
+    0 4px 14px -4px rgba(12, 25, 56, 0.08);
 }
 html[data-theme="light"] .module-card:hover {
-  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.14);
+  border-color: color-mix(in srgb, var(--app-accent) 45%, #c5d4e8);
+  box-shadow: 0 14px 36px -12px rgba(22, 45, 130, 0.18);
+}
+html[data-theme="light"] .module-card-icon {
+  background: #eff4fc;
+  color: #162d82;
+  border-color: #bfdbfe;
+}
+html[data-theme="light"] .module-card .text-muted {
+  color: #3d5278;
+}
+html[data-theme="light"] .module-card .text-faint {
+  color: #6b82a6;
+}
+html[data-theme="light"] .module-card .text-accent,
+html[data-theme="light"] .module-card .text-accent\/80 {
+  color: #162d82;
+}
+html[data-theme="light"] .section-kicker {
+  color: #162d82;
+  letter-spacing: 0.14em;
 }
 html[data-theme="light"] .page-panel,
 html[data-theme="light"] .panel,
@@ -1974,3 +2019,104 @@ html[data-theme="light"] .time-header-sticky[data-cell-selected="true"] {
   background-color: rgba(22, 45, 130, 0.22) !important;
 }
 
+
+/* ── Monthly duty roster table ── */
+html[data-theme="dark"] {
+  --duty-row-odd: #0a2a36;
+  --duty-row-even: #012433;
+  --duty-row-odd-sticky: #0c3140;
+  --duty-row-even-sticky: #023430;
+}
+
+html[data-theme="light"] {
+  --duty-row-odd: #eef3fa;
+  --duty-row-even: #ffffff;
+  --duty-row-odd-sticky: #e4ebf5;
+  --duty-row-even-sticky: #f7f9fc;
+}
+
+.duty-roster-scroll {
+  scrollbar-gutter: stable;
+}
+
+.duty-roster-scroll table {
+  border-spacing: 0;
+}
+
+.duty-roster-scroll thead th {
+  backdrop-filter: blur(6px);
+}
+
+html[data-theme="light"] .duty-roster-scroll thead th {
+  background: #dbe4f0 !important;
+  color: #0a152e !important;
+}
+
+html[data-theme="dark"] .duty-roster-scroll thead th {
+  background: #0c3b34 !important;
+  color: #f9fbfa !important;
+}
+
+/* ── Homepage + login light-mode readability ── */
+html[data-theme="light"] .home-modules-section {
+  background: linear-gradient(180deg, #f4f7fb 0%, #eef2f8 100%);
+}
+
+html[data-theme="light"] .module-card {
+  background: #ffffff !important;
+  border: 1px solid #b8c9de !important;
+  box-shadow:
+    0 1px 2px rgba(12, 25, 56, 0.05),
+    0 6px 16px -6px rgba(12, 25, 56, 0.1) !important;
+}
+
+html[data-theme="light"] .module-card:hover {
+  border-color: #162d82 !important;
+  box-shadow: 0 12px 28px -10px rgba(22, 45, 130, 0.22) !important;
+}
+
+html[data-theme="light"] .module-card h3,
+html[data-theme="light"] .module-card .text-app {
+  color: #0a152e !important;
+}
+
+html[data-theme="light"] .module-card .text-muted,
+html[data-theme="light"] .module-card p {
+  color: #334e73 !important;
+}
+
+html[data-theme="light"] .module-card-icon {
+  background: #e8eef8 !important;
+  color: #162d82 !important;
+  border-color: #b7cadf !important;
+}
+
+html[data-theme="light"] .module-card .text-accent,
+html[data-theme="light"] .module-card a,
+html[data-theme="light"] .module-card span.text-accent {
+  color: #162d82 !important;
+}
+
+html[data-theme="light"] .section-kicker {
+  color: #162d82 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .home-telemetry {
+  background: #e8eef8 !important;
+  border-color: #b8c9de !important;
+}
+
+html[data-theme="light"] .home-telemetry .text-app,
+html[data-theme="light"] .home-telemetry .text-secondary {
+  color: #0a152e !important;
+}
+
+html[data-theme="light"] .home-telemetry .text-muted {
+  color: #3d5278 !important;
+}
+
+/* Login form surface contrast */
+html[data-theme="light"] .login-form-panel {
+  background: #ffffff;
+}

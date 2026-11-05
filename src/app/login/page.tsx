@@ -69,7 +69,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[52rem] max-h-[min(94dvh,42rem)] bg-surface rounded-2xl sm:rounded-3xl shadow-[var(--app-shadow-lg)] border border-app overflow-hidden flex flex-col sm:flex-row">
         <aside
           data-keep-dark="true"
-          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001e2b] via-[#012433] to-[#023430] border-b sm:border-b-0 sm:border-r border-app text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
+          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001e2b] via-[#012433] to-[#023430] border-b sm:border-b-0 sm:border-r border-white/10 text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-500/15 blur-3xl" />
@@ -77,47 +77,47 @@ export default function LoginPage() {
             <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:22px_22px]" />
           </div>
           <div className="relative">
-            <p className="text-xs font-semibold tracking-wide text-accent mb-3">
+            <p className="text-xs font-semibold tracking-wide text-[#6bffb0] mb-3">
               WZPDCL · Bottail Control Room
             </p>
-            <h1 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight text-white">
               Bottail Substation
             </h1>
-            <p className="mt-2 text-sm text-secondary leading-relaxed max-w-[18rem]">
+            <p className="mt-2 text-sm text-white/85 leading-relaxed max-w-[18rem]">
               Sign in to save load data and open all tools. Guests may use Home
               and Calculator without an account.
             </p>
           </div>
-          <ul className="relative mt-8 sm:mt-0 space-y-3 text-[12px] text-secondary">
+          <ul className="relative mt-8 sm:mt-0 space-y-3 text-[12px] text-white/80">
             {[
               "Role-based access: Viewer · Duty · Admin",
               "Hourly logs, loadshed & night data",
               "Secure cookie session",
             ].map((line) => (
               <li key={line} className="flex items-start gap-2.5">
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-500/15 text-accent border border-accent">
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-400/20 text-[#6bffb0] border border-emerald-400/40">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </span>
-                <span className="leading-snug font-medium">{line}</span>
+                <span className="leading-snug font-medium text-white/90">{line}</span>
               </li>
             ))}
           </ul>
-          <p className="relative hidden sm:block mt-8 text-[11px] text-white/60 font-medium">
+          <p className="relative hidden sm:block mt-8 text-[11px] text-white/55 font-medium">
             Authorized personnel only · Contact Bottail SS for accounts
           </p>
         </aside>
 
-        <div className="flex-1 flex flex-col min-h-0 bg-surface">
+        <div className="flex-1 flex flex-col min-h-0 bg-[var(--app-surface)]">
           <div className="flex-1 overflow-y-auto px-6 py-7 sm:px-10 sm:py-9">
-            <p className="text-xs font-semibold tracking-wide text-accent mb-2">
+            <p className="text-xs font-semibold tracking-wide text-[var(--app-accent)] mb-2">
               Operator Portal
             </p>
-            <h2 className="text-xl sm:text-2xl font-semibold text-app tracking-tight font-display">
+            <h2 className="text-xl sm:text-2xl font-semibold text-[var(--app-text)] tracking-tight font-display">
               Sign in
             </h2>
-            <p className="mt-1.5 text-sm text-muted leading-relaxed">
+            <p className="mt-1.5 text-sm text-[var(--app-text-muted)] leading-relaxed">
               Use your Bottail SS account. Your role controls the sidebar and
               save permissions.
             </p>
@@ -135,7 +135,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="page-login-user"
-                  className="block text-[12px] font-medium text-secondary mb-1.5"
+                  className="block text-[12px] font-semibold text-[var(--app-text-secondary)] mb-1.5"
                 >
                   Username or email
                 </label>
@@ -147,7 +147,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={busy}
-                  className="w-full h-11 px-3.5 rounded-xl border border-app bg-app text-[15px] font-medium text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent disabled:opacity-60"
+                  className="w-full h-11 px-3.5 rounded-xl border-2 border-[var(--app-border-strong)] bg-[var(--app-surface)] text-[15px] font-medium text-[var(--app-text)] placeholder:text-[var(--app-text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-[var(--app-accent)] disabled:opacity-60"
                   placeholder="Enter your username"
                 />
               </div>
@@ -155,7 +155,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="page-login-pass"
-                  className="block text-[12px] font-medium text-secondary mb-1.5"
+                  className="block text-[12px] font-semibold text-[var(--app-text-secondary)] mb-1.5"
                 >
                   Password
                 </label>
@@ -167,14 +167,14 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={busy}
-                    className="w-full h-11 pl-3.5 pr-14 rounded-xl border border-app bg-app text-[15px] font-medium text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent disabled:opacity-60"
+                    className="w-full h-11 pl-3.5 pr-14 rounded-xl border-2 border-[var(--app-border-strong)] bg-[var(--app-surface)] text-[15px] font-medium text-[var(--app-text)] placeholder:text-[var(--app-text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-[var(--app-accent)] disabled:opacity-60"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     tabIndex={-1}
                     onClick={() => setShowPass((s) => !s)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-app hover:bg-surface-2"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--app-text-muted)] hover:text-[var(--app-text)] hover:bg-[var(--app-surface-2)]"
                     aria-label={showPass ? "Hide password" : "Show password"}
                   >
                     {showPass ? "Hide" : "Show"}
@@ -191,17 +191,17 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-app">
-              <p className="text-center text-[12px] text-muted mb-3">
+            <div className="mt-6 pt-5 border-t border-[var(--app-border)]">
+              <p className="text-center text-[12px] text-[var(--app-text-muted)] mb-3">
                 Or continue without an account
               </p>
               <Link
                 href="/"
-                className="flex items-center justify-center w-full h-11 rounded-xl text-[13px] font-semibold text-secondary bg-surface-2 hover:bg-surface-3 border border-app transition-colors"
+                className="flex items-center justify-center w-full h-11 rounded-xl text-[13px] font-semibold text-[var(--app-text-secondary)] bg-[var(--app-surface-2)] hover:bg-[var(--app-surface-3)] border border-[var(--app-border-strong)] transition-colors"
               >
                 Visit homepage
               </Link>
-              <p className="mt-2.5 text-center text-[11px] text-faint leading-relaxed">
+              <p className="mt-2.5 text-center text-[11px] text-[var(--app-text-faint)] leading-relaxed">
                 Guests may use Home and Calculator (calculate / copy only).
                 Sign in to save history and open other tools.
               </p>
