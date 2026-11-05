@@ -125,10 +125,13 @@ function ThemedToaster() {
   );
 }
 
+import TableCellNavigator from "@/components/TableCellNavigator";
+
 export default function Providers({ children }) {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <TableCellNavigator />
         {children}
         <ThemedToaster />
       </AuthProvider>
