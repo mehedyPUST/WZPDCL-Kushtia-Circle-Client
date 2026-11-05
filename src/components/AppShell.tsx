@@ -155,7 +155,7 @@ export default function AppShell({ children }) {
           <img
             src={APP_META.logoUrl}
             alt="WZPDCL"
-            className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-md shadow-black/40 ring-1 ring-emerald-500/30 shrink-0 group-hover:scale-105 transition-transform"
+            className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-md shadow-black/40 ring-1 ring-accent/30 shrink-0 group-hover:scale-105 transition-transform"
           />
           <div className="min-w-0 flex-1">
             <div className="text-[12px] sm:text-[13px] md:text-[14px] font-semibold text-app tracking-tight leading-tight truncate group-hover:text-accent transition-colors">
@@ -301,7 +301,7 @@ export default function AppShell({ children }) {
             {isAuthenticated ? (
               <Link
                 href="/"
-                className="shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-accent bg-emerald-950/60 border border-emerald-500/35 hover:bg-emerald-900/50"
+                className="shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-accent bg-[var(--app-accent-dim)] border border-accent hover:opacity-90"
               >
                 Home
               </Link>

@@ -59,12 +59,12 @@ function normalizeRoleClient(role) {
 function roleBadge(role) {
   const r = String(role || "").toLowerCase();
   if (r === "admin" || r === "superadmin")
-    return "text-accent bg-emerald-50 border-emerald-300 text-accent dark:bg-emerald-500/10 dark:border-accent border px-2 py-0.5 rounded-md font-semibold";
+    return "text-accent bg-accent/10 border-accent/30 border px-2 py-0.5 rounded-md font-semibold";
   if (r === "circle-load-input")
-    return "text-amber-700 bg-amber-50 border-amber-300 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20 border px-2 py-0.5 rounded-md font-semibold";
+    return "text-amber-800 bg-amber-50 border-amber-300 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20 border px-2 py-0.5 rounded-md font-semibold";
   if (r === "duty" || r === "duty-person" || r === "operator")
-    return "text-sky-700 bg-sky-50 border-sky-300 dark:text-sky-400 dark:bg-sky-500/10 dark:border-sky-500/20 border px-2 py-0.5 rounded-md font-semibold";
-  return "text-secondary bg-surface-3/60 border border-app-strong/50 px-2 py-0.5 rounded-md";
+    return "text-sky-800 bg-sky-50 border-sky-300 dark:text-sky-400 dark:bg-sky-500/10 dark:border-sky-500/20 border px-2 py-0.5 rounded-md font-semibold";
+  return "text-secondary bg-surface-3/60 border border-app px-2 py-0.5 rounded-md font-medium";
 }
 
 function EyeIcon({ open }) {

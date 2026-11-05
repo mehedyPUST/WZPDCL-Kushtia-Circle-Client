@@ -58,15 +58,15 @@ const COL_WIDTH = 68;
 
 /** Cohesive substation bus-coded feeder columns */
 const FEEDER_COL = {
-  1: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  2: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  3: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  4: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  5: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  6: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  7: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  8: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  9: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
+  1: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  2: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  3: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  4: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  5: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  6: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  7: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  8: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  9: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
 };
 
 /**
@@ -819,7 +819,7 @@ export default function ManualEntryView({
                   Time
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-emerald-950/80 text-accent"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-[var(--app-accent-dim)] text-accent"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                 >
                   Total
@@ -845,14 +845,14 @@ export default function ManualEntryView({
                   H3+T3
                 </th>
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-700 dark:text-purple-300 border-b border-r border-app"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                   title="BUS-2 voltage (kV) — per hour"
                 >
                   Bus 2
                 </th>
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-700 dark:text-sky-300 border-b border-r border-app"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: COL_WIDTH }}
                   title="BUS-1 voltage (kV) — per hour"
                 >
@@ -874,11 +874,11 @@ export default function ManualEntryView({
                 const isEditing = !!editingRows[slot.label] || isEditTarget;
                 const alt = idx % 2 === 1;
                 const rowBg = slot.isSpecial
-                  ? "bg-amber-950/30 hover:bg-amber-950/50"
+                  ? "bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100/70 dark:hover:bg-amber-950/50"
                   : filled
                     ? alt
-                      ? "bg-emerald-950/30 hover:bg-emerald-950/45"
-                      : "bg-emerald-950/20 hover:bg-emerald-950/40"
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/45"
+                      : "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40"
                     : alt
                       ? "bg-surface-2/75 hover:bg-surface-3/80"
                       : "bg-surface hover:bg-surface-3/70";
@@ -961,7 +961,7 @@ export default function ManualEntryView({
                     className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/70 ${isEditTarget ? "ring-2 ring-inset ring-emerald-500" : "" }`}
                   >
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-300 font-extrabold" : "text-app" }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-700 dark:text-amber-300 font-extrabold" : "text-app" }`}
                       style={{ backgroundColor: stickyBg }}
                     >
                       <div className="inline-flex items-center justify-center gap-1 leading-tight">
@@ -1065,10 +1065,10 @@ export default function ManualEntryView({
                             setDraftField(slot.label, "bus2", e.target.value)
                           }
                           placeholder="kV"
-                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-500/35 bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-300 dark:border-purple-500/35 bg-elevated text-purple-900 dark:text-purple-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                       ) : (
-                        <span className="font-mono text-[11px] font-semibold text-purple-300">
+                        <span className="font-mono text-[11px] font-semibold text-purple-700 dark:text-purple-300">
                           {getBusDisplay(slot.label, "bus2", rec) || "—"}
                         </span>
                       )}
@@ -1083,10 +1083,10 @@ export default function ManualEntryView({
                             setDraftField(slot.label, "bus1", e.target.value)
                           }
                           placeholder="kV"
-                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-500/35 bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          className="w-full min-w-0 px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-300 dark:border-sky-500/35 bg-elevated text-sky-900 dark:text-sky-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
                         />
                       ) : (
-                        <span className="font-mono text-[11px] font-semibold text-sky-300">
+                        <span className="font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">
                           {getBusDisplay(slot.label, "bus1", rec) || "—"}
                         </span>
                       )}
@@ -1107,7 +1107,7 @@ export default function ManualEntryView({
                               type="button"
                               disabled={savingSlot === slot.label}
                               onClick={() => handleSaveSlot(slot)}
-                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled ? "bg-amber-600 hover:bg-amber-500" : "bg-emerald-600 hover:opacity-95" }`}
+                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95" }`}
                             >
                               {savingSlot === slot.label
                                 ? "…"

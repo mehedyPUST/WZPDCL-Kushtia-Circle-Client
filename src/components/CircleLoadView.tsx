@@ -53,7 +53,7 @@ function shiftDay(ymd, delta) {
 }
 
 const inputCls =
-  "w-full min-w-0 h-8 sm:h-9 px-0.5 sm:px-1 rounded-lg border border-app bg-surface text-center font-mono text-[10px] sm:text-xs font-semibold tabular-nums text-app placeholder:text-muted transition-colors hover:border-app-strong focus:outline-none focus:ring-2 focus:ring-emerald-500/35 focus:border-emerald-500";
+  "w-full min-w-0 h-8 sm:h-9 px-0.5 sm:px-1 rounded-lg border border-app bg-surface text-center font-mono text-[10px] sm:text-xs font-semibold tabular-nums text-app placeholder:text-muted transition-colors hover:border-app-strong focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent";
 
 const readCls =
   "block w-full text-center font-mono text-[11px] sm:text-xs font-semibold tabular-nums text-secondary";

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Do NOT use output: "standalone" on Vercel — it can break the serverless build.
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },

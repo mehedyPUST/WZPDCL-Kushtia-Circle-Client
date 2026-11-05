@@ -22,7 +22,7 @@ function Field({
         ? "bg-purple-500/10 dark:bg-purple-950/25 border-purple-500/30 hover:border-purple-500/60"
         : tone === "sky"
           ? "bg-sky-500/10 dark:bg-sky-950/25 border-sky-500/30 hover:border-sky-500/60"
-          : "bg-surface-2 bg-surface-3/70 border-app hover:border-emerald-500/50";
+          : "bg-surface-2 border-app hover:border-accent";
 
   const labelCls =
     tone === "amber"
@@ -31,7 +31,7 @@ function Field({
         ? "text-purple-800 dark:text-purple-300"
         : tone === "sky"
           ? "text-sky-800 dark:text-sky-300"
-          : "text-slate-800 text-secondary";
+          : "text-secondary";
 
   const inputCls =
     tone === "amber"

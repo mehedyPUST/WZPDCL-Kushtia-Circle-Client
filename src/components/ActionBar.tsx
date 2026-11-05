@@ -112,16 +112,16 @@ export default function ActionBar({
         <button
           type="button"
           onClick={() => setShowLogin(true)}
-          className="w-full text-center font-medium text-amber-300 bg-amber-950/40 rounded-md border border-amber-500/30 hover:bg-amber-950/60 transition-colors cursor-pointer"
-          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.25rem", paddingBottom: "0.25rem" }}
+          className="w-full text-center font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors cursor-pointer shadow-xs"
+          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
         >
           Login required to save history — tap to sign in
         </button>
       )}
       {isAuthenticated && isViewer && !isLS && (
         <p
-          className="w-full text-center font-medium text-secondary bg-surface-2 rounded-md border border-app"
-          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.25rem", paddingBottom: "0.25rem" }}
+          className="w-full text-center font-semibold text-secondary bg-surface-2 rounded-lg border border-app shadow-xs"
+          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
         >
           Viewer role — calculate only; saving is disabled
         </p>

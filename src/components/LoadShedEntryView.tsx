@@ -471,21 +471,21 @@ export default function LoadShedEntryView() {
                   Time
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-amber-950/85 text-amber-300"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-amber-50 dark:bg-amber-950/85 text-amber-800 dark:text-amber-300"
                   title="Grid allotment MW — empty = unlimited"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
                   Allotment
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-purple-950/90 text-purple-300"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-purple-50 dark:bg-purple-950/90 text-purple-800 dark:text-purple-300"
                   title="Demand MW = Total (Consumption) + LS"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
                   Demand
                 </th>
                 <th
-                  className="px-1 py-2 font-semibold text-center border-b border-r border-app bg-emerald-950/90 text-accent leading-tight"
+                  className="px-1 py-2 font-semibold text-center border-b border-r border-app bg-[var(--app-accent-dim)] text-accent leading-tight"
                   title="Running load / actual consumption MW"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
@@ -495,7 +495,7 @@ export default function LoadShedEntryView() {
                   </span>
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-rose-950/90 text-rose-300"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-rose-50 dark:bg-rose-950/90 text-rose-800 dark:text-rose-300"
                   title="Sum of LS MW"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
@@ -507,7 +507,7 @@ export default function LoadShedEntryView() {
                   return (
                     <th
                       key={f.id}
-                      className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${isProt ? "bg-cyan-950/75 text-cyan-200" : col.head }`}
+                      className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${isProt ? "bg-cyan-100 dark:bg-cyan-950/75 text-cyan-800 dark:text-cyan-200" : col.head }`}
                       title={
                         isProt
                           ? `${f.name} (excluded from LS plan)`
@@ -525,14 +525,14 @@ export default function LoadShedEntryView() {
                   );
                 })}
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-teal-950/90 text-teal-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-teal-50 dark:bg-teal-950/90 text-teal-800 dark:text-teal-300 border-b border-r border-app"
                   title="H-3 + T-3 LS sum"
                   style={{ width: `${100 / COL_COUNT}%`, minWidth: 0 }}
                 >
                   H3+T3
                 </th>
                 <th
-                  className="px-0.5 py-2.5 font-semibold text-center bg-amber-950/85 text-amber-200 border-b border-app col-action"
+                  className="px-0.5 py-2.5 font-semibold text-center bg-amber-50 dark:bg-amber-950/85 text-amber-800 dark:text-amber-200 border-b border-app col-action"
                   style={{ width: "5.5rem", minWidth: "5.5rem", maxWidth: "5.5rem" }}
                 >
                   Action
@@ -553,16 +553,16 @@ export default function LoadShedEntryView() {
                 let stickyBg = alt ? "var(--sticky-odd)" : "var(--sticky-even)";
 
                 if (underCovered) {
-                  rowBg = alt ? "bg-rose-950/45" : "bg-rose-950/35";
+                  rowBg = alt ? "bg-rose-50 dark:bg-rose-950/45" : "bg-rose-50/60 dark:bg-rose-950/35";
                   stickyBg = alt ? "var(--sticky-rose-alt)" : "var(--sticky-rose)";
                 } else if (over) {
-                  rowBg = alt ? "bg-amber-950/40" : "bg-amber-950/30";
+                  rowBg = alt ? "bg-amber-50 dark:bg-amber-950/40" : "bg-amber-50/60 dark:bg-amber-950/30";
                   stickyBg = alt ? "var(--sticky-special-alt)" : "var(--sticky-special)";
                 } else if (st.dirty) {
-                  rowBg = alt ? "bg-sky-950/40" : "bg-sky-950/30";
+                  rowBg = alt ? "bg-sky-50 dark:bg-sky-950/40" : "bg-sky-50/60 dark:bg-sky-950/30";
                   stickyBg = alt ? "var(--sticky-sky-alt)" : "var(--sticky-sky)";
                 } else if (slot.isSpecial) {
-                  rowBg = alt ? "bg-amber-950/35" : "bg-amber-950/25";
+                  rowBg = alt ? "bg-amber-50 dark:bg-amber-950/35" : "bg-amber-50/60 dark:bg-amber-950/25";
                   stickyBg = alt ? "var(--sticky-special-alt)" : "var(--sticky-special)";
                 }
 
@@ -572,14 +572,14 @@ export default function LoadShedEntryView() {
                     className={`group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/80`}
                   >
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-300 font-extrabold" : "text-app" }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${slot.isSpecial ? "text-amber-700 dark:text-amber-300 font-extrabold" : "text-app" }`}
                       style={{ backgroundColor: stickyBg }}
                     >
                       <div className="inline-flex items-center justify-center gap-1">
                         <span>{slot.label}</span>
                         {st.hasLoad && (
                           <span
-                            className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
+                            className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"
                             title="Load data present"
                           />
                         )}
@@ -587,7 +587,7 @@ export default function LoadShedEntryView() {
                     </td>
 
                     {/* Allotment */}
-                    <td className="px-0.5 py-1 border-b border-r border-app align-middle text-center bg-amber-950/15 group-hover:bg-amber-950/30">
+                    <td className="px-0.5 py-1 border-b border-r border-app align-middle text-center bg-amber-50/50 dark:bg-amber-950/15 group-hover:bg-amber-100/60 dark:group-hover:bg-amber-950/30">
                       {isEditing ? (
                         <input
                           type="number"
@@ -601,29 +601,29 @@ export default function LoadShedEntryView() {
                               allotment: e.target.value,
                             })
                           }
-                          className="w-full min-w-0 rounded border border-amber-500/35 bg-elevated px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold text-amber-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-amber-400"
+                          className="w-full min-w-0 rounded border border-amber-300 dark:border-amber-500/35 bg-elevated px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold text-amber-900 dark:text-amber-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-amber-500"
                           title="Grid allotment (MW). Empty = unlimited"
                         />
                       ) : (
-                        <span className="block text-center font-mono text-[11px] tabular-nums font-medium text-amber-300/90 px-1">
+                        <span className="block text-center font-mono text-[11px] tabular-nums font-medium text-amber-700 dark:text-amber-300/90 px-1">
                           {st.allotment !== "" ? formatMW(st.allotment) : "∞"}
                         </span>
                       )}
                     </td>
 
                     {/* Demand */}
-                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-bold text-purple-300 border-b border-r border-app bg-purple-950/20 group-hover:bg-purple-950/35">
+                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-bold text-purple-700 dark:text-purple-300 border-b border-r border-app bg-purple-50/50 dark:bg-purple-950/20 group-hover:bg-purple-100/60 dark:group-hover:bg-purple-950/35">
                       {st.hasLoad || t.totalLs > 0 ? formatMW(t.demand) : "—"}
                     </td>
 
                     {/* Total */}
-                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-semibold text-accent border-b border-r border-app bg-emerald-950/20 group-hover:bg-emerald-950/35">
+                    <td className="px-1.5 py-1 text-center font-mono tabular-nums font-semibold text-accent border-b border-r border-app bg-emerald-50/50 dark:bg-emerald-950/20 group-hover:bg-emerald-100/60 dark:group-hover:bg-emerald-950/35">
                       {st.hasLoad ? formatMW(t.consumption) : "—"}
                     </td>
 
                     {/* Σ LS */}
                     <td
-                      className={`px-1.5 py-1 text-center font-mono tabular-nums font-bold border-b border-r border-app ${t.totalLs > 0.05 ? "bg-rose-950/35 text-rose-400" : "text-muted" } group-hover:bg-rose-950/45`}
+                      className={`px-1.5 py-1 text-center font-mono tabular-nums font-bold border-b border-r border-app ${t.totalLs > 0.05 ? "bg-rose-50 dark:bg-rose-950/35 text-rose-700 dark:text-rose-400" : "text-muted" } group-hover:bg-rose-100/60 dark:group-hover:bg-rose-950/45`}
                     >
                       {formatMW(t.totalLs)}
                     </td>
@@ -648,11 +648,11 @@ export default function LoadShedEntryView() {
                               onChange={(e) =>
                                 setLs(slot.label, f.id, e.target.value)
                               }
-                              className={`w-full min-w-0 rounded border px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold focus:outline-none focus:ring-1 bg-elevated text-white placeholder:text-muted ${col.input || "border-app focus:ring-emerald-500" }`}
+                              className={`w-full min-w-0 rounded border px-0.5 py-0.5 text-center font-mono text-[11px] tabular-nums font-semibold focus:outline-none focus:ring-1 bg-elevated text-app placeholder:text-muted ${col.input || "border-app focus:ring-accent" }`}
                             />
                           ) : (
                             <span
-                              className={`block text-center font-mono text-[11px] tabular-nums px-0.5 ${isProt ? "text-muted font-normal" : st.ls[f.id] ? "font-bold text-rose-300" : "text-muted font-normal" }`}
+                              className={`block text-center font-mono text-[11px] tabular-nums px-0.5 ${isProt ? "text-muted font-normal" : st.ls[f.id] ? "font-bold text-rose-700 dark:text-rose-300" : "text-muted font-normal" }`}
                             >
                               {isProt
                                 ? "—"
@@ -666,7 +666,7 @@ export default function LoadShedEntryView() {
                     })}
 
                     {/* H3+T3 */}
-                    <td className="px-1 py-1 text-center font-mono tabular-nums font-semibold text-teal-300 border-b border-r border-app bg-teal-950/20 group-hover:bg-teal-950/35">
+                    <td className="px-1 py-1 text-center font-mono tabular-nums font-semibold text-teal-700 dark:text-teal-300 border-b border-r border-app bg-teal-50/50 dark:bg-teal-950/20 group-hover:bg-teal-100/60 dark:group-hover:bg-teal-950/35">
                       {t.h3t3Ls > 0.05 ? formatMW(t.h3t3Ls) : "—"}
                     </td>
 

@@ -15,7 +15,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
       }}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="inline-flex rounded-lg border border-app bg-surface bg-app p-0.5 shadow-xs shrink-0">
+        <div className="inline-flex rounded-lg border border-app bg-surface p-0.5 shadow-xs shrink-0">
           <button
             type="button"
             onClick={() => onChange("normal")}
@@ -44,7 +44,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
           <button
             type="button"
             onClick={onHistory}
-            className="shrink-0 rounded-lg font-semibold tracking-wide uppercase border border-app text-secondary hover:text-app bg-surface hover:bg-surface-3 shadow-xs active:scale-[0.98] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+            className="shrink-0 rounded-lg font-semibold tracking-wide uppercase border border-app text-secondary hover:text-app bg-surface hover:bg-surface-3 shadow-xs active:scale-[0.98] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
             style={{
               height: "calc(var(--calc-btn-h) * 0.8)",
               fontSize: "var(--calc-btn-text)",

@@ -352,9 +352,9 @@ export default function HistoryList({
         </div>
 
         {!isAuthenticated && (
-          <div className="px-3 py-2 bg-amber-950/40 border-b border-amber-500/25 shrink-0">
-            <p className="text-[11px] font-medium text-amber-200/90 text-center">
-              <span className="font-semibold text-amber-300">Read-only mode.</span> Sign in to manage calculations.
+          <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-500/25 shrink-0">
+            <p className="text-[11px] font-medium text-amber-800 dark:text-amber-200/90 text-center">
+              <span className="font-semibold text-amber-900 dark:text-amber-300">Read-only mode.</span> Sign in to manage calculations.
             </p>
           </div>
         )}
@@ -364,7 +364,7 @@ export default function HistoryList({
           <button
             type="button"
             onClick={() => switchFolder("inbox")}
-            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${!isTrash ? "text-accent border-b-2 border-emerald-500 bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
+            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${!isTrash ? "text-accent border-b-2 border-accent bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
           >
             History
             <span className="ml-1.5 text-[11px] font-mono tabular-nums text-muted">
@@ -374,11 +374,11 @@ export default function HistoryList({
           <button
             type="button"
             onClick={() => switchFolder("trash")}
-            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${isTrash ? "text-rose-400 border-b-2 border-rose-500 bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
+            className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${isTrash ? "text-rose-600 dark:text-rose-400 border-b-2 border-rose-500 bg-surface-2" : "text-muted hover:text-secondary hover:bg-surface-2/40" }`}
           >
             Trash
             <span
-              className={`ml-1.5 text-[11px] font-mono tabular-nums ${trashCount > 0 ? "text-rose-400" : "text-faint" }`}
+              className={`ml-1.5 text-[11px] font-mono tabular-nums ${trashCount > 0 ? "text-rose-600 dark:text-rose-400" : "text-faint" }`}
             >
               ({trashCount})
             </span>
@@ -386,8 +386,8 @@ export default function HistoryList({
         </div>
 
         {isTrash && (
-          <div className="px-3 py-2 bg-amber-950/35 border-b border-amber-500/20 shrink-0 flex items-start justify-between gap-2">
-            <p className="text-[10px] font-medium text-amber-200/85 leading-snug">
+          <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/35 border-b border-amber-200 dark:border-amber-500/20 shrink-0 flex items-start justify-between gap-2">
+            <p className="text-[10px] font-medium text-amber-800 dark:text-amber-200/85 leading-snug">
               Deleted items stay in Trash until an admin permanently deletes them.
             </p>
             {trashCount > 0 && isAdmin && (
@@ -402,7 +402,7 @@ export default function HistoryList({
                     message: `Permanently delete all ${trashCount} item(s) in Trash?`,
                   })
                 }
-                className="shrink-0 text-[10px] font-bold text-rose-400 hover:text-rose-300 underline disabled:opacity-50 whitespace-nowrap"
+                className="shrink-0 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 underline disabled:opacity-50 whitespace-nowrap"
               >
                 Empty trash
               </button>

@@ -87,15 +87,15 @@ const COL_WIDTH = 68;
 
 /** Cohesive substation bus-coded feeder columns */
 const FEEDER_COL = {
-  1: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  2: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  3: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  4: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  5: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  6: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  7: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  8: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
-  9: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-emerald-400 focus:ring-emerald-500/40" },
+  1: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  2: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  3: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  4: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  5: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  6: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  7: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  8: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
+  9: { head: "bg-surface-2 text-secondary", cell: "bg-transparent", input: "border-app focus:border-accent focus:ring-accent/40" },
 };
 
 function fmtMW(v) {
@@ -692,7 +692,7 @@ export default function RestTimeDataView() {
                   Time
                 </th>
                 <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-emerald-950/80 text-accent"
+                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-[var(--app-accent-dim)] text-accent"
                   style={colStyleFit}
                 >
                   Total
@@ -718,14 +718,14 @@ export default function RestTimeDataView() {
                   H3+T3
                 </th>
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-700 dark:text-purple-300 border-b border-r border-app"
                   style={colStyleFit}
                   title={`BUS-2 (max ${BUS2_MAX_KV} kV)`}
                 >
                   Bus 2
                 </th>
                 <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-300 border-b border-r border-app"
+                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-700 dark:text-sky-300 border-b border-r border-app"
                   style={colStyleFit}
                   title={`BUS-1 (max ${BUS1_MAX_KV} kV)`}
                 >
@@ -756,12 +756,12 @@ export default function RestTimeDataView() {
                   ? "bg-elevated/90 hover:bg-surface-2"
                   : required
                     ? alt
-                      ? "bg-purple-950/35 hover:bg-purple-950/50"
-                      : "bg-purple-950/25 hover:bg-purple-950/45"
+                      ? "bg-purple-50 dark:bg-purple-950/35 hover:bg-purple-100/70 dark:hover:bg-purple-950/50"
+                      : "bg-purple-50/50 dark:bg-purple-950/25 hover:bg-purple-100/60 dark:hover:bg-purple-950/45"
                     : filled
                       ? alt
-                        ? "bg-emerald-950/30 hover:bg-emerald-950/45"
-                        : "bg-emerald-950/20 hover:bg-emerald-950/40"
+                        ? "bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/45"
+                        : "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40"
                       : alt
                         ? "bg-surface-2/75 hover:bg-surface-3/80"
                         : "bg-surface hover:bg-surface-2";
@@ -788,27 +788,27 @@ export default function RestTimeDataView() {
                 return (
                   <tr key={slot} className={`group ${rowBg} border-b border-app hover:!bg-surface-2 transition-colors`}>
                     <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${isPrev ? "text-muted font-semibold" : required ? "text-purple-300 font-extrabold" : "text-app" }`}
+                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${isPrev ? "text-muted font-semibold" : required ? "text-purple-700 dark:text-purple-300 font-extrabold" : "text-app" }`}
                       style={{ backgroundColor: stickyBg }}
                     >
                       <div className="inline-flex items-center justify-center gap-1 leading-tight">
                         <span>{slot}</span>
                         {required && (
-                          <span className="block text-[8px] font-extrabold text-purple-300 uppercase leading-tight tracking-wider">
+                          <span className="block text-[8px] font-extrabold text-purple-700 dark:text-purple-300 uppercase leading-tight tracking-wider">
                             req
                           </span>
                         )}
                       </div>
                     </td>
 
-                    <td className="px-1 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-950/15">
+                    <td className="px-1 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-50/50 dark:bg-emerald-950/15">
                       {fmtMW(total)}
                     </td>
 
                     {FEEDERS.map((f) => {
                       const col = FEEDER_COL[f.id] || {
                         cell: "bg-transparent",
-                        input: "border-app focus:ring-emerald-500",
+                        input: "border-app focus:ring-accent",
                       };
                       const pred = sourceMap[slot]?.[f.id] === "predicted";
                       return (
@@ -825,13 +825,13 @@ export default function RestTimeDataView() {
                                 onChange={(e) =>
                                   setAmp(slot, f.id, e.target.value)
                                 }
-                                className={`w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border bg-elevated text-white placeholder:text-muted focus:outline-none focus:ring-1 ${col.input}`}
+                                className={`w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 ${col.input}`}
                               />
                             ) : (
                               <span className="font-mono text-[11px] font-semibold text-secondary">
                                 {grid[slot]?.amps?.[f.id] ?? "—"}
                                 {getRingOn(slot, f.id) ? (
-                                  <span className="text-amber-400 font-black text-[8px] ml-0.5">
+                                  <span className="text-amber-500 dark:text-amber-400 font-black text-[8px] ml-0.5">
                                     ●
                                   </span>
                                 ) : null}
@@ -871,10 +871,10 @@ export default function RestTimeDataView() {
                           value={grid[slot]?.bus2 ?? ""}
                           onChange={(e) => setBus(slot, "bus2", e.target.value)}
                           placeholder="kV"
-                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-500/35 bg-elevated text-purple-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-300 dark:border-purple-500/35 bg-elevated text-purple-900 dark:text-purple-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
                         />
                       ) : (
-                        <span className="font-mono text-[11px] font-semibold text-purple-300">
+                        <span className="font-mono text-[11px] font-semibold text-purple-700 dark:text-purple-300">
                           {grid[slot]?.bus2 || "—"}
                         </span>
                       )}
@@ -890,10 +890,10 @@ export default function RestTimeDataView() {
                           value={grid[slot]?.bus1 ?? ""}
                           onChange={(e) => setBus(slot, "bus1", e.target.value)}
                           placeholder="kV"
-                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-500/35 bg-elevated text-sky-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-300 dark:border-sky-500/35 bg-elevated text-sky-900 dark:text-sky-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
                         />
                       ) : (
-                        <span className="font-mono text-[11px] font-semibold text-sky-300">
+                        <span className="font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">
                           {grid[slot]?.bus1 || "—"}
                         </span>
                       )}
@@ -918,7 +918,7 @@ export default function RestTimeDataView() {
                                 type="button"
                                 disabled={savingSlot === slot}
                                 onClick={() => saveOneSlot(slot)}
-                                className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-amber-600 hover:bg-amber-500" : "bg-emerald-600 hover:opacity-95" }`}
+                                className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95" }`}
                               >
                                 {savingSlot === slot
                                   ? "…"
@@ -953,7 +953,7 @@ export default function RestTimeDataView() {
             <button
               type="button"
               onClick={handleModifyAll}
-              className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[7.5rem] px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide border shadow-sm transition-all active:scale-[0.98] ${bulkEditMode ? "bg-sky-600 text-white border-sky-500" : "bg-surface-2 text-sky-300 border-sky-500/40 hover:bg-sky-950/60" }`}
+              className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[7.5rem] px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide border shadow-sm transition-all active:scale-[0.98] ${bulkEditMode ? "bg-sky-600 text-white border-sky-500" : "bg-surface-2 text-sky-700 dark:text-sky-300 border-sky-500/40 hover:bg-sky-50 dark:hover:bg-sky-950/60" }`}
             >
               {bulkEditMode ? "Editing…" : "Modify"}
             </button>
@@ -962,7 +962,7 @@ export default function RestTimeDataView() {
             type="button"
             onClick={handlePrimaryAction}
             disabled={saving}
-            className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[10rem] px-4 sm:px-5 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 ${generated ? "bg-emerald-600 hover:opacity-95 shadow-emerald-950/50" : "bg-purple-600 hover:bg-purple-500 shadow-purple-950/50" }`}
+            className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[10rem] px-4 sm:px-5 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 ${generated ? "btn-primary hover:opacity-95 shadow-emerald-950/20" : "bg-purple-600 hover:bg-purple-500 shadow-purple-950/20" }`}
           >
             {saving
               ? "Saving…"

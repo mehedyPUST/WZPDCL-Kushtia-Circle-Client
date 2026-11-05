@@ -34,7 +34,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
-          className="font-bold tracking-wide uppercase text-muted text-secondary truncate"
+          className="font-bold tracking-wide uppercase text-secondary truncate"
           style={{ fontSize: "var(--calc-badge-label)" }}
         >
           H3+T3

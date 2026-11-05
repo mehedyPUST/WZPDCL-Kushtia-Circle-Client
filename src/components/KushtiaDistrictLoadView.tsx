@@ -230,7 +230,7 @@ export default function KushtiaDistrictLoadView() {
     load();
   }, [load]);
 
-  const slots = data?.slots || [];
+  const slots = useMemo(() => data?.slots || [], [data?.slots]);
   const boundary = data?.boundary || "22:00";
 
   const summary = useMemo(() => {

@@ -586,7 +586,7 @@ export default function MaxLoadView() {
                   type="button"
                   onClick={handleSetRingWithout}
                   title="Feeder peaks on radial / own-TX only. Excludes Mozompur↔Housing↔Campus/GIS, external rings, H3↔T3 coupler."
-                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "without" ? "bg-slate-100 text-slate-900 shadow-sm" : "text-muted hover:text-app hover:bg-white/5" }`}
+                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "without" ? "btn-primary shadow-sm" : "text-muted hover:text-app hover:bg-surface-3" }`}
                 >
                   No Ring
                 </button>
@@ -594,14 +594,14 @@ export default function MaxLoadView() {
                   type="button"
                   onClick={handleSetRingWith}
                   title="All samples including ring/coupler. Individual peaks may be shared-path. Station total & 11 kV total always use all data."
-                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "with" ? "bg-amber-500 text-[var(--app-accent-ink)] shadow-sm shadow-amber-500/20" : "text-muted hover:text-app hover:bg-white/5" }`}
+                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "with" ? "bg-amber-600 text-white shadow-sm shadow-amber-600/20" : "text-muted hover:text-app hover:bg-surface-3" }`}
                 >
                   + Ring
                 </button>
               </div>
               <p className="text-[10px] text-faint leading-snug max-w-xs hidden lg:block">
                 <span className="text-secondary font-semibold">No Ring</span> radial / own-TX ·{" "}
-                <span className="text-amber-400/90 font-semibold">+ Ring</span> all samples · 11 kV total always full
+                <span className="text-amber-600 dark:text-amber-400 font-semibold">+ Ring</span> all samples · 11 kV total always full
               </p>
             </div>
 
@@ -618,7 +618,7 @@ export default function MaxLoadView() {
                 type="button"
                 onClick={() => setPeakBy("mw")}
                 title="Rank peaks by calculated MW; Amps column shows current at that MW peak"
-                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "mw" ? "bg-emerald-500 text-[var(--app-accent-ink)] shadow-sm" : "text-muted hover:text-app hover:bg-white/5" }`}
+                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "mw" ? "btn-primary shadow-sm" : "text-muted hover:text-app hover:bg-surface-3" }`}
               >
                 MW
               </button>
@@ -626,7 +626,7 @@ export default function MaxLoadView() {
                 type="button"
                 onClick={() => setPeakBy("amps")}
                 title="Rank peaks by amps; MW column shows power at that amp peak (voltage may differ)"
-                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "amps" ? "bg-sky-500 text-[var(--app-accent-ink)] shadow-sm" : "text-muted hover:text-app hover:bg-white/5" }`}
+                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "amps" ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-app hover:bg-surface-3" }`}
               >
                 Amps
               </button>
@@ -907,7 +907,7 @@ export default function MaxLoadView() {
                 <h2 className="text-sm font-semibold text-app tracking-tight">
                   Feeder Peak Ranking Schedule (Top {topN})
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-100 dark:bg-surface-3 text-slate-700 text-secondary border border-slate-300 dark:border-app">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-surface-2 text-secondary border border-app">
                   {periodLabel || "Current Period"}
                 </span>
               </div>

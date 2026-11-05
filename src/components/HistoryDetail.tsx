@@ -129,8 +129,8 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
           )}
 
         <div className="px-3 pb-4 grid grid-cols-2 gap-2">
-          <div className="bg-teal-50 bg-app rounded-xl h-12 flex items-center justify-between px-3 border border-teal-300 dark:border-teal-500/35">
-            <span className="text-xs font-semibold text-teal-800 text-secondary">
+          <div className="bg-teal-50 dark:bg-teal-950/40 rounded-xl h-12 flex items-center justify-between px-3 border border-teal-300 dark:border-teal-500/35">
+            <span className="text-xs font-semibold text-teal-800 dark:text-teal-300">
               H3+T3
             </span>
             <span className="text-sm font-bold font-mono tabular-nums text-teal-800 dark:text-teal-300">
@@ -144,7 +144,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
             </span>
             <span className="text-sm font-bold font-mono tabular-nums text-accent">
               {(Math.round((Number(record.totalMW || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
-              <span className="text-[10px] font-medium text-accent text-accent/80">MW</span>
+              <span className="text-[10px] font-medium text-accent/80">MW</span>
             </span>
           </div>
         </div>

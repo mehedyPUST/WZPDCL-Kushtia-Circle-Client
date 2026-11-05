@@ -167,7 +167,7 @@ export default function SiteNavbar() {
           <button
             type="button"
             onClick={() => setShowLogin(true)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-md transition-colors"
+            className="btn-primary w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold shadow-md transition-colors"
           >
             Sign in
           </button>
@@ -204,7 +204,7 @@ export default function SiteNavbar() {
             <img
               src={APP_META.logoUrl}
               alt="WZPDCL"
-              className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-sm ring-1 ring-emerald-500/25 shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-sm ring-1 ring-accent/30 shrink-0"
             />
             <div className="min-w-0">
               <div className="text-[12px] sm:text-[13px] md:text-[14px] font-bold text-app tracking-tight leading-tight truncate">
@@ -230,7 +230,7 @@ export default function SiteNavbar() {
               <button
                 type="button"
                 onClick={() => setShowLogin(true)}
-                className="px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-md transition-colors"
+                className="btn-primary px-3.5 py-1.5 rounded-lg text-[12px] font-semibold shadow-md transition-colors"
               >
                 Sign in
               </button>

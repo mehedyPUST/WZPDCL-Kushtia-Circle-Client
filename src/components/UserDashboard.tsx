@@ -33,23 +33,23 @@ import ConfirmModal from "./ConfirmModal";
 const ROLE_META = {
   admin: {
     label: "Administrator",
-    color: "text-emerald-600 text-accent",
-    bg: "bg-emerald-500/10 border-accent",
+    color: "text-accent",
+    bg: "bg-accent/10 border-accent/40",
   },
   duty: {
     label: "Duty Operator",
-    color: "text-sky-600 dark:text-sky-400",
+    color: "text-sky-700 dark:text-sky-400",
     bg: "bg-sky-500/10 border-sky-500/25",
   },
   "circle-load-input": {
     label: "Circle Load Input",
-    color: "text-amber-600 dark:text-amber-400",
+    color: "text-amber-700 dark:text-amber-400",
     bg: "bg-amber-500/10 border-amber-500/25",
   },
   viewer: {
     label: "Viewer",
-    color: "text-muted text-muted",
-    bg: "bg-surface-20/10 border-slate-500/25",
+    color: "text-muted",
+    bg: "bg-surface-3/60 border-app",
   },
 };
 

@@ -76,7 +76,7 @@ export default function StationHeader({ tagline }) {
               src={APP_META.logoUrl}
               alt="WZPDCL Logo"
               referrerPolicy="no-referrer"
-              className="object-contain bg-white rounded-full p-0.5 shadow-sm ring-1 ring-emerald-500/30 shrink-0"
+              className="object-contain bg-white rounded-full p-0.5 shadow-sm ring-1 ring-accent/30 shrink-0"
               style={{
                 width: "var(--calc-logo, 2.5rem)",
                 height: "var(--calc-logo, 2.5rem)",

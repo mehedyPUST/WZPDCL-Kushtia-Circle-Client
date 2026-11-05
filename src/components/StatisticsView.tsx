@@ -615,17 +615,17 @@ export default function StatisticsView() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-[var(--app-accent-dim)] text-accent border border-accent/40">
                 WZPDCL Substation 33/11 kV
               </span>
               <span className="text-app text-xs">·</span>
               <span className="text-muted text-xs font-mono font-medium">Bottail Grid</span>
             </div>
-            <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-lg sm:text-2xl font-bold text-app tracking-tight">
               Substation Operational Analytics
             </h1>
             <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl leading-relaxed">
-              Active power dispatch (<span className="text-emerald-400 font-semibold">Demand = Total Supplied + Load Shed</span>),
+              Active power dispatch (<span className="text-accent font-semibold">Demand = Total Supplied + Load Shed</span>),
               transformer bus balance, voltage stability, and feeder loading analysis.
             </p>
           </div>
@@ -635,7 +635,7 @@ export default function StatisticsView() {
               type="button"
               onClick={loadData}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-3 text-secondary border border-app hover:bg-surface-3 hover:text-white disabled:opacity-50 transition-all shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-2 text-secondary border border-app hover:bg-surface-3 hover:text-app disabled:opacity-50 transition-all shadow-sm"
             >
               <svg
                 className={`w-3.5 h-3.5 ${loading ? "animate-spin text-emerald-400" : "text-muted"}`}
@@ -807,9 +807,9 @@ export default function StatisticsView() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               {/* Insight 1: Peak Demand Event */}
-              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
+                  <div className="flex items-center justify-between text-muted mb-1">
                     <span className="font-semibold text-[11px]">System Peak Demand</span>
                     <span className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 font-mono text-[10px] border border-purple-200 dark:border-transparent">
                       {analytics.peakDemandRecord?.slot || "—"}
@@ -818,9 +818,9 @@ export default function StatisticsView() {
                   <p className="text-sm font-bold text-app">
                     {formatMW(analytics.peakDemand)} MW
                   </p>
-                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
+                  <p className="text-[11px] text-muted mt-1 leading-snug">
                     {analytics.peakDemandRecord?.ls > 0 ? (
-                      <>Supplied: <span className="text-slate-900 text-secondary font-medium">{formatMW(analytics.peakDemandRecord?.total)} MW</span> + Shed: <span className="text-rose-600 dark:text-rose-400 font-semibold">{formatMW(analytics.peakDemandRecord?.ls)} MW</span></>
+                      <>Supplied: <span className="text-secondary font-medium">{formatMW(analytics.peakDemandRecord?.total)} MW</span> + Shed: <span className="text-rose-600 dark:text-rose-400 font-semibold">{formatMW(analytics.peakDemandRecord?.ls)} MW</span></>
                     ) : (
                       <span className="text-emerald-700 dark:text-emerald-400 font-medium">100% supplied without curtailment</span>
                     )}
@@ -832,9 +832,9 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 2: Load Shedding & Curtailment */}
-              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
+                  <div className="flex items-center justify-between text-muted mb-1">
                     <span className="font-semibold text-[11px]">Load Shedding Status</span>
                     <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${analytics.peakLs > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-transparent" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" }`}>
                       {analytics.peakLs > 0 ? `${analytics.hoursWithLS} slots with LS` : "Zero LS"}
@@ -843,9 +843,9 @@ export default function StatisticsView() {
                   <p className="text-sm font-bold text-app">
                     {analytics.peakLs > 0 ? `${formatMW(analytics.peakLs)} MW Peak Cut` : "0.0 MW (Full Supply)"}
                   </p>
-                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
+                  <p className="text-[11px] text-muted mt-1 leading-snug">
                     {analytics.peakLs > 0 ? (
-                      <>Average cut: <span className="text-slate-900 text-secondary font-mono font-medium">{formatMW(analytics.meanLS)} MW</span> across active slots</>
+                      <>Average cut: <span className="text-secondary font-mono font-medium">{formatMW(analytics.meanLS)} MW</span> across active slots</>
                     ) : (
                       <span className="text-emerald-700 dark:text-emerald-400 font-medium">100% grid demand met without curtailment</span>
                     )}
@@ -857,9 +857,9 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 3: 33/11 kV Transformer Balance */}
-              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
+                  <div className="flex items-center justify-between text-muted mb-1">
                     <span className="font-semibold text-[11px]">Bus 1 vs Bus 2 Loading</span>
                     <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-transparent" }`}>
                       {Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "Balanced" : "Asymmetric"}
@@ -868,7 +868,7 @@ export default function StatisticsView() {
                   <p className="text-sm font-bold text-app">
                     B1: {analytics.bus1SharePct}% · B2: {analytics.bus2SharePct}%
                   </p>
-                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
+                  <p className="text-[11px] text-muted mt-1 leading-snug">
                     B1 (MRS, Housing, Rajbari, H-3)
                     <br />
                     B2 (BRB, Mozompur, Campus/GIS, Kobur, T-3)
@@ -880,9 +880,9 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 4: 33 kV Voltage Profile */}
-              <div className="p-3 rounded-lg bg-white bg-surface-3 border border-slate-200 dark:border-white/5 shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-slate-600 text-muted mb-1">
+                  <div className="flex items-center justify-between text-muted mb-1">
                     <span className="font-semibold text-[11px]">33 kV Incoming Voltage</span>
                     <span className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-mono text-[10px] border border-sky-200 dark:border-transparent">
                       Nominal: 33.0 kV
@@ -891,7 +891,7 @@ export default function StatisticsView() {
                   <p className="text-sm font-bold text-app">
                     B1: {formatKV(analytics.bus1AvgVolt)} kV · B2: {formatKV(analytics.bus2AvgVolt)} kV
                   </p>
-                  <p className="text-[11px] text-slate-600 text-muted mt-1 leading-snug">
+                  <p className="text-[11px] text-muted mt-1 leading-snug">
                     Range: {formatKV(Math.min(analytics.bus1MinVolt, analytics.bus2MinVolt))} – {formatKV(Math.max(analytics.bus1MaxVolt, analytics.bus2MaxVolt))} kV
                     {analytics.bus1MinVolt < 30.5 || analytics.bus2MinVolt < 30.5 ? (
                       <span className="text-amber-600 dark:text-amber-400 block font-semibold">Under-voltage detected (&lt;30.5 kV)</span>
@@ -1497,10 +1497,10 @@ export default function StatisticsView() {
                     </div>
                   </div>
                   <div className="mt-3 text-xs text-slate-600 text-muted">
-                    <span className="font-semibold text-slate-800 text-secondary block mb-1">Connected Feeders:</span>
+                    <span className="font-semibold text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 2).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 bg-surface-3 text-slate-700 text-secondary text-[11px] border border-slate-200 dark:border-transparent">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-surface-3 text-secondary text-[11px] border border-app">
                           {f.name}
                         </span>
                       ))}
@@ -1516,7 +1516,7 @@ export default function StatisticsView() {
             <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6 mb-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+                  <h2 className="text-sm sm:text-base font-semibold text-app tracking-tight">
                     Daily Peak & Average Demand Trend
                   </h2>
                   <p className="text-xs text-muted mt-0.5">
@@ -1652,15 +1652,15 @@ function SubstationKpi({ label, value, unit, sub, accent = "slate" }) {
   return (
     <div className={`rounded-xl border p-3.5 sm:p-4 bg-gradient-to-br ${accentClasses[accent] || accentClasses.slate} shadow-xs dark:shadow-sm flex flex-col justify-between`}>
       <div>
-        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 text-muted">
+        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted">
           {label}
         </p>
         <p className={`mt-1.5 text-lg sm:text-xl font-bold tabular-nums tracking-tight font-mono ${valueClasses[accent] || valueClasses.slate}`}>
           {value}
-          {unit ? <span className="text-xs font-sans font-medium text-app text-muted ml-1">{unit}</span> : null}
+          {unit ? <span className="text-xs font-sans font-medium text-muted ml-1">{unit}</span> : null}
         </p>
       </div>
-      {sub ? <p className="text-[10px] text-slate-600 text-muted mt-2 leading-tight">{sub}</p> : null}
+      {sub ? <p className="text-[10px] text-muted mt-2 leading-tight">{sub}</p> : null}
     </div>
   );
 }

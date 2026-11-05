@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ═══════════════════════════════════════════════════════════
    Theme tokens — dark (default) & light
@@ -192,36 +193,36 @@ html[data-theme="light"] {
   color-scheme: light;
 
   /*
-    Freelancer.com-inspired light — clean white marketplace UI
-    Primary: hummingbird blue #29B2FE / #0EA5E9 CTAs
-    Text: near-black #1a1d26 · muted slate
-    Surfaces: white / soft gray · high AA contrast for tables
+    WZPDCL Official Identity inspired Light Theme
+    Primary: WZPDCL Corporate Deep Emerald Green #007a52
+    Secondary: Electric Power Lightning Amber/Gold #d97706 & Grid Navy #005a9c
+    Surfaces: Crisp pure white / slate-50 / slate-100 with WCAG AAA text contrast
   */
-  --app-bg: #f5f7fb;
+  --app-bg: #f8fafc;
   --app-surface: #ffffff;
-  --app-surface-2: #f0f3f9;
-  --app-surface-3: #e6ebf5;
+  --app-surface-2: #f1f5f9;
+  --app-surface-3: #e2e8f0;
   --app-elevated: #ffffff;
-  --app-border: #d8dee9;
-  --app-border-strong: #b8c0d0;
-  --app-text: #1a1d26;
-  --app-text-secondary: #3d4454;
-  --app-text-muted: #6b7280;
-  --app-text-faint: #9aa3b2;
-  --app-accent: #0ea5e9;
+  --app-border: #e2e8f0;
+  --app-border-strong: #cbd5e1;
+  --app-text: #0f172a;
+  --app-text-secondary: #334155;
+  --app-text-muted: #64748b;
+  --app-text-faint: #94a3b8;
+  --app-accent: #007a52;
   --app-accent-ink: #ffffff;
-  --app-accent-hover: #0284c7;
-  --app-accent-dim: #e0f2fe;
-  --app-accent-border: #7dd3fc;
-  --app-highlight: #f59e0b;
-  --app-highlight-hover: #d97706;
-  --app-highlight-dim: #fffbeb;
-  --app-highlight-border: #fde68a;
-  --app-navy: #1a1d26;
-  --app-danger: #e11d48;
+  --app-accent-hover: #006241;
+  --app-accent-dim: rgba(0, 122, 82, 0.08);
+  --app-accent-border: rgba(0, 122, 82, 0.28);
+  --app-highlight: #d97706;
+  --app-highlight-hover: #b45309;
+  --app-highlight-dim: #fef3c7;
+  --app-highlight-border: #fcd34d;
+  --app-navy: #0f2742;
+  --app-danger: #dc2626;
   --app-warning: #d97706;
-  --app-info: #0ea5e9;
-  --app-success: #059669;
+  --app-info: #0284c7;
+  --app-success: #007a52;
 
   --app-success-bg: #ecfdf5;
   --app-success-border: #a7f3d0;
@@ -229,12 +230,12 @@ html[data-theme="light"] {
   --app-warning-bg: #fffbeb;
   --app-warning-border: #fde68a;
   --app-warning-text: #92400e;
-  --app-danger-bg: #fff1f2;
-  --app-danger-border: #fecdd3;
-  --app-danger-text: #9f1239;
-  --app-info-bg: #e0f2fe;
-  --app-info-border: #7dd3fc;
-  --app-info-text: #075985;
+  --app-danger-bg: #fef2f2;
+  --app-danger-border: #fecaca;
+  --app-danger-text: #991b1b;
+  --app-info-bg: #f0f9ff;
+  --app-info-border: #bae6fd;
+  --app-info-text: #0369a1;
 
   --app-violet: #7c3aed;
   --app-violet-dim: #f5f3ff;
@@ -247,62 +248,62 @@ html[data-theme="light"] {
   --app-pink-border: #fbcfe8;
   --app-indigo: #4f46e5;
   --app-indigo-dim: #eef2ff;
-  --app-lime: #65a30d;
+  --app-lime: #4d7c0f;
   --app-lime-dim: #f7fee7;
   --app-orange: #ea580c;
   --app-orange-dim: #fff7ed;
 
-  --status-normal: #059669;
+  --status-normal: #007a52;
   --status-normal-bg: #ecfdf5;
   --status-high: #d97706;
   --status-high-bg: #fffbeb;
-  --status-overload: #e11d48;
-  --status-overload-bg: #fff1f2;
+  --status-overload: #dc2626;
+  --status-overload-bg: #fef2f2;
   --status-shed: #ea580c;
   --status-shed-bg: #fff7ed;
-  --status-offline: #6b7280;
-  --status-offline-bg: #f3f4f6;
-  --status-live: #059669;
+  --status-offline: #64748b;
+  --status-offline-bg: #f1f5f9;
+  --status-live: #007a52;
   --status-ring: #7c3aed;
   --status-ring-bg: #f5f3ff;
 
-  --bus-1: #0284c7;
-  --bus-1-bg: #e0f2fe;
-  --bus-1-border: #7dd3fc;
+  --bus-1: #005a9c;
+  --bus-1-bg: #eff6ff;
+  --bus-1-border: #bfdbfe;
   --bus-2: #d97706;
   --bus-2-bg: #fffbeb;
-  --bus-2-border: #fcd34d;
+  --bus-2-border: #fde68a;
 
-  --feeder-1: #0284c7;
-  --feeder-2: #059669;
+  --feeder-1: #005a9c;
+  --feeder-2: #007a52;
   --feeder-3: #7c3aed;
   --feeder-4: #db2777;
   --feeder-5: #ea580c;
   --feeder-6: #0891b2;
   --feeder-7: #ca8a04;
   --feeder-8: #4f46e5;
-  --feeder-9: #e11d48;
+  --feeder-9: #dc2626;
 
-  --chart-1: #0ea5e9;
-  --chart-2: #059669;
-  --chart-3: #f59e0b;
+  --chart-1: #007a52;
+  --chart-2: #005a9c;
+  --chart-3: #d97706;
   --chart-4: #7c3aed;
   --chart-5: #db2777;
   --chart-6: #0891b2;
   --chart-7: #ea580c;
-  --chart-8: #6b7280;
-  --chart-grid: rgba(107, 114, 128, 0.15);
-  --chart-axis: #6b7280;
+  --chart-8: #64748b;
+  --chart-grid: rgba(148, 163, 184, 0.2);
+  --chart-axis: #64748b;
   --chart-tooltip-bg: #ffffff;
-  --chart-tooltip-border: #d8dee9;
+  --chart-tooltip-border: #cbd5e1;
 
-  --app-focus-ring: rgba(14, 165, 233, 0.45);
-  --app-selection: rgba(14, 165, 233, 0.22);
-  --app-overlay: rgba(26, 29, 38, 0.45);
-  --app-scrim: rgba(26, 29, 38, 0.32);
+  --app-focus-ring: rgba(0, 122, 82, 0.4);
+  --app-selection: rgba(0, 122, 82, 0.2);
+  --app-overlay: rgba(15, 23, 42, 0.5);
+  --app-scrim: rgba(15, 23, 42, 0.35);
 
-  --app-shadow: 0 1px 2px rgba(26, 29, 38, 0.05), 0 4px 14px -4px rgba(26, 29, 38, 0.08);
-  --app-shadow-lg: 0 12px 32px -8px rgba(26, 29, 38, 0.14);
+  --app-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+  --app-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
   --app-radius: 0.75rem;
   --app-radius-sm: 0.375rem;
   --app-radius-md: 0.5rem;
@@ -314,36 +315,35 @@ html[data-theme="light"] {
   --shell-chrome-h: 0px;
 
   --sticky-even: #ffffff;
-  --sticky-odd: #f5f7fb;
-  --sticky-hover: #e0f2fe;
+  --sticky-odd: #f8fafc;
+  --sticky-hover: #f1f5f9;
   --sticky-special: #fffbeb;
   --sticky-special-alt: #fef3c7;
   --sticky-special-hover: #fde68a;
   --sticky-filled: #ecfdf5;
   --sticky-filled-alt: #d1fae5;
-  --sticky-rose: #fff1f2;
-  --sticky-rose-alt: #fecdd3;
-  --sticky-sky: #e0f2fe;
-  --sticky-sky-alt: #bae6fd;
-  --sticky-purple: #f5f3ff;
-  --sticky-prev: #f0f3f9;
-  --sticky-foot-head: #e6ebf5;
+  --sticky-rose: #fef2f2;
+  --sticky-rose-alt: #fee2e2;
+  --sticky-sky: #f0f9ff;
+  --sticky-sky-alt: #e0f2fe;
+  --sticky-purple: #faf5ff;
+  --sticky-prev: #f1f5f9;
+  --sticky-foot-head: #0f172a;
   --sticky-foot-sub: #fffbeb;
-  --sticky-shadow: 2px 0 6px rgba(26, 29, 38, 0.06);
+  --sticky-shadow: 2px 0 8px rgba(15, 23, 42, 0.08);
 
-  --history-head-bg: #e6ebf5;
-  --history-head-fg: #3d4454;
-  --history-time-head-fg: #0284c7;
-  --history-border: #d8dee9;
+  --history-head-bg: #f1f5f9;
+  --history-head-fg: #0f172a;
+  --history-time-head-fg: #007a52;
+  --history-border: #e2e8f0;
   --history-row-odd: #ffffff;
-  --history-row-even: #f5f7fb;
-  --history-row-fg: #1a1d26;
-  --history-row-hover: #e0f2fe;
-  --history-row-selected: #bae6fd;
-  --history-row-active: #fef3c7;
-  --history-time-fg: #0284c7;
-  --history-time-hover-fg: #0369a1;
-
+  --history-row-even: #f8fafc;
+  --history-row-fg: #0f172a;
+  --history-row-hover: #f1f5f9;
+  --history-row-selected: #ecfdf5;
+  --history-row-active: #d1fae5;
+  --history-time-fg: #007a52;
+  --history-time-hover-fg: #006241;
 }
 
 /* Mild height-adaptive density for calculator (never unreadable) */
