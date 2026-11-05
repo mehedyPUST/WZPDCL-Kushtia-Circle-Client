@@ -1,6 +1,6 @@
 export default function VoltageInputs({ busVoltages, onVoltageChange, handleWheel, handleKeyDown }) {
     return (
-        <div className="p-3 grid grid-cols-2 gap-3 bg-white flex-shrink-0">
+        <div className="p-3 grid grid-cols-2 gap-3 bg-surface-2 flex-shrink-0">
             <div>
                 <label className="text-[10px] font-medium text-muted">BUS-2 VOLTAGE (kV) *</label>
                 <input

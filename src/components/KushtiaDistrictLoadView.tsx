@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, memo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
 import toast from "react-hot-toast";
 import { fetchDistrictDay } from "@/lib/api";
 import SkeletonTable from "./SkeletonTable";
@@ -12,6 +12,13 @@ function dayKeyNow() {
   const m = String(shifted.getUTCMonth() + 1).padStart(2, "0");
   const d = String(shifted.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function currentSlotNow() {
+  const OFFSET_MS = 6 * 60 * 60 * 1000;
+  const shifted = new Date(Date.now() + OFFSET_MS);
+  const h = String(shifted.getUTCHours()).padStart(2, "0");
+  return `${h}:00`;
 }
 
 function shiftDay(ymd, delta) {
@@ -37,18 +44,18 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
   const tones = {
     teal: {
       bar: "bg-teal-500",
-      head: "text-teal-300",
-      demand: "text-teal-200 bg-teal-950/60",
+      head: "text-teal-700 dark:text-teal-300",
+      demand: "text-teal-800 dark:text-teal-200 bg-teal-100/70 dark:bg-teal-950/60 font-bold",
     },
     amber: {
       bar: "bg-amber-500",
-      head: "text-amber-300",
-      demand: "text-amber-200 bg-amber-950/60",
+      head: "text-amber-800 dark:text-amber-300",
+      demand: "text-amber-800 dark:text-amber-200 bg-amber-100/70 dark:bg-amber-950/60 font-bold",
     },
     slate: {
       bar: "bg-surface-3",
       head: "text-secondary",
-      demand: "text-emerald-200 bg-emerald-950/60",
+      demand: "text-emerald-800 dark:text-emerald-200 bg-emerald-100/70 dark:bg-emerald-950/60 font-bold",
     },
   };
   const t = tones[tone] || tones.slate;
@@ -86,26 +93,39 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
   );
 }
 
-const MobileSlotCard = memo(function MobileSlotCard({ row }) {
+const MobileSlotCard = memo(function MobileSlotCard({ row, isCurrentSlot }) {
   const b = row.bottail || {};
   const h = row.bheramara || {};
   const t = row.total || {};
   return (
     <article
-      className={`rounded-2xl border shadow-sm overflow-hidden ${row.isPreviousDay ? "border-violet-500/30 bg-violet-950/40" : "border-app bg-surface-2/60" }`}
+      data-slot={row.hourSlot}
+      className={`rounded-2xl border shadow-sm overflow-hidden transition-all ${
+        isCurrentSlot
+          ? "border-emerald-500/80 ring-2 ring-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20"
+          : row.isPreviousDay
+            ? "border-violet-300 dark:border-violet-500/30 bg-violet-50/50 dark:bg-violet-950/40"
+            : "border-app bg-surface-2/60"
+      }`}
     >
       <div className="flex items-center justify-between px-3 py-2 border-b border-app">
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm font-bold text-app tabular-nums">
             {row.hourSlot}
           </span>
+          {isCurrentSlot && (
+            <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              now
+            </span>
+          )}
           {row.isPreviousDay && (
-            <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+            <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-800 dark:text-violet-300 border border-violet-300 dark:border-violet-500/30">
               prev day
             </span>
           )}
           {row.isSpecial && (
-            <span className="text-[10px] text-amber-400 font-bold">★</span>
+            <span className="text-[10px] text-amber-500 font-bold" title="Peak slot">★</span>
           )}
         </div>
         <div className="text-right">
@@ -150,35 +170,60 @@ const MobileSlotCard = memo(function MobileSlotCard({ row }) {
   );
 });
 
-const DesktopRow = memo(function DesktopRow({ row, isAlt }) {
+const DesktopRow = memo(function DesktopRow({ row, isAlt, isCurrentSlot }) {
   const b = row.bottail || {};
   const h = row.bheramara || {};
   const t = row.total || {};
   const prev = row.isPreviousDay;
-  const base = prev
-    ? isAlt
-      ? "bg-violet-950/40"
-      : "bg-violet-950/25"
-    : isAlt
-      ? "bg-surface-2/60"
-      : "bg-surface";
+
+  const base = isCurrentSlot
+    ? "bg-emerald-100/40 dark:bg-emerald-950/30 ring-1 ring-inset ring-emerald-500/50 font-medium"
+    : prev
+      ? isAlt
+        ? "bg-violet-50/70 dark:bg-violet-950/40"
+        : "bg-violet-50/40 dark:bg-violet-950/25"
+      : isAlt
+        ? "bg-surface-2/60"
+        : "bg-surface";
+
   const cell =
     "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs tabular-nums text-app";
   const demand =
-    "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs font-bold tabular-nums text-accent bg-emerald-500/10";
+    "px-1 py-1.5 border-b border-r border-app text-center font-mono text-[11px] sm:text-xs font-bold tabular-nums text-accent bg-emerald-100/40 dark:bg-emerald-500/10";
 
   return (
-    <tr className={`${base} group hover:!bg-[var(--sticky-hover)] transition-colors`}>
+    <tr
+      data-slot={row.hourSlot}
+      className={`${base} group hover:!bg-[var(--sticky-hover)] transition-colors`}
+    >
       <td
-        className={`time-col-sticky px-1 py-1.5 border-b border-r border-app text-center group-hover:!bg-[var(--sticky-hover)] ${prev ? "bg-[var(--sticky-purple)] text-violet-700 dark:text-violet-200" : isAlt ? "bg-[var(--sticky-odd)]" : "bg-[var(--sticky-even)]" }`}
+        className={`time-col-sticky px-1 py-1.5 border-b border-r border-app text-center group-hover:!bg-[var(--sticky-hover)] ${
+          isCurrentSlot
+            ? "!bg-emerald-100 dark:!bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-extrabold"
+            : prev
+              ? "bg-[var(--sticky-purple)] text-violet-700 dark:text-violet-200"
+              : isAlt
+                ? "bg-[var(--sticky-odd)]"
+                : "bg-[var(--sticky-even)]"
+        }`}
+        style={{ position: "sticky", left: 0, zIndex: 20 }}
       >
         <span className="block text-xs sm:text-[13px] font-bold tabular-nums font-mono">
           {row.hourSlot}
         </span>
-        {prev && (
-          <span className="block text-[8px] font-extrabold uppercase text-violet-600 tracking-wider">
+        {isCurrentSlot && (
+          <span className="inline-flex items-center gap-0.5 text-[8px] font-extrabold uppercase text-emerald-700 dark:text-emerald-400 tracking-wider">
+            <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+            now
+          </span>
+        )}
+        {prev && !isCurrentSlot && (
+          <span className="block text-[8px] font-extrabold uppercase text-violet-600 dark:text-violet-400 tracking-wider">
             prev
           </span>
+        )}
+        {row.isSpecial && !isCurrentSlot && (
+          <span className="text-[9px] text-amber-500 font-bold leading-none block">★</span>
         )}
       </td>
       <td className={cell}>{fmt(b.consumption)}</td>
@@ -202,7 +247,12 @@ export default function KushtiaDistrictLoadView() {
   const [mobileView, setMobileView] = useState("table");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const tableContainerRef = useRef(null);
+  const cardsContainerRef = useRef(null);
+
   const today = dayKeyNow();
+  const currentSlot = currentSlotNow();
+  const isToday = day === today;
 
   const load = useCallback(
     async (force = false) => {
@@ -232,6 +282,41 @@ export default function KushtiaDistrictLoadView() {
 
   const slots = useMemo(() => data?.slots || [], [data?.slots]);
   const boundary = data?.boundary || "22:00";
+
+  // Smooth scroll logic: scroll to current slot
+  const scrollToNow = useCallback(() => {
+    const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
+    if (!container) return;
+    const target = container.querySelector(`[data-slot="${currentSlot}"]`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      toast("Current hour slot is not within this range", { icon: "ℹ️" });
+    }
+  }, [currentSlot, mobileView]);
+
+  // Smooth scroll logic: scroll to top
+  const scrollToTop = useCallback(() => {
+    const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
+    if (container) {
+      container.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [mobileView]);
+
+  // Auto-scroll to active slot on initial load if viewing today
+  useEffect(() => {
+    if (!loading && data && isToday) {
+      const timer = setTimeout(() => {
+        const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
+        if (!container) return;
+        const target = container.querySelector(`[data-slot="${currentSlot}"]`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, data, isToday, currentSlot, mobileView]);
 
   const summary = useMemo(() => {
     let peakDemand = 0;
@@ -269,9 +354,9 @@ export default function KushtiaDistrictLoadView() {
 
   return (
     <div className="h-full w-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/20">
-      {/* Header */}
-      <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2 border-b border-app bg-elevated/60">
-        <div className="flex flex-wrap items-start justify-between gap-2">
+      {/* ── Fixed Header Section ── */}
+      <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2 border-b border-app bg-elevated/80 backdrop-blur-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent">
               Kushtia district
@@ -284,11 +369,37 @@ export default function KushtiaDistrictLoadView() {
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Scroll navigation helpers */}
+            {isToday && (
+              <button
+                type="button"
+                onClick={scrollToNow}
+                className="h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-accent text-xs font-semibold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm"
+                title={`Jump to current hour slot (${currentSlot})`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider">Now</span>
+                <span className="font-mono text-[11px] hidden sm:inline">{currentSlot}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="h-8 sm:h-9 px-2 rounded-xl border border-app bg-surface-2 hover:bg-surface-3 text-secondary text-xs font-semibold inline-flex items-center gap-0.5 active:scale-95 transition-all shadow-sm"
+              title="Scroll to top of sheet"
+              aria-label="Scroll to top"
+            >
+              <span className="text-xs">↑</span>
+              <span className="text-[10px] font-semibold hidden md:inline">Top</span>
+            </button>
+
+            {/* Date controls */}
             <button
               type="button"
               onClick={() => setDay((d) => shiftDay(d, -1))}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95"
+              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 transition-colors"
               aria-label="Previous day"
             >
               ‹
@@ -300,7 +411,7 @@ export default function KushtiaDistrictLoadView() {
               onChange={(e) => {
                 if (e.target.value) setDay(clampDay(e.target.value));
               }}
-              className="h-9 px-2 rounded-xl border border-app bg-surface-2 text-xs sm:text-sm font-mono font-semibold text-app focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+              className="h-8 sm:h-9 px-2 rounded-xl border border-app bg-surface-2 text-xs sm:text-sm font-mono font-semibold text-app focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
             />
             <button
               type="button"
@@ -311,7 +422,7 @@ export default function KushtiaDistrictLoadView() {
                 })
               }
               disabled={day >= today}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 disabled:opacity-40"
+              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 disabled:opacity-40 transition-colors"
               aria-label="Next day"
             >
               ›
@@ -320,10 +431,13 @@ export default function KushtiaDistrictLoadView() {
               type="button"
               onClick={() => load(true)}
               disabled={loading}
-              className="h-9 px-3 rounded-xl bg-surface-3 text-app text-[11px] font-bold uppercase tracking-wide hover:bg-surface-2 disabled:opacity-50 border border-app"
+              className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-surface-3 text-app text-[11px] font-bold uppercase tracking-wide hover:bg-surface-2 disabled:opacity-50 border border-app transition-colors"
+              title="Reload data"
             >
               {loading ? "…" : "↻"}
             </button>
+
+            {/* Mobile View Toggle */}
             <div className="md:hidden inline-flex items-center rounded-xl bg-surface-2 p-0.5 border border-app">
               <button
                 type="button"
@@ -343,8 +457,8 @@ export default function KushtiaDistrictLoadView() {
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-2">
+        {/* Summary KPIs: Pinned at top so operators always see peaks while scrolling */}
+        <div className="mt-2.5 grid grid-cols-2 lg:grid-cols-4 gap-2">
           {[
             {
               label: "Peak demand",
@@ -356,13 +470,13 @@ export default function KushtiaDistrictLoadView() {
               label: "Peak consumption",
               value: summary.peakConsumption,
               slot: summary.peakConsumptionSlot,
-              accent: "text-teal-300",
+              accent: "text-teal-700 dark:text-teal-300",
             },
             {
               label: "Max LS",
               value: summary.maxLoadshed,
               slot: summary.maxLoadshedSlot,
-              accent: "text-rose-300",
+              accent: "text-rose-700 dark:text-rose-300",
             },
             {
               label: "Stations",
@@ -374,13 +488,13 @@ export default function KushtiaDistrictLoadView() {
           ].map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-app bg-surface-2 px-2.5 py-2 shadow-sm"
+              className="rounded-xl border border-app bg-surface-2/90 px-2.5 py-1.5 shadow-sm"
             >
               <p className="text-[9px] font-bold uppercase tracking-wider text-muted">
                 {s.label}
               </p>
               <p
-                className={`mt-0.5 font-mono text-sm sm:text-base font-bold tabular-nums ${s.accent}`}
+                className={`mt-0.5 font-mono text-xs sm:text-sm md:text-base font-bold tabular-nums ${s.accent}`}
               >
                 {s.text
                   ? s.text
@@ -396,141 +510,215 @@ export default function KushtiaDistrictLoadView() {
         </div>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 min-h-0 overflow-auto">
-        {loading && !data ? (
-          <div className="p-4">
-            <SkeletonTable rows={10} columns={7} dark />
-          </div>
-        ) : (
-          <>
-            {/* Mobile: cards */}
-            {mobileView === "cards" && (
-              <div className="md:hidden p-2.5 space-y-2.5 pb-4">
-                {slots.map((row) => (
-                  <MobileSlotCard
+      {/* ── Main Scroll Area ── */}
+      {loading && !data ? (
+        <div className="flex-1 min-h-0 overflow-auto p-4">
+          <SkeletonTable rows={12} columns={7} dark />
+        </div>
+      ) : (
+        <>
+          {/* Mobile: cards scrollable view */}
+          {mobileView === "cards" && (
+            <div
+              ref={cardsContainerRef}
+              className="md:hidden flex-1 min-h-0 overflow-y-auto overscroll-contain p-2.5 space-y-2.5 pb-4"
+            >
+              {slots.map((row) => (
+                <MobileSlotCard
+                  key={`${row.dayKey}-${row.hourSlot}`}
+                  row={row}
+                  isCurrentSlot={isToday && row.hourSlot === currentSlot}
+                />
+              ))}
+              {!loading && slots.length === 0 && (
+                <p className="text-center text-muted text-sm py-12">
+                  No data for this operational day
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Unified Table scroll container: Single overflow-auto element for both X & Y */}
+          <div
+            ref={tableContainerRef}
+            className={`flex-1 min-h-0 overflow-auto relative sheet-scroll-x overscroll-contain ${
+              mobileView === "cards" ? "hidden md:block" : "block"
+            }`}
+          >
+            <table
+              className="sheet-table w-full text-left"
+              style={{
+                tableLayout: "fixed",
+                borderCollapse: "separate",
+                borderSpacing: 0,
+                minWidth: "62rem",
+                width: "100%",
+              }}
+            >
+              {/* Stable column width definition */}
+              <colgroup>
+                <col style={{ width: "4.75rem" }} />
+                {/* Bottail: 4 cols */}
+                <col style={{ width: "7.7%" }} />
+                <col style={{ width: "7.7%" }} />
+                <col style={{ width: "8.5%" }} />
+                <col style={{ width: "7.7%" }} />
+                {/* Bheramara: 4 cols */}
+                <col style={{ width: "7.7%" }} />
+                <col style={{ width: "7.7%" }} />
+                <col style={{ width: "8.5%" }} />
+                <col style={{ width: "7.7%" }} />
+                {/* Total: 4 cols */}
+                <col style={{ width: "8.5%" }} />
+                <col style={{ width: "9.5%" }} />
+                <col style={{ width: "8.5%" }} />
+                <col style={{ width: "8.5%" }} />
+              </colgroup>
+
+              {/* Two-tier Sticky Thead: Row 1 at top: 0, Row 2 at top: 32px */}
+              <thead className="sticky top-0 z-40">
+                {/* Row 1: Groups */}
+                <tr className="h-8 text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold">
+                  <th
+                    rowSpan={2}
+                    className="time-header-sticky px-2 py-1 border-b border-r border-app text-center align-middle"
+                    style={{ position: "sticky", top: 0, left: 0, zIndex: 50, height: "64px" }}
+                  >
+                    Time
+                  </th>
+                  <th
+                    colSpan={4}
+                    className="h-8 px-1 py-1.5 border-b border-r border-teal-500/40 bg-teal-700 text-white text-center font-bold tracking-wider"
+                    style={{ position: "sticky", top: 0, zIndex: 35, height: "32px" }}
+                  >
+                    Bottail
+                  </th>
+                  <th
+                    colSpan={4}
+                    className="h-8 px-1 py-1.5 border-b border-r border-amber-500/40 bg-amber-600 text-white text-center font-bold tracking-wider"
+                    style={{ position: "sticky", top: 0, zIndex: 35, height: "32px" }}
+                  >
+                    Bheramara
+                  </th>
+                  <th
+                    colSpan={4}
+                    className="h-8 px-1 py-1.5 border-b border-r border-app bg-surface-3 text-app text-center font-bold tracking-wider"
+                    style={{ position: "sticky", top: 0, zIndex: 35, height: "32px" }}
+                  >
+                    Total
+                  </th>
+                </tr>
+
+                {/* Row 2: Sub-columns — all pinned uniformly at top: 32px with opaque backgrounds */}
+                <tr className="h-8 text-[9px] uppercase tracking-wide font-semibold">
+                  {/* Bottail subheaders */}
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-teal-500/30 bg-teal-100 dark:bg-teal-950/90 text-teal-800 dark:text-teal-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Consumption
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-teal-500/30 bg-teal-100 dark:bg-teal-950/90 text-teal-800 dark:text-teal-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    LS
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-accent bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-accent font-bold text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Demand
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-teal-500/30 bg-teal-100 dark:bg-teal-950/90 text-teal-800 dark:text-teal-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Allotment
+                  </th>
+
+                  {/* Bheramara subheaders */}
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-amber-500/30 bg-amber-100 dark:bg-amber-950/90 text-amber-800 dark:text-amber-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Consumption
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-amber-500/30 bg-amber-100 dark:bg-amber-950/90 text-amber-800 dark:text-amber-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    LS
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-accent bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-accent font-bold text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Demand
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-amber-500/30 bg-amber-100 dark:bg-amber-950/90 text-amber-800 dark:text-amber-300 text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Allotment
+                  </th>
+
+                  {/* Total subheaders */}
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-app bg-surface-2 text-secondary text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Consumption
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-accent bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-accent font-bold text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Demand
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-app bg-surface-2 text-secondary text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    Allotment
+                  </th>
+                  <th
+                    className="h-8 px-1 py-1.5 border-b border-r border-app bg-surface-2 text-secondary text-center whitespace-nowrap"
+                    style={{ position: "sticky", top: "32px", zIndex: 34, height: "32px" }}
+                  >
+                    LS
+                  </th>
+                </tr>
+              </thead>
+
+              {/* Data Rows */}
+              <tbody>
+                {slots.map((row, i) => (
+                  <DesktopRow
                     key={`${row.dayKey}-${row.hourSlot}`}
                     row={row}
+                    isAlt={i % 2 === 1}
+                    isCurrentSlot={isToday && row.hourSlot === currentSlot}
                   />
                 ))}
                 {!loading && slots.length === 0 && (
-                  <p className="text-center text-muted text-sm py-12">
-                    No data for this operational day
-                  </p>
+                  <tr>
+                    <td
+                      colSpan={13}
+                      className="px-4 py-14 text-center text-muted text-sm"
+                    >
+                      No data for this operational day
+                    </td>
+                  </tr>
                 )}
-              </div>
-            )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
-            {/* Table */}
-            <div className={`overflow-x-auto overflow-y-auto flex-1 min-h-0 relative sheet-scroll-x ${mobileView === "cards" ? "hidden md:block" : "block"}`}>
-              <table
-                className="sheet-table w-full text-left border border-app"
-                style={{
-                  tableLayout: "fixed",
-                  borderCollapse: "separate",
-                  borderSpacing: 0,
-                  minWidth: "56rem",
-                  width: "100%",
-                }}
-              >
-                <thead className="sticky-head sticky top-0 z-40">
-                  <tr className="text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold">
-                    <th
-                      rowSpan={2}
-                      className="time-header-sticky px-2 py-2.5 border-b border-r border-app text-center align-middle"
-                    >
-                      Time
-                    </th>
-                    <th
-                      colSpan={4}
-                      className="px-1 py-2 border-b border-r border-teal-500/40 bg-teal-700 text-white text-center"
-                      style={{ position: "sticky", top: 0, zIndex: 30 }}
-                    >
-                      Bottail
-                    </th>
-                    <th
-                      colSpan={4}
-                      className="px-1 py-2 border-b border-r border-amber-500/40 bg-amber-600 text-white text-center"
-                      style={{ position: "sticky", top: 0, zIndex: 30 }}
-                    >
-                      Bheramara
-                    </th>
-                    <th
-                      colSpan={4}
-                      className="px-1 py-2 border-b border-r border-app-strong bg-surface-2 text-app text-center"
-                      style={{ position: "sticky", top: 0, zIndex: 30 }}
-                    >
-                      Total
-                    </th>
-                  </tr>
-                  <tr className="text-[9px] uppercase tracking-wide font-semibold">
-                    <th
-                      className="px-1 py-2 border-b border-r border-teal-500/30 bg-teal-950/70 text-teal-300 text-center"
-                      style={{ position: "sticky", top: "33px", zIndex: 30 }}
-                    >
-                      Consumption
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-teal-500/30 bg-teal-950/70 text-teal-300 text-center">
-                      LS
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
-                      Demand
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-teal-500/30 bg-teal-950/70 text-teal-300 text-center">
-                      Allotment
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-amber-500/30 bg-amber-950/70 text-amber-300 text-center">
-                      Consumption
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-amber-500/30 bg-amber-950/70 text-amber-300 text-center">
-                      LS
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
-                      Demand
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-amber-500/30 bg-amber-950/70 text-amber-300 text-center">
-                      Allotment
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-app-strong bg-surface-2 text-secondary text-center">
-                      Consumption
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-accent bg-emerald-950/80 text-accent text-center">
-                      Demand
-                    </th>
-                    <th className="px-1 py-2 border-b border-r border-app-strong bg-surface-2 text-secondary text-center">
-                      Allotment
-                    </th>
-                    <th className="px-1 py-2 border-b border-app-strong bg-surface-2 text-secondary text-center">
-                      LS
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {slots.map((row, i) => (
-                    <DesktopRow
-                      key={`${row.dayKey}-${row.hourSlot}`}
-                      row={row}
-                      isAlt={i % 2 === 1}
-                    />
-                  ))}
-                  {!loading && slots.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={13}
-                        className="px-4 py-14 text-center text-muted text-sm"
-                      >
-                        No data for this operational day
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </div>
-
-      <p className="shrink-0 px-3 py-2 text-[10px] text-muted border-t border-app bg-elevated/60 leading-relaxed">
+      {/* ── Fixed Footer Note ── */}
+      <p className="shrink-0 px-3 py-2 text-[10px] text-muted border-t border-app bg-elevated/70 leading-relaxed">
         <strong className="text-secondary">Demand</strong> = Consumption + LS · Allotment
         defaults to demand · Window ends on selected date at{" "}
         <strong className="text-secondary">{boundary}</strong>

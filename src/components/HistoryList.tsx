@@ -342,7 +342,7 @@ export default function HistoryList({
               <button
                 type="button"
                 onClick={onClose}
-                className="text-lg font-bold w-8 h-8 rounded-lg text-muted hover:text-white hover:bg-white/10 active:scale-95 transition-all leading-none"
+                className="text-lg font-bold w-8 h-8 rounded-lg text-muted hover:text-app hover:bg-surface-3 active:scale-95 transition-all leading-none"
                 aria-label="Close"
               >
                 ×

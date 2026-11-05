@@ -18,8 +18,13 @@ export default function SiteFooter() {
             <div className="flex items-center gap-2.5 mb-3">
               <img
                 src={APP_META.logoUrl}
-                alt=""
-                className="w-8 h-8 object-contain bg-white rounded-full p-0.5"
+                alt="WZPDCL"
+                onError={(e) => {
+                  if (APP_META.logoFallbackUrl && e.currentTarget.src !== APP_META.logoFallbackUrl) {
+                    e.currentTarget.src = APP_META.logoFallbackUrl;
+                  }
+                }}
+                className="w-8 h-8 object-contain bg-white rounded-full p-0.5 shadow-xs ring-1 ring-accent/20"
               />
               <span className="text-sm font-semibold text-app tracking-tight">
                 WZPDCL · SBA-Bottail

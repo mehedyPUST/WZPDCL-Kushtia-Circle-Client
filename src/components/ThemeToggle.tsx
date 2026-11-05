@@ -22,7 +22,7 @@ export default function ThemeToggle({ compact = false, className = "" }) {
         </>
       ) : (
         <>
-          <Moon className="w-3.5 h-3.5 text-muted shrink-0" />
+          <Moon className="w-3.5 h-3.5 text-accent shrink-0" />
           {!compact && <span suppressHydrationWarning>Dark</span>}
         </>
       )}

@@ -155,6 +155,11 @@ export default function AppShell({ children }) {
           <img
             src={APP_META.logoUrl}
             alt="WZPDCL"
+            onError={(e) => {
+              if (APP_META.logoFallbackUrl && e.currentTarget.src !== APP_META.logoFallbackUrl) {
+                e.currentTarget.src = APP_META.logoFallbackUrl;
+              }
+            }}
             className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-md shadow-black/40 ring-1 ring-accent/30 shrink-0 group-hover:scale-105 transition-transform"
           />
           <div className="min-w-0 flex-1">

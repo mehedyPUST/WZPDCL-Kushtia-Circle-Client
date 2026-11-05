@@ -220,7 +220,7 @@ function PeakKpiCard({ label, value, unit, sub, badge, accent = "slate", icon: I
     >
       <div>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-app0 dark:text-muted">
+          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted">
             {label}
           </p>
           {Icon ? (
@@ -236,7 +236,7 @@ function PeakKpiCard({ label, value, unit, sub, badge, accent = "slate", icon: I
             {value}
           </span>
           {unit ? (
-            <span className="text-xs font-medium text-app0 dark:text-muted">{unit}</span>
+            <span className="text-xs font-medium text-muted">{unit}</span>
           ) : null}
           {badge}
         </div>
@@ -683,7 +683,7 @@ export default function MaxLoadView() {
           <button
             type="button"
             onClick={load}
-            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-3 text-white text-xs font-semibold border border-app-strong hover:bg-surface-3 transition-colors"
+            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-3 text-app text-xs font-semibold border border-app-strong hover:bg-surface-2 transition-colors"
           >
             Retry Connection
           </button>
@@ -1050,7 +1050,7 @@ export default function MaxLoadView() {
                             {empty ? (
                               <span className="text-slate-600">—</span>
                             ) : isTop ? (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 text-[10px] font-bold">
                                 #{i + 1}
                               </span>
                             ) : (
@@ -1062,7 +1062,7 @@ export default function MaxLoadView() {
 
                           {/* Max Amps */}
                           <td
-                            className={`px-3 py-2 text-right font-mono tabular-nums border-r border-app/80 ${ empty ? "text-slate-600" : isTop ? "text-white font-bold" : "text-secondary" }`}
+                            className={`px-3 py-2 text-right font-mono tabular-nums border-r border-app/80 ${ empty ? "text-slate-600" : isTop ? "text-app dark:text-white font-bold" : "text-secondary" }`}
                           >
                             {empty ? (
                               "—"
@@ -1082,7 +1082,7 @@ export default function MaxLoadView() {
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center justify-between gap-2">
                                   <span
-                                    className={`font-mono tabular-nums font-bold inline-flex items-center gap-1.5 ${ g.isBottail ? isTop ? "text-teal-300 text-sm" : "text-teal-400/90" : isTop ? "text-emerald-300 text-sm" : "text-emerald-400/85" }`}
+                                    className={`font-mono tabular-nums font-bold inline-flex items-center gap-1.5 ${ g.isBottail ? isTop ? "text-teal-800 dark:text-teal-300 text-sm" : "text-teal-700 dark:text-teal-400/90" : isTop ? "text-emerald-800 dark:text-emerald-300 text-sm" : "text-emerald-700 dark:text-emerald-400/85" }`}
                                   >
                                     {formatMW(p.mw)}
                                     <span className="text-[10px] font-normal text-muted">
@@ -1090,7 +1090,7 @@ export default function MaxLoadView() {
                                     </span>
                                     {isTop && (
                                       <Star
-                                        className="w-3 h-3 text-amber-400 fill-amber-400 shrink-0"
+                                        className="w-3 h-3 text-amber-500 fill-amber-500 dark:text-amber-400 dark:fill-amber-400 shrink-0"
                                         aria-label="Highest peak"
                                       />
                                     )}
@@ -1099,7 +1099,7 @@ export default function MaxLoadView() {
                                   {p.hasActiveRing && (
                                     <span
                                       title="Peak from active ring record"
-                                      className="inline-flex items-center justify-center px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase tracking-tight bg-amber-500/20 text-amber-300 border border-amber-500/40 leading-tight shrink-0"
+                                      className="inline-flex items-center justify-center px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase tracking-tight bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/40 leading-tight shrink-0"
                                     >
                                       R
                                     </span>

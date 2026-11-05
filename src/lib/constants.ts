@@ -218,5 +218,6 @@ export const APP_META = {
   subtitle: "33/11 kV Power Substation",
   tagline: "Load Calculator Dashboard",
   footer: "© All Rights Reserved · SBA-Bottail, WZPDCL",
-  logoUrl: "https://i.ibb.co.com/sL3vSkg/Logo.png",
+  logoUrl: "/logo.png",
+  logoFallbackUrl: "https://i.ibb.co.com/sL3vSkg/Logo.png",
 };

@@ -141,7 +141,7 @@ export default function HomePage() {
                 "linear-gradient(90deg, rgba(8,13,23,0.95) 0%, rgba(8,13,23,0.82) 42%, rgba(8,13,23,0.45) 75%, rgba(8,13,23,0.2) 100%)",
             }}
           />
-          <div className="hero-bottom-fade absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#090e17] to-transparent" />
+          <div className="hero-bottom-fade absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--app-bg)] to-transparent" />
 
           {/* Hero Content */}
           <div className="absolute inset-0 flex items-center">

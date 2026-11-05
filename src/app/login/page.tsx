@@ -104,7 +104,7 @@ export default function LoginPage() {
               </li>
             ))}
           </ul>
-          <p className="relative hidden sm:block mt-8 text-[11px] text-app0 font-medium">
+          <p className="relative hidden sm:block mt-8 text-[11px] text-white/60 font-medium">
             Authorized personnel only · Contact Bottail SS for accounts
           </p>
         </aside>

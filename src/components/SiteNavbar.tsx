@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
+import ThemeToggle from "./ThemeToggle";
 import toast from "react-hot-toast";
 
 const NAV_LINKS = [
@@ -152,7 +153,11 @@ export default function SiteNavbar() {
         })}
       </nav>
 
-      <div className="px-3 py-3 border-t border-app shrink-0">
+      <div className="px-3 py-3 border-t border-app shrink-0 space-y-2">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[11px] font-medium text-muted">Theme</span>
+          <ThemeToggle compact />
+        </div>
         {loading ? (
           <span className="text-xs text-muted px-2">…</span>
         ) : isAuthenticated ? (
@@ -204,6 +209,11 @@ export default function SiteNavbar() {
             <img
               src={APP_META.logoUrl}
               alt="WZPDCL"
+              onError={(e) => {
+                if (APP_META.logoFallbackUrl && e.currentTarget.src !== APP_META.logoFallbackUrl) {
+                  e.currentTarget.src = APP_META.logoFallbackUrl;
+                }
+              }}
               className="w-9 h-9 sm:w-10 sm:h-10 object-contain bg-white rounded-full p-[3px] shadow-sm ring-1 ring-accent/30 shrink-0"
             />
             <div className="min-w-0">
@@ -216,8 +226,9 @@ export default function SiteNavbar() {
             </div>
           </Link>
 
-          {/* Desktop auth shortcut in top bar (sidebar also has it) */}
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
+          {/* Desktop theme toggle + auth shortcut in top bar */}
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+            <ThemeToggle />
             {loading ? null : isAuthenticated ? (
               <button
                 type="button"

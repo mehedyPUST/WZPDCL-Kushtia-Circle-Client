@@ -989,7 +989,7 @@ export default function ManualEntryView({
                       </div>
                     </td>
                     <td
-                      className="px-2 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-950/15"
+                      className="px-2 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-50 dark:bg-emerald-950/15"
                     >
                       {getTotalDisplay(slot.label, rec)}
                     </td>
@@ -1026,7 +1026,7 @@ export default function ManualEntryView({
                               <span className={`font-mono text-[11px] tabular-nums ${val !== "" ? "text-app" : "text-muted"}`}>
                                 {val !== "" ? val : "—"}
                                 {showRing && ringOn ? (
-                                  <span className="text-amber-400 font-black text-[8px] ml-0.5">
+                                  <span className="text-amber-600 dark:text-amber-400 font-black text-[8px] ml-0.5">
                                     ●
                                   </span>
                                 ) : null}
@@ -1039,7 +1039,7 @@ export default function ManualEntryView({
                                   onClick={() =>
                                     toggleRingDraft(slot.label, f.id)
                                   }
-                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-300" }`}
+                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300" }`}
                                   title={(RING_BY_FEEDER[f.id]?.partner || f.name) + ` · ring ${ringOn ? "ON" : "OFF"}`}
                                 >
                                   {ringOn ? "R ON" : "R OFF"}

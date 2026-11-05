@@ -638,7 +638,7 @@ export default function RestTimeDataView() {
             role="tab"
             aria-selected={sheetMode === "general"}
             onClick={() => setSheetMode("general")}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${ sheetMode === "general" ? "bg-surface-3 text-app bg-surface-3 dark:text-white shadow-sm font-semibold" : "text-muted hover:text-app" }`}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${ sheetMode === "general" ? "bg-surface-3 text-app dark:text-white shadow-sm font-semibold" : "text-muted hover:text-app" }`}
           >
             General
           </button>
@@ -842,7 +842,7 @@ export default function RestTimeDataView() {
                                 <button
                                   type="button"
                                   onClick={() => toggleRing(slot, f.id)}
-                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-300" }`}
+                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300" }`}
                                   title={`${f.name} · ${ringPartnerHint(f.id)} · ${getRingOn(slot, f.id) ? "ON" : "OFF"
                                     }`}
                                 >

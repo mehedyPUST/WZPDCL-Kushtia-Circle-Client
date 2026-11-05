@@ -76,6 +76,11 @@ export default function StationHeader({ tagline }) {
               src={APP_META.logoUrl}
               alt="WZPDCL Logo"
               referrerPolicy="no-referrer"
+              onError={(e) => {
+                if (APP_META.logoFallbackUrl && e.currentTarget.src !== APP_META.logoFallbackUrl) {
+                  e.currentTarget.src = APP_META.logoFallbackUrl;
+                }
+              }}
               className="object-contain bg-white rounded-full p-0.5 shadow-sm ring-1 ring-accent/30 shrink-0"
               style={{
                 width: "var(--calc-logo, 2.5rem)",

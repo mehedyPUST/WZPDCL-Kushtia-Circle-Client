@@ -153,7 +153,7 @@ function StationTable({
 
               const alt = i % 2 === 1;
               const rowBg = isBottail
-                ? "bg-teal-950/30 hover:bg-teal-950/45"
+                ? "bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100/70 dark:hover:bg-teal-950/45"
                 : alt
                   ? "bg-surface-2/75 hover:bg-surface-3/80"
                   : "bg-surface hover:bg-surface-3/70";
@@ -164,7 +164,7 @@ function StationTable({
                   className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/80`}
                 >
                   <td
-                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-teal-950/80" : "" }`}
+                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-teal-100 dark:bg-teal-950/80" : "" }`}
                     style={
                       isBottail
                         ? {}
@@ -175,7 +175,7 @@ function StationTable({
                       {s.name.replace(" (Kushtia)", "")}
                     </div>
                     <div
-                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked ? "text-amber-400" : isBottail ? "text-teal-400" : can ? "text-accent" : "text-app0" }`}
+                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked ? "text-amber-600 dark:text-amber-400" : isBottail ? "text-teal-700 dark:text-teal-400" : can ? "text-accent" : "text-muted" }`}
                     >
                       {s.editLocked
                         ? `locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`
@@ -211,14 +211,14 @@ function StationTable({
                         inputMode="decimal"
                       />
                     ) : (
-                      <span className={`${readCls} text-rose-300`}>
+                      <span className={`${readCls} text-rose-700 dark:text-rose-300`}>
                         {fmt(d[lsKey] ?? (mode === "main" ? 0 : null))}
                       </span>
                     )}
                   </td>
-                  <td className="px-1.5 py-1.5 border-b border-r border-app align-middle bg-purple-950/20">
+                  <td className="px-1.5 py-1.5 border-b border-r border-app align-middle bg-purple-50/50 dark:bg-purple-950/20">
                     <span
-                      className={`${readCls} !text-purple-300 font-bold py-1 rounded`}
+                      className={`${readCls} text-purple-800 dark:text-purple-300 font-bold py-1 rounded`}
                     >
                       {fmt(demand)}
                     </span>
@@ -234,7 +234,7 @@ function StationTable({
                         inputMode="decimal"
                       />
                     ) : (
-                      <span className={`${readCls} text-amber-300/90`}>
+                      <span className={`${readCls} text-amber-800 dark:text-amber-300/90`}>
                         {d[allotKey] == null || d[allotKey] === ""
                           ? fmt(demand)
                           : fmt(d[allotKey])}
@@ -252,7 +252,7 @@ function StationTable({
                         {savingId === s.id ? "…" : "Submit"}
                       </button>
                     ) : locked ? (
-                      <span className="inline-flex items-center gap-1 text-[8px] text-amber-400 font-bold uppercase">
+                      <span className="inline-flex items-center gap-1 text-[8px] text-amber-700 dark:text-amber-400 font-bold uppercase">
                         <svg
                           className="w-2.5 h-2.5"
                           fill="none"
@@ -269,7 +269,7 @@ function StationTable({
                         Locked
                       </span>
                     ) : (
-                      <span className="text-[9px] text-app0 font-bold">
+                      <span className="text-[9px] text-muted font-bold">
                         {isBottail && mode === "main" ? "AUTO" : "—"}
                       </span>
                     )}
@@ -307,16 +307,16 @@ function StationTable({
                   >
                     {totalLabel}
                   </td>
-                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-accent border-t-2 border-app-strong border-r border-app bg-emerald-950/40">
+                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-accent border-t-2 border-app-strong border-r border-app bg-emerald-50 dark:bg-emerald-950/40">
                     {fmt(cons)}
                   </td>
-                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-rose-300 border-t-2 border-app-strong border-r border-app bg-rose-950/40">
+                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-rose-700 dark:text-rose-300 border-t-2 border-app-strong border-r border-app bg-rose-50 dark:bg-rose-950/40">
                     {fmt(ls)}
                   </td>
                   <td className="px-1.5 py-2 text-center font-mono font-bold tabular-nums text-app border-t-2 border-app-strong border-r border-app bg-[var(--app-violet-dim)]">
                     {fmt(demand)}
                   </td>
-                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-amber-300 border-t-2 border-app-strong border-r border-app bg-amber-950/40">
+                  <td className="px-1.5 py-2 text-center font-mono font-semibold tabular-nums text-amber-800 dark:text-amber-300 border-t-2 border-app-strong border-r border-app bg-amber-50 dark:bg-amber-950/40">
                     {fmt(allot)}
                   </td>
                   <td className="px-1.5 py-2 border-t-2 border-app-strong" />
@@ -572,17 +572,17 @@ export default function CircleLoadView() {
             </span>
           )}
           {isRelaxed && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-200 text-[10px] font-bold border border-amber-500/25">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 text-[10px] font-bold border border-amber-300 dark:border-amber-500/25">
               Relaxed · {data?.relaxUntil || "12:00"}
             </span>
           )}
           <span
-            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${data?.editable ? "bg-emerald-500/15 text-accent border-accent" : "bg-amber-500/15 text-amber-200 border-amber-500/25" }`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${data?.editable ? "bg-emerald-50 dark:bg-emerald-500/15 text-accent border-accent" : "bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-500/25" }`}
           >
             {data?.editable ? "OPEN" : "CLOSED"}
           </span>
           {!isRelaxed && (
-            <span className="hidden md:inline text-[10px] text-app0">
+            <span className="hidden md:inline text-[10px] text-muted">
               Hour ±30m · 19:00 18:30–19:30 · half-slots 60m
             </span>
           )}
