@@ -4,14 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FEEDERS, BOTTAIL_11KV_IDS, RING_LINES, RING_BY_FEEDER, feederAllowsRing } from "@/lib/constants";
 import {
-  REST_SLOT_LABELS,
-  REQUIRED_SLOTS,
-  OPTIONAL_REST_SLOTS,
+  REST_SLOT_LABELS as DEFAULT_REST_SLOT_LABELS,
+  REQUIRED_SLOTS as DEFAULT_REQUIRED_SLOTS,
+  OPTIONAL_REST_SLOTS as DEFAULT_OPTIONAL_REST_SLOTS,
   PREV_CONTEXT_SLOTS,
   generateRestTimeData,
+  buildNightWindow,
   approximateFajrHour,
   BUS1_MAX_KV,
   BUS2_MAX_KV,
+  DEFAULT_NIGHT_START,
+  DEFAULT_NIGHT_END,
 } from "@/lib/restTimeGenerate";
 import { toDayKey, formatDayLabel } from "@/lib/logsheetSlots";
 import {
@@ -23,6 +26,7 @@ import {
   fetchCalculations,
   saveCalculation,
   updateCalculation,
+  fetchSettings,
 } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
@@ -105,15 +109,26 @@ function fmtMW(v) {
 
 /**
  * Rest-time sheet — same UI language as Manual Input.
- * Special logic: generate 01–07 from 00:00 & 08:00 (+ optional mid anchors).
+ * Special logic: generate intermediate hours from configurable end anchors (+ optional mid anchors).
  */
 export default function RestTimeDataView() {
   const { isAuthenticated, login } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [day, setDay] = useState(todayKey);
+  const [nightStart, setNightStart] = useState(DEFAULT_NIGHT_START);
+  const [nightEnd, setNightEnd] = useState(DEFAULT_NIGHT_END);
+  const [useAi, setUseAi] = useState(true);
+  const [aiBusy, setAiBusy] = useState(false);
+  const nightWindow = useMemo(
+    () => buildNightWindow(nightStart, nightEnd),
+    [nightStart, nightEnd]
+  );
+  const REST_SLOT_LABELS = nightWindow.labels;
+  const REQUIRED_SLOTS = nightWindow.requiredSlots;
+  const OPTIONAL_REST_SLOTS = nightWindow.optionalSlots;
   const [grid, setGrid] = useState(() => {
     const g = {};
-    [...PREV_CONTEXT_SLOTS, ...REST_SLOT_LABELS].forEach((l) => {
+    [...PREV_CONTEXT_SLOTS, ...DEFAULT_REST_SLOT_LABELS].forEach((l) => {
       g[l] = emptySlot();
     });
     return g;
@@ -283,6 +298,35 @@ export default function RestTimeDataView() {
     loadDay();
   }, [loadDay]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetchSettings();
+        const data = res?.data ? res.data : res || {};
+        if (cancelled) return;
+        const start = data.nightLogStartSlot || DEFAULT_NIGHT_START;
+        const end = data.nightLogEndSlot || DEFAULT_NIGHT_END;
+        setNightStart(start);
+        setNightEnd(end);
+        setUseAi(data.nightLogUseAi !== false);
+        const win = buildNightWindow(start, end);
+        setGrid((g) => {
+          const next = { ...g };
+          [...PREV_CONTEXT_SLOTS, ...win.labels].forEach((l) => {
+            if (!next[l]) next[l] = emptySlot();
+          });
+          return next;
+        });
+      } catch {
+        /* keep defaults */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const setAmp = (slot, fid, val) => {
     setGrid((g) => {
       const cell = g[slot] || emptySlot();
@@ -367,9 +411,10 @@ export default function RestTimeDataView() {
     return { total, bottail };
   };
 
+
   const handleModifyAll = () => {
     if (!generated) {
-      toast.error("Generate first, then modify 01:00–07:00 if needed");
+      toast.error("Generate first, then modify intermediate hours if needed");
       return;
     }
     setBulkEditMode(true);
@@ -378,96 +423,181 @@ export default function RestTimeDataView() {
       next[s] = true;
     });
     setEditingRows(next);
-    toast.success("01:00–07:00 unlocked — edit then Save", {
+    toast.success("Intermediate hours unlocked — edit then Save", {
       style: { fontWeight: "bold" },
     });
   };
 
-  const handlePrimaryAction = async () => {
-    if (!generated) {
-      handleGenerate();
-      return;
-    }
-    await applyToManual();
+  const collectGenerateInput = () => {
+    const input = {};
+    REST_SLOT_LABELS.forEach((l) => {
+      const cell = grid[l];
+      if (!cell) return;
+      const hasAmp = FEEDERS.some((f) => {
+        const v = parseFloat(cell.amps[f.id]);
+        return (
+          Number.isFinite(v) &&
+          v >= 0 &&
+          String(cell.amps[f.id]).trim() !== ""
+        );
+      });
+      if (hasAmp || cell.bus1 || cell.bus2) input[l] = cell;
+    });
+    return input;
   };
 
-  const handleGenerate = () => {
-    try {
-      const input = {};
+  /** Apply result; copy end-interval ring marks onto intermediate hours. */
+  const applyGenerateResult = (result, modeLabel) => {
+    const endSlot = REQUIRED_SLOTS[1];
+    const startSlotKey = REQUIRED_SLOTS[0];
+    setGrid((g) => {
+      const next = { ...g };
+      const endRings = { ...(g[endSlot]?.rings || emptyRings()) };
+      const endHasRing = Object.values(endRings).some(Boolean);
+
       REST_SLOT_LABELS.forEach((l) => {
-        const cell = grid[l];
-        if (!cell) return;
-        const hasAmp = FEEDERS.some((f) => {
-          const v = parseFloat(cell.amps[f.id]);
-          return (
-            Number.isFinite(v) &&
-            v >= 0 &&
-            String(cell.amps[f.id]).trim() !== ""
-          );
+        const row = result.slots?.[l];
+        if (!row) return;
+        const amps = {};
+        FEEDERS.forEach((f) => {
+          amps[f.id] = String(row.amps?.[f.id] ?? 0);
         });
-        if (hasAmp || cell.bus1 || cell.bus2) input[l] = cell;
+
+        const isRequired = REQUIRED_SLOTS.includes(l);
+        const prevRings = g[l]?.rings || emptyRings();
+        const prevHas = Object.values(prevRings).some(Boolean);
+
+        let rings;
+        if (isRequired) {
+          rings = { ...emptyRings(), ...prevRings };
+        } else if (endHasRing) {
+          rings = { ...emptyRings(), ...endRings };
+        } else if (prevHas) {
+          rings = { ...emptyRings(), ...prevRings };
+        } else {
+          rings = emptyRings();
+        }
+
+        next[l] = {
+          amps,
+          bus1:
+            row.bus1 != null && row.bus1 !== ""
+              ? String(row.bus1)
+              : g[l]?.bus1 || "",
+          bus2:
+            row.bus2 != null && row.bus2 !== ""
+              ? String(row.bus2)
+              : g[l]?.bus2 || "",
+          rings,
+        };
       });
-      if (!input["00:00"] || !input["08:00"]) {
-        toast.error("00:00 and 08:00 are required before generating");
+      return next;
+    });
+
+    const src = {};
+    const bsrc = {};
+    REST_SLOT_LABELS.forEach((l) => {
+      src[l] = result.slots?.[l]?.source || {};
+      bsrc[l] = result.slots?.[l]?.busSource || {};
+    });
+    setSourceMap(src);
+    setBusSource(bsrc);
+    setMeta(result.meta || null);
+    setGenerated(true);
+    setBulkEditMode(false);
+    setEditingRows({});
+
+    const er = grid[endSlot]?.rings || {};
+    const ringNote = Object.values(er).some(Boolean)
+      ? " · rings from end interval"
+      : "";
+
+    toast.success(
+      result.meta?.friday
+        ? `Generated (${modeLabel}) · Friday BRB reduced${ringNote}`
+        : `Generated (${modeLabel})${ringNote}`,
+      { style: { fontWeight: "bold" } }
+    );
+  };
+
+  const handleGenerateLocal = async () => {
+    try {
+      const input = collectGenerateInput();
+      const reqA = REQUIRED_SLOTS[0];
+      const reqB = REQUIRED_SLOTS[1];
+      if (!input[reqA] || !input[reqB]) {
+        toast.error(`${reqA} and ${reqB} are required before generating`);
         return;
       }
-      const result = generateRestTimeData({ dayKey: day, slots: input });
-      setGrid((g) => {
-        const next = { ...g };
-        REST_SLOT_LABELS.forEach((l) => {
-          const row = result.slots[l];
-          if (!row) return;
-          const amps = {};
-          FEEDERS.forEach((f) => {
-            amps[f.id] = String(row.amps[f.id] ?? 0);
-          });
-          const prevRings = g[l]?.rings;
-          const hasPrev =
-            prevRings && Object.values(prevRings).some((v) => v === true);
-          const seedRings =
-            hasPrev
-              ? { ...emptyRings(), ...prevRings }
-              : {
-                ...emptyRings(),
-                ...(g["00:00"]?.rings || {}),
-              };
-          const rings = REQUIRED_SLOTS.includes(l)
-            ? seedRings
-            : hasPrev
-              ? seedRings
-              : emptyRings();
-          next[l] = {
-            amps,
-            bus1: row.bus1 ? String(row.bus1) : g[l]?.bus1 || "",
-            bus2: row.bus2 ? String(row.bus2) : g[l]?.bus2 || "",
-            rings,
-          };
-        });
-        return next;
+      const result = generateRestTimeData({
+        dayKey: day,
+        slots: input,
+        startSlot: nightStart,
+        endSlot: nightEnd,
       });
-      const src = {};
-      const bsrc = {};
-      REST_SLOT_LABELS.forEach((l) => {
-        src[l] = result.slots[l]?.source || {};
-        bsrc[l] = result.slots[l]?.busSource || {};
-      });
-      setSourceMap(src);
-      setBusSource(bsrc);
-      setMeta(result.meta);
-      setGenerated(true);
-      setBulkEditMode(false);
-      setEditingRows({});
-      toast.success(
-        result.meta.friday
-          ? "Generated · Friday BRB → 0 at 07:00"
-          : "Generated 01:00–07:00 — use Modify to adjust",
-        { style: { fontWeight: "bold" } }
-      );
+      applyGenerateResult(result, "Local");
     } catch (err) {
-      toast.error(err?.message || "Generate failed");
+      toast.error(err?.message || "Local generate failed");
     }
   };
 
+  const handleGenerateAi = async () => {
+    try {
+      const input = collectGenerateInput();
+      const reqA = REQUIRED_SLOTS[0];
+      const reqB = REQUIRED_SLOTS[1];
+      if (!input[reqA] || !input[reqB]) {
+        toast.error(`${reqA} and ${reqB} are required before generating`);
+        return;
+      }
+      setAiBusy(true);
+      try {
+        const apiRes = await fetch("/api/night-log/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dayKey: day,
+            slots: input,
+            startSlot: nightStart,
+            endSlot: nightEnd,
+          }),
+        });
+        const json = await apiRes.json().catch(() => ({}));
+        if (apiRes.ok && json?.success && json?.data?.slots) {
+          const src = json.meta?.source || json.data?.meta?.source || "ai";
+          if (src === "local") {
+            toast("AI unavailable — used local logic", { icon: "ℹ️" });
+            applyGenerateResult(json.data, "Local fallback");
+          } else {
+            applyGenerateResult(json.data, "AI");
+          }
+        } else {
+          const result = generateRestTimeData({
+            dayKey: day,
+            slots: input,
+            startSlot: nightStart,
+            endSlot: nightEnd,
+          });
+          toast("AI failed — used local logic", { icon: "ℹ️" });
+          applyGenerateResult(result, "Local fallback");
+        }
+      } catch {
+        const result = generateRestTimeData({
+          dayKey: day,
+          slots: input,
+          startSlot: nightStart,
+          endSlot: nightEnd,
+        });
+        toast("AI failed — used local logic", { icon: "ℹ️" });
+        applyGenerateResult(result, "Local fallback");
+      } finally {
+        setAiBusy(false);
+      }
+    } catch (err) {
+      setAiBusy(false);
+      toast.error(err?.message || "AI generate failed");
+    }
+  };
 
   const saveOneSlot = async (label) => {
     if (PREV_CONTEXT_SLOTS.includes(label)) {
@@ -489,8 +619,8 @@ export default function RestTimeDataView() {
         amps[f.id] = cell.amps[f.id] || "0";
       });
       const busVoltages = {
-        bus1: cell.bus1 || grid["00:00"]?.bus1 || grid["08:00"]?.bus1 || "0",
-        bus2: cell.bus2 || grid["00:00"]?.bus2 || grid["08:00"]?.bus2 || "0",
+        bus1: cell.bus1 || grid[REQUIRED_SLOTS[0]]?.bus1 || grid[REQUIRED_SLOTS[1]]?.bus1 || "0",
+        bus2: cell.bus2 || grid[REQUIRED_SLOTS[0]]?.bus2 || grid[REQUIRED_SLOTS[1]]?.bus2 || "0",
       };
       const ringActive = {};
       FEEDERS.forEach((f) => {
@@ -539,8 +669,8 @@ export default function RestTimeDataView() {
           amps[f.id] = cell.amps[f.id] || "0";
         });
         const busVoltages = {
-          bus1: cell.bus1 || grid["00:00"]?.bus1 || grid["08:00"]?.bus1 || "0",
-          bus2: cell.bus2 || grid["00:00"]?.bus2 || grid["08:00"]?.bus2 || "0",
+          bus1: cell.bus1 || grid[REQUIRED_SLOTS[0]]?.bus1 || grid[REQUIRED_SLOTS[1]]?.bus1 || "0",
+          bus2: cell.bus2 || grid[REQUIRED_SLOTS[0]]?.bus2 || grid[REQUIRED_SLOTS[1]]?.bus2 || "0",
         };
         const ringActive = {};
         FEEDERS.forEach((f) => {
@@ -616,7 +746,7 @@ export default function RestTimeDataView() {
         </span>
 
         <label
-          className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border text-[11px] font-bold cursor-pointer select-none transition-colors ${prevLoadedCount === 2 ? "border-emerald-500/35 bg-emerald-950/50 text-accent" : prevLoadedCount === 1 ? "border-amber-500/35 bg-amber-950/50 text-amber-300" : "border-app bg-surface-2 text-secondary" }`}
+          className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border text-[11px] font-bold cursor-pointer select-none transition-colors ${prevLoadedCount === 2 ? "border-emerald-500/35 bg-emerald-950/50 text-accent" : prevLoadedCount === 1 ? "border-amber-500/35 bg-amber-950/50 text-amber-300" : "border-app bg-surface-2 text-secondary"}`}
           title={`Previous evening (${shiftYmd(day, -1)}) · loaded ${prevLoadedCount}/2`}
         >
           <input
@@ -638,7 +768,7 @@ export default function RestTimeDataView() {
             role="tab"
             aria-selected={sheetMode === "general"}
             onClick={() => setSheetMode("general")}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${ sheetMode === "general" ? "bg-surface-3 text-app dark:text-white shadow-sm font-semibold" : "text-muted hover:text-app" }`}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "general" ? "bg-surface-3 text-app dark:text-white shadow-sm font-semibold" : "text-muted hover:text-app"}`}
           >
             General
           </button>
@@ -647,7 +777,7 @@ export default function RestTimeDataView() {
             role="tab"
             aria-selected={sheetMode === "ring"}
             onClick={() => setSheetMode("ring")}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${ sheetMode === "ring" ? "bg-amber-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app" }`}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-amber-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app"}`}
           >
             Ring
           </button>
@@ -682,303 +812,313 @@ export default function RestTimeDataView() {
             <SkeletonTable rows={10} columns={15} dark />
           </div>
         ) : (
-          <table
-            className="sheet-table night-log-table text-left border border-app"
-            style={{ borderCollapse: "separate", borderSpacing: 0 }}
-          >
-            <thead className="sticky top-0 z-40">
-              <tr className="bg-elevated text-app text-[10px] uppercase tracking-wider">
-                <th className="time-header-sticky px-1 py-2.5 font-bold font-mono text-center border-b border-r border-app text-[11px] uppercase tracking-wider">
-                  Time
-                </th>
-                <th
-                  className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-[var(--app-accent-dim)] text-accent"
-                  style={colStyleFit}
-                >
-                  Total
-                </th>
-                {FEEDERS.map((f) => {
-                  const col = FEEDER_COL[f.id] || { head: "bg-surface-2 text-secondary" };
+          <>
+            <table
+              className="sheet-table night-log-table text-left border border-app"
+              style={{ borderCollapse: "separate", borderSpacing: 0 }}
+            >
+              <thead className="sticky top-0 z-40">
+                <tr className="bg-elevated text-app text-[10px] uppercase tracking-wider">
+                  <th className="time-header-sticky px-1 py-2.5 font-bold font-mono text-center border-b border-r border-app text-[11px] uppercase tracking-wider">
+                    Time
+                  </th>
+                  <th
+                    className="px-1.5 py-2.5 font-semibold text-center border-b border-r border-app bg-[var(--app-accent-dim)] text-accent"
+                    style={colStyleFit}
+                  >
+                    Total
+                  </th>
+                  {FEEDERS.map((f) => {
+                    const col = FEEDER_COL[f.id] || { head: "bg-surface-2 text-secondary" };
+                    return (
+                      <th
+                        key={f.id}
+                        className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${col.head}`}
+                        title={`BUS-${f.bus}`}
+                        style={colStyleFit}
+                      >
+                        {f.name}
+                      </th>
+                    );
+                  })}
+                  <th
+                    className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-secondary border-b border-r border-app"
+                    style={colStyleFit}
+                    title="H-3 + T-3"
+                  >
+                    H3+T3
+                  </th>
+                  <th
+                    className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-700 dark:text-purple-300 border-b border-r border-app"
+                    style={colStyleFit}
+                    title={`BUS-2 (max ${BUS2_MAX_KV} kV)`}
+                  >
+                    Bus 2
+                  </th>
+                  <th
+                    className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-700 dark:text-sky-300 border-b border-r border-app"
+                    style={colStyleFit}
+                    title={`BUS-1 (max ${BUS1_MAX_KV} kV)`}
+                  >
+                    Bus 1
+                  </th>
+                  <th
+                    className="px-1 py-2.5 font-semibold text-center bg-surface-2/95 text-secondary border-b border-app col-action"
+                    style={colStyleFit}
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleSlots.map((slot, idx) => {
+                  const required = REQUIRED_SLOTS.includes(slot);
+                  const isPrev = PREV_CONTEXT_SLOTS.includes(slot);
+                  const isEditing = !!editingRows[slot];
+                  const filled =
+                    FEEDERS.some((f) => {
+                      const v = parseFloat(grid[slot]?.amps?.[f.id]);
+                      return Number.isFinite(v) && String(grid[slot]?.amps?.[f.id]).trim() !== "";
+                    }) ||
+                    !!grid[slot]?.bus1 ||
+                    !!grid[slot]?.bus2;
+                  const alt = idx % 2 === 1;
+                  const rowBg = isPrev
+                    ? "bg-elevated/90 hover:bg-surface-2"
+                    : required
+                      ? alt
+                        ? "bg-purple-50 dark:bg-purple-950/35 hover:bg-purple-100/70 dark:hover:bg-purple-950/50"
+                        : "bg-purple-50/50 dark:bg-purple-950/25 hover:bg-purple-100/60 dark:hover:bg-purple-950/45"
+                      : filled
+                        ? alt
+                          ? "bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/45"
+                          : "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40"
+                        : alt
+                          ? "bg-surface-2/75 hover:bg-surface-3/80"
+                          : "bg-surface hover:bg-surface-2";
+                  const stickyBg = isPrev
+                    ? "var(--sticky-prev)"
+                    : required
+                      ? "var(--sticky-purple)"
+                      : filled
+                        ? alt
+                          ? "var(--sticky-filled-alt)"
+                          : "var(--sticky-filled)"
+                        : alt
+                          ? "var(--sticky-odd)"
+                          : "var(--sticky-even)";
+                  const { total, bottail } = rowTotals(slot);
+                  const isRestMid = OPTIONAL_REST_SLOTS.includes(slot);
+                  const canEditCell =
+                    isEditing ||
+                    isPrev ||
+                    required ||
+                    !generated ||
+                    (bulkEditMode && isRestMid);
+
                   return (
-                    <th
-                      key={f.id}
-                      className={`px-1 py-2.5 font-semibold text-center whitespace-nowrap border-b border-r border-app ${col.head}`}
-                      title={`BUS-${f.bus}`}
-                      style={colStyleFit}
-                    >
-                      {f.name}
-                    </th>
-                  );
-                })}
-                <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-secondary border-b border-r border-app"
-                  style={colStyleFit}
-                  title="H-3 + T-3"
-                >
-                  H3+T3
-                </th>
-                <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-purple-700 dark:text-purple-300 border-b border-r border-app"
-                  style={colStyleFit}
-                  title={`BUS-2 (max ${BUS2_MAX_KV} kV)`}
-                >
-                  Bus 2
-                </th>
-                <th
-                  className="px-1 py-2.5 font-semibold text-center whitespace-nowrap bg-surface-2/95 text-sky-700 dark:text-sky-300 border-b border-r border-app"
-                  style={colStyleFit}
-                  title={`BUS-1 (max ${BUS1_MAX_KV} kV)`}
-                >
-                  Bus 1
-                </th>
-                <th
-                  className="px-1 py-2.5 font-semibold text-center bg-surface-2/95 text-secondary border-b border-app col-action"
-                  style={colStyleFit}
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleSlots.map((slot, idx) => {
-                const required = REQUIRED_SLOTS.includes(slot);
-                const isPrev = PREV_CONTEXT_SLOTS.includes(slot);
-                const isEditing = !!editingRows[slot];
-                const filled =
-                  FEEDERS.some((f) => {
-                    const v = parseFloat(grid[slot]?.amps?.[f.id]);
-                    return Number.isFinite(v) && String(grid[slot]?.amps?.[f.id]).trim() !== "";
-                  }) ||
-                  !!grid[slot]?.bus1 ||
-                  !!grid[slot]?.bus2;
-                const alt = idx % 2 === 1;
-                const rowBg = isPrev
-                  ? "bg-elevated/90 hover:bg-surface-2"
-                  : required
-                    ? alt
-                      ? "bg-purple-50 dark:bg-purple-950/35 hover:bg-purple-100/70 dark:hover:bg-purple-950/50"
-                      : "bg-purple-50/50 dark:bg-purple-950/25 hover:bg-purple-100/60 dark:hover:bg-purple-950/45"
-                    : filled
-                      ? alt
-                        ? "bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/45"
-                        : "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40"
-                      : alt
-                        ? "bg-surface-2/75 hover:bg-surface-3/80"
-                        : "bg-surface hover:bg-surface-2";
-                const stickyBg = isPrev
-                  ? "var(--sticky-prev)"
-                  : required
-                    ? "var(--sticky-purple)"
-                    : filled
-                      ? alt
-                        ? "var(--sticky-filled-alt)"
-                        : "var(--sticky-filled)"
-                      : alt
-                        ? "var(--sticky-odd)"
-                        : "var(--sticky-even)";
-                const { total, bottail } = rowTotals(slot);
-                const isRestMid = OPTIONAL_REST_SLOTS.includes(slot);
-                const canEditCell =
-                  isEditing ||
-                  isPrev ||
-                  required ||
-                  !generated ||
-                  (bulkEditMode && isRestMid);
-
-                return (
-                  <tr key={slot} className={`group ${rowBg} border-b border-app hover:!bg-surface-2 transition-colors`}>
-                    <td
-                      className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${isPrev ? "text-muted font-semibold" : required ? "text-purple-700 dark:text-purple-300 font-extrabold" : "text-app" }`}
-                      style={{ backgroundColor: stickyBg }}
-                    >
-                      <div className="inline-flex items-center justify-center gap-1 leading-tight">
-                        <span>{slot}</span>
-                        {required && (
-                          <span className="block text-[8px] font-extrabold text-purple-700 dark:text-purple-300 uppercase leading-tight tracking-wider">
-                            req
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    <td className="px-1 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-50/50 dark:bg-emerald-950/15">
-                      {fmtMW(total)}
-                    </td>
-
-                    {FEEDERS.map((f) => {
-                      const col = FEEDER_COL[f.id] || {
-                        cell: "bg-transparent",
-                        input: "border-app focus:ring-accent",
-                      };
-                      const pred = sourceMap[slot]?.[f.id] === "predicted";
-                      return (
-                        <td
-                          key={f.id}
-                          className={`px-0.5 py-0.5 text-center border-b border-r border-app ${col.cell} ${pred && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : "" } ${getRingOn(slot, f.id) ? "ring-1 ring-inset ring-amber-400/80" : "" }`}
-                        >
-                          <div className="flex flex-col items-center gap-0.5">
-                            {canEditCell ? (
-                              <input
-                                type="text"
-                                inputMode="decimal"
-                                value={grid[slot]?.amps?.[f.id] ?? ""}
-                                onChange={(e) =>
-                                  setAmp(slot, f.id, e.target.value)
-                                }
-                                className={`w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 ${col.input}`}
-                              />
-                            ) : (
-                              <span className="font-mono text-[11px] font-semibold text-secondary">
-                                {grid[slot]?.amps?.[f.id] ?? "—"}
-                                {getRingOn(slot, f.id) ? (
-                                  <span className="text-amber-500 dark:text-amber-400 font-black text-[8px] ml-0.5">
-                                    ●
-                                  </span>
-                                ) : null}
-                              </span>
-                            )}
-                            {isEditing && sheetMode === "ring" ? (
-                              feederAllowsRing(f.id) ? (
-                                <button
-                                  type="button"
-                                  onClick={() => toggleRing(slot, f.id)}
-                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300" }`}
-                                  title={`${f.name} · ${ringPartnerHint(f.id)} · ${getRingOn(slot, f.id) ? "ON" : "OFF"
-                                    }`}
-                                >
-                                  {getRingOn(slot, f.id) ? "R ON" : "R OFF"}
-                                </button>
-                              ) : (
-                                <span className="text-[8px] text-muted font-bold" title="No ring line">—</span>
-                              )
-                            ) : null}
-                          </div>
-                        </td>
-                      );
-                    })}
-
-                    <td className="px-1 py-1.5 text-center font-mono tabular-nums font-semibold border-b border-r border-app text-secondary bg-surface-2/30">
-                      {fmtMW(bottail)}
-                    </td>
-
-                    <td
-                      className={`px-0.5 py-0.5 text-center border-b border-r border-app bg-surface-2/25 ${busSource[slot]?.bus2 === "predicted" && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : "" }`}
-                    >
-                      {canEditCell ? (
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          value={grid[slot]?.bus2 ?? ""}
-                          onChange={(e) => setBus(slot, "bus2", e.target.value)}
-                          placeholder="kV"
-                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-300 dark:border-purple-500/35 bg-elevated text-purple-900 dark:text-purple-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
-                        />
-                      ) : (
-                        <span className="font-mono text-[11px] font-semibold text-purple-700 dark:text-purple-300">
-                          {grid[slot]?.bus2 || "—"}
-                        </span>
-                      )}
-                    </td>
-
-                    <td
-                      className={`px-0.5 py-0.5 text-center border-b border-r border-app bg-surface-2/25 ${busSource[slot]?.bus1 === "predicted" && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : "" }`}
-                    >
-                      {canEditCell ? (
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          value={grid[slot]?.bus1 ?? ""}
-                          onChange={(e) => setBus(slot, "bus1", e.target.value)}
-                          placeholder="kV"
-                          className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-300 dark:border-sky-500/35 bg-elevated text-sky-900 dark:text-sky-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
-                        />
-                      ) : (
-                        <span className="font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">
-                          {grid[slot]?.bus1 || "—"}
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-1 py-1 text-center border-b border-app">
-                      {isPrev ? (
-                        <span className="text-[9px] text-muted font-bold">—</span>
-                      ) : (
-                        <div className="inline-flex flex-col gap-0.5 items-center">
-                          {!isEditing ? (
-                            <button
-                              type="button"
-                              onClick={() => enableRowEdit(slot)}
-                              className="min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
-                            >
-                              Modify
-                            </button>
-                          ) : (
-                            <>
-                              <button
-                                type="button"
-                                disabled={savingSlot === slot}
-                                onClick={() => saveOneSlot(slot)}
-                                className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95" }`}
-                              >
-                                {savingSlot === slot
-                                  ? "…"
-                                  : existingIds[slot]
-                                    ? "Update"
-                                    : "Save"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => disableRowEdit(slot)}
-                                className="min-w-[3rem] px-1.5 py-0.5 rounded text-[8px] font-bold uppercase text-secondary border border-app bg-surface-3 hover:bg-surface-3"
-                              >
-                                Done
-                              </button>
-                            </>
+                    <tr key={slot} className={`group ${rowBg} border-b border-app hover:!bg-surface-2 transition-colors`}>
+                      <td
+                        className={`time-col-sticky px-1 py-1.5 text-center align-middle font-mono font-bold text-xs sm:text-[13px] tabular-nums border-b border-r border-app group-hover:!bg-[var(--sticky-hover)] ${isPrev ? "text-muted font-semibold" : required ? "text-purple-700 dark:text-purple-300 font-extrabold" : "text-app"}`}
+                        style={{ backgroundColor: stickyBg }}
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 leading-tight">
+                          <span>{slot}</span>
+                          {required && (
+                            <span className="block text-[8px] font-extrabold text-purple-700 dark:text-purple-300 uppercase leading-tight tracking-wider">
+                              req
+                            </span>
                           )}
                         </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+
+                      <td className="px-1 py-1.5 text-center font-mono font-bold tabular-nums border-b border-r border-app text-accent bg-emerald-50/50 dark:bg-emerald-950/15">
+                        {fmtMW(total)}
+                      </td>
+
+                      {FEEDERS.map((f) => {
+                        const col = FEEDER_COL[f.id] || {
+                          cell: "bg-transparent",
+                          input: "border-app focus:ring-accent",
+                        };
+                        const pred = sourceMap[slot]?.[f.id] === "predicted";
+                        return (
+                          <td
+                            key={f.id}
+                            className={`px-0.5 py-0.5 text-center border-b border-r border-app ${col.cell} ${pred && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : ""} ${getRingOn(slot, f.id) ? "ring-1 ring-inset ring-amber-400/80" : ""}`}
+                          >
+                            <div className="flex flex-col items-center gap-0.5">
+                              {canEditCell ? (
+                                <input
+                                  type="text"
+                                  inputMode="decimal"
+                                  value={grid[slot]?.amps?.[f.id] ?? ""}
+                                  onChange={(e) =>
+                                    setAmp(slot, f.id, e.target.value)
+                                  }
+                                  className={`w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border bg-elevated text-app placeholder:text-muted focus:outline-none focus:ring-1 ${col.input}`}
+                                />
+                              ) : (
+                                <span className="font-mono text-[11px] font-semibold text-secondary">
+                                  {grid[slot]?.amps?.[f.id] ?? "—"}
+                                  {getRingOn(slot, f.id) ? (
+                                    <span className="text-amber-500 dark:text-amber-400 font-black text-[8px] ml-0.5">
+                                      ●
+                                    </span>
+                                  ) : null}
+                                </span>
+                              )}
+                              {isEditing && sheetMode === "ring" ? (
+                                feederAllowsRing(f.id) ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleRing(slot, f.id)}
+                                    className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300"}`}
+                                    title={`${f.name} · ${ringPartnerHint(f.id)} · ${getRingOn(slot, f.id) ? "ON" : "OFF"
+                                      }`}
+                                  >
+                                    {getRingOn(slot, f.id) ? "R ON" : "R OFF"}
+                                  </button>
+                                ) : (
+                                  <span className="text-[8px] text-muted font-bold" title="No ring line">—</span>
+                                )
+                              ) : null}
+                            </div>
+                          </td>
+                        );
+                      })}
+
+                      <td className="px-1 py-1.5 text-center font-mono tabular-nums font-semibold border-b border-r border-app text-secondary bg-surface-2/30">
+                        {fmtMW(bottail)}
+                      </td>
+
+                      <td
+                        className={`px-0.5 py-0.5 text-center border-b border-r border-app bg-surface-2/25 ${busSource[slot]?.bus2 === "predicted" && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : ""}`}
+                      >
+                        {canEditCell ? (
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={grid[slot]?.bus2 ?? ""}
+                            onChange={(e) => setBus(slot, "bus2", e.target.value)}
+                            placeholder="kV"
+                            className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-purple-300 dark:border-purple-500/35 bg-elevated text-purple-900 dark:text-purple-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          />
+                        ) : (
+                          <span className="font-mono text-[11px] font-semibold text-purple-700 dark:text-purple-300">
+                            {grid[slot]?.bus2 || "—"}
+                          </span>
+                        )}
+                      </td>
+
+                      <td
+                        className={`px-0.5 py-0.5 text-center border-b border-r border-app bg-surface-2/25 ${busSource[slot]?.bus1 === "predicted" && !isEditing ? "ring-1 ring-inset ring-amber-400/50" : ""}`}
+                      >
+                        {canEditCell ? (
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={grid[slot]?.bus1 ?? ""}
+                            onChange={(e) => setBus(slot, "bus1", e.target.value)}
+                            placeholder="kV"
+                            className="w-full max-w-full px-0.5 py-1 text-center font-mono text-[11px] font-semibold rounded border border-sky-300 dark:border-sky-500/35 bg-elevated text-sky-900 dark:text-sky-200 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          />
+                        ) : (
+                          <span className="font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">
+                            {grid[slot]?.bus1 || "—"}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-1 py-1 text-center border-b border-app">
+                        {isPrev ? (
+                          <span className="text-[9px] text-muted font-bold">—</span>
+                        ) : (
+                          <div className="inline-flex flex-col gap-0.5 items-center">
+                            {!isEditing ? (
+                              <button
+                                type="button"
+                                onClick={() => enableRowEdit(slot)}
+                                className="min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
+                              >
+                                Modify
+                              </button>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  disabled={savingSlot === slot}
+                                  onClick={() => saveOneSlot(slot)}
+                                  className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95"}`}
+                                >
+                                  {savingSlot === slot
+                                    ? "…"
+                                    : existingIds[slot]
+                                      ? "Update"
+                                      : "Save"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => disableRowEdit(slot)}
+                                  className="min-w-[3rem] px-1.5 py-0.5 rounded text-[8px] font-bold uppercase text-secondary border border-app bg-surface-3 hover:bg-surface-3"
+                                >
+                                  Done
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Action buttons — immediately under the table last row */}
+            <div className="sticky bottom-0 z-30 border-t border-app bg-surface/95 backdrop-blur-sm px-2 sm:px-3 py-2.5">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 max-w-4xl mx-auto">
+                <button
+                  type="button"
+                  onClick={handleGenerateAi}
+                  disabled={saving || aiBusy}
+                  className="min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 bg-purple-600 hover:bg-purple-500 border border-purple-400/30"
+                >
+                  {aiBusy ? "Generating…" : "Generate With AI"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateLocal}
+                  disabled={saving || aiBusy}
+                  className="min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 bg-violet-700 hover:bg-violet-600 border border-violet-400/30"
+                >
+                  Generate By Local
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyToManual()}
+                  disabled={!generated || saving || aiBusy}
+                  className="min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 bg-emerald-600 hover:bg-emerald-500 border border-emerald-400/30"
+                >
+                  {saving ? "Saving…" : "Save"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleModifyAll}
+                  disabled={!generated || saving || aiBusy}
+                  className={`min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 border ${bulkEditMode ? "bg-sky-500 border-sky-300" : "bg-sky-600 hover:bg-sky-500 border-sky-400/30"}`}
+                >
+                  {bulkEditMode ? "Editing…" : "Modify"}
+                </button>
+              </div>
+              <p className="mt-1.5 text-center text-[10px] text-muted">
+                Fill {REQUIRED_SLOTS[0]} &amp; {REQUIRED_SLOTS[1]} → generate → Modify (optional) → Save
+              </p>
+            </div>
+          </>
         )}
       </div>
 
-      {/* Bottom actions — Generate → Save, plus Modify for 01–07 */}
-      <div className="flex-shrink-0 border-t border-app bg-elevated px-2.5 sm:px-3 py-2.5 sm:py-3 safe-pb">
-        <div className="flex flex-wrap items-center justify-stretch sm:justify-center gap-2">
-          {generated && (
-            <button
-              type="button"
-              onClick={handleModifyAll}
-              className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[7.5rem] px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide border shadow-sm transition-all active:scale-[0.98] ${bulkEditMode ? "bg-sky-600 text-white border-sky-500" : "bg-surface-2 text-sky-700 dark:text-sky-300 border-sky-500/40 hover:bg-sky-50 dark:hover:bg-sky-950/60" }`}
-            >
-              {bulkEditMode ? "Editing…" : "Modify"}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handlePrimaryAction}
-            disabled={saving}
-            className={`flex-1 sm:flex-none min-h-[44px] min-w-0 sm:min-w-[10rem] px-4 sm:px-5 rounded-xl text-[11px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 ${generated ? "btn-primary hover:opacity-95 shadow-emerald-950/20" : "bg-purple-600 hover:bg-purple-500 shadow-purple-950/20" }`}
-          >
-            {saving
-              ? "Saving…"
-              : generated
-                ? "Save 00:00–08:00"
-                : "Generate 01:00–07:00"}
-          </button>
-        </div>
-        <p className="mt-2 text-center text-[10px] text-muted">
-          {generated
-            ? bulkEditMode
-              ? "Edit 01:00–07:00 cells, then Save."
-              : "Tap Modify to unlock 01:00–07:00, or Save to write Manual/History."
-            : "Fill 00:00 & 08:00 (and any mid anchors), then Generate."}
-        </p>
-      </div>
 
       <LoginModal
         open={showLogin}

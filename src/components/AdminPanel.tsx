@@ -185,6 +185,9 @@ export default function AdminPanel() {
           ? data.circleRelaxedSlots.join(", ")
           : "01:00, 02:00, 03:00, 04:00, 05:00, 06:00, 07:00, 08:00",
         districtDayBoundary: data.districtDayBoundary || "22:00",
+        nightLogStartSlot: data.nightLogStartSlot || "00:00",
+        nightLogEndSlot: data.nightLogEndSlot || "08:00",
+        nightLogUseAi: data.nightLogUseAi !== false,
       });
     } catch (err) {
       toast.error(err.message || "Failed to load settings");
@@ -335,6 +338,16 @@ export default function AdminPanel() {
       toast.error("District day boundary must be HH:mm (e.g. 22:00)");
       return;
     }
+    const nightStart = String(settingsDraft.nightLogStartSlot || "").trim();
+    const nightEnd = String(settingsDraft.nightLogEndSlot || "").trim();
+    if (nightStart && !isValidHHmm(nightStart)) {
+      toast.error("Night log start must be HH:mm (e.g. 00:00)");
+      return;
+    }
+    if (nightEnd && !isValidHHmm(nightEnd)) {
+      toast.error("Night log end must be HH:mm (e.g. 08:00)");
+      return;
+    }
     setSavingSettings(true);
     try {
       const payload = { ...settingsDraft };
@@ -369,6 +382,15 @@ export default function AdminPanel() {
         const [h, m] = boundary.split(":");
         payload.districtDayBoundary = `${h.padStart(2, "0")}:${m}`;
       }
+      if (nightStart) {
+        const [h, m] = nightStart.split(":");
+        payload.nightLogStartSlot = `${h.padStart(2, "0")}:${m}`;
+      }
+      if (nightEnd) {
+        const [h, m] = nightEnd.split(":");
+        payload.nightLogEndSlot = `${h.padStart(2, "0")}:${m}`;
+      }
+      payload.nightLogUseAi = !!settingsDraft.nightLogUseAi;
       await patchAppSettings(payload);
       toast.success("Settings saved");
       await loadSettings();
@@ -989,6 +1011,59 @@ export default function AdminPanel() {
                     District day labelled with end date D runs from previous day
                     at this time through D at this time (default 22:00).
                   </span>
+                </label>
+              </div>
+            </div>
+            <div className="col-span-full border-t border-app pt-4 mt-1">
+              <p className="text-xs font-semibold text-secondary mb-1.5">
+                Night Logs · generation window
+              </p>
+              <p className="text-[11px] text-muted mb-3 leading-relaxed">
+                Operators enter the two end intervals; intermediate hours are
+                generated (Grok AI when enabled, otherwise local algorithm).
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <label className="block text-xs font-medium text-secondary">
+                  Start interval (required anchor)
+                  <input
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-app bg-elevated text-sm text-app font-mono tabular-nums placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                    value={settingsDraft.nightLogStartSlot ?? "00:00"}
+                    onChange={(e) =>
+                      setSettingsDraft({
+                        ...settingsDraft,
+                        nightLogStartSlot: e.target.value,
+                      })
+                    }
+                    placeholder="00:00"
+                  />
+                </label>
+                <label className="block text-xs font-medium text-secondary">
+                  End interval (required anchor)
+                  <input
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-app bg-elevated text-sm text-app font-mono tabular-nums placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                    value={settingsDraft.nightLogEndSlot ?? "08:00"}
+                    onChange={(e) =>
+                      setSettingsDraft({
+                        ...settingsDraft,
+                        nightLogEndSlot: e.target.value,
+                      })
+                    }
+                    placeholder="08:00"
+                  />
+                </label>
+                <label className="flex items-center gap-2.5 text-xs font-medium text-secondary sm:col-span-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-app accent-[var(--app-accent)]"
+                    checked={settingsDraft.nightLogUseAi !== false}
+                    onChange={(e) =>
+                      setSettingsDraft({
+                        ...settingsDraft,
+                        nightLogUseAi: e.target.checked,
+                      })
+                    }
+                  />
+                  Use Grok AI for intermediate hours (falls back to local algorithm if API key missing)
                 </label>
               </div>
             </div>

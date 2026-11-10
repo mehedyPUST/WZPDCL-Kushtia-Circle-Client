@@ -112,6 +112,8 @@ export async function PATCH(request) {
       "stationOrg",
       "circleRelaxUntil",
       "districtDayBoundary",
+      "nightLogStartSlot",
+      "nightLogEndSlot",
     ];
     for (const k of extraStringKeys) {
       if (body[k] != null) $set[k] = String(body[k]);
@@ -132,6 +134,14 @@ export async function PATCH(request) {
 
     if (Array.isArray(body.circleRelaxedSlots)) {
       $set.circleRelaxedSlots = body.circleRelaxedSlots.map(String);
+    }
+
+    if (body.nightLogUseAi != null) {
+      $set.nightLogUseAi =
+        body.nightLogUseAi === true ||
+        body.nightLogUseAi === "true" ||
+        body.nightLogUseAi === 1 ||
+        body.nightLogUseAi === "1";
     }
 
     if (Object.keys($set).length === 0) {

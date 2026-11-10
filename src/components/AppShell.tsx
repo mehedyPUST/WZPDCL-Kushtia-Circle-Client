@@ -38,7 +38,7 @@ const NAV_LINKS = [
   { href: "/calculator", label: "Calculator", icon: Calculator },
   { href: "/loadshed", label: "Loadshed", icon: Zap },
   { href: "/manual", label: "Manual Input", icon: ClipboardEdit },
-  { href: "/generate-night-log", label: "Generate Night Logs", icon: Moon },
+  { href: "/generate-night-log", label: "Night Logs", icon: Moon },
   { href: "/history", label: "History", icon: History },
   { href: "/circle-load", label: "Circle Load", icon: CircleDot },
   { href: "/kushtia-district-load", label: "Kushtia District Load", icon: MapPin },

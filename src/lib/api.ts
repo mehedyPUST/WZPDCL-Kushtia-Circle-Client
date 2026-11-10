@@ -474,9 +474,13 @@ export async function fetchSettings() {
       for (const [k, v] of Object.entries(ring)) {
         if (v === true) calculatorRingActive[String(k)] = true;
       }
+      // Return full settings payload so Admin / Night Logs can read all fields
       return {
+        ...(data.data || {}),
         maxLoadRingMode: mode === "without" ? "without" : "with",
         calculatorRingActive,
+        data: data.data,
+        success: true,
       };
     } catch (err) {
       lastErr = err;

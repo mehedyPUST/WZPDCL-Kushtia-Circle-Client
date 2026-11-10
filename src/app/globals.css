@@ -208,10 +208,10 @@ html[data-theme="light"] {
   --app-elevated: #ffffff;
   --app-border: #d4e0ee;
   --app-border-strong: #b7cadf;
-  --app-text: #0a152e;
-  --app-text-secondary: #1a2f55;
-  --app-text-muted: #3d5278;
-  --app-text-faint: #6b82a6;
+  --app-text: #07122a;
+  --app-text-secondary: #152a4f;
+  --app-text-muted: #2a4268;
+  --app-text-faint: #4a6288;
   --app-accent: #162d82;
   --app-accent-ink: #ffffff;
   --app-accent-hover: #0f2061;
@@ -2113,8 +2113,34 @@ html[data-theme="light"] .home-telemetry .text-secondary {
 }
 
 html[data-theme="light"] .home-telemetry .text-muted {
-  color: #3d5278 !important;
+  color: #2a4268 !important;
 }
+
+/* Stronger global light text utilities for homepage visibility */
+html[data-theme="light"] .text-muted {
+  color: var(--app-text-muted) !important;
+}
+html[data-theme="light"] .text-faint {
+  color: var(--app-text-faint) !important;
+}
+html[data-theme="light"] .text-secondary {
+  color: var(--app-text-secondary) !important;
+}
+html[data-theme="light"] .home-modules-section h2,
+html[data-theme="light"] .home-modules-section .text-app {
+  color: #07122a !important;
+}
+html[data-theme="light"] .home-modules-section > div > p.text-muted,
+html[data-theme="light"] .home-modules-section .text-sm.text-muted {
+  color: #2a4268 !important;
+}
+html[data-theme="light"] .module-card .text-faint {
+  color: #4a6288 !important;
+}
+html[data-theme="light"] .module-card {
+  color: #07122a;
+}
+
 
 /* Login form surface contrast */
 html[data-theme="light"] .login-form-panel {
