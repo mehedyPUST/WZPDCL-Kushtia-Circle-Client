@@ -42,10 +42,15 @@ const dayCache = new Map();
 
 function StationMini({ title, tone, cons, ls, demand, allot }) {
   const tones = {
+    blue: {
+      bar: "bg-blue-600",
+      head: "text-blue-700 dark:text-blue-300",
+      demand: "text-blue-800 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-950/60 font-bold",
+    },
     teal: {
-      bar: "bg-teal-500",
-      head: "text-teal-700 dark:text-teal-300",
-      demand: "text-teal-800 dark:text-teal-200 bg-teal-100/70 dark:bg-teal-950/60 font-bold",
+      bar: "bg-blue-600",
+      head: "text-blue-700 dark:text-blue-300",
+      demand: "text-blue-800 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-950/60 font-bold",
     },
     amber: {
       bar: "bg-amber-500",

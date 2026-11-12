@@ -135,7 +135,7 @@ export default function BusVoltagePanel({
           handleKeyDown={handleKeyDown}
           placeholder="-"
           unit="kV"
-          tone="purple"
+          tone="amber"
           required
           navRow={-1}
           navCol={0}

@@ -77,7 +77,7 @@ export default function ActionBar({
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} btn-primary border border-emerald-500/80 hover:opacity-95 hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5 focus-visible:ring-emerald-400`}
+            className={`${btnBase} btn-primary border border-blue-500/80 hover:opacity-95 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
             style={btnStyle}
           >
             Calculate Only

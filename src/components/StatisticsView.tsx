@@ -18,7 +18,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { fetchCalculations } from "@/lib/api";
-import { FEEDERS, BOTTAIL_11KV_IDS, LS_PROTECTED_IDS } from "@/lib/constants";
+import { FEEDERS, BOTTAIL_11KV_IDS, LS_PROTECTED_IDS, FEEDER_COLORS } from "@/lib/constants";
 import {
   LOGSHEET_SLOTS,
   toDayKey,
@@ -26,6 +26,7 @@ import {
   formatDayLabel,
 } from "@/lib/logsheetSlots";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { SkeletonStatCard, SkeletonShimmer } from "./SkeletonTable";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -99,17 +100,7 @@ const PRESET_RANGES = [
   { id: "custom", label: "Custom", from: () => null, to: () => null },
 ];
 
-const FEEDER_PALETTE = [
-  "#10b981", // emerald
-  "#0ea5e9", // sky
-  "#8b5cf6", // violet
-  "#f59e0b", // amber
-  "#ec4899", // pink
-  "#14b8a6", // teal
-  "#6366f1", // indigo
-  "#f43f5e", // rose
-  "#84cc16", // lime
-];
+const FEEDER_PALETTE = FEEDER_COLORS;
 
 const chartTooltipStyle = {
   backgroundColor: "#0f172a",
@@ -609,13 +600,18 @@ export default function StatisticsView() {
   }, [rawRecords, ringFilter]);
 
   return (
-    <div className="page-frame py-2 sm:py-4 min-h-0 overflow-y-auto overscroll-contain">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="page-frame py-2 sm:py-4 min-h-0 overflow-y-auto overscroll-contain"
+    >
       {/* ── Top Header & Substation Identity ── */}
       <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 shrink-0">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-[var(--app-accent-dim)] text-accent border border-accent/40">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-950/80 text-blue-400 border border-blue-500/30">
                 WZPDCL Substation 33/11 kV
               </span>
               <span className="text-app text-xs">·</span>
@@ -638,7 +634,7 @@ export default function StatisticsView() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-2 text-secondary border border-app hover:bg-surface-3 hover:text-app disabled:opacity-50 transition-all shadow-sm"
             >
               <svg
-                className={`w-3.5 h-3.5 ${loading ? "animate-spin text-emerald-400" : "text-muted"}`}
+                className={`w-3.5 h-3.5 ${loading ? "animate-spin text-blue-500" : "text-muted"}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -650,7 +646,7 @@ export default function StatisticsView() {
             </button>
             <Link
               href="/loadshed"
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-sm shadow-blue-900/30"
             >
               Load Shed Entry
             </Link>
@@ -669,7 +665,7 @@ export default function StatisticsView() {
                 key={r.id}
                 type="button"
                 onClick={() => setRangeId(r.id)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id ? "bg-emerald-600 text-white shadow-sm font-semibold" : "text-muted hover:text-secondary hover:bg-white/5" }`}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id ? "bg-blue-600 text-white shadow-sm font-semibold shadow-blue-900/30" : "text-muted hover:text-secondary hover:bg-white/5" }`}
               >
                 {r.label}
               </button>
@@ -696,7 +692,7 @@ export default function StatisticsView() {
               <button
                 type="button"
                 onClick={loadData}
-                className="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                className="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
               >
                 Apply
               </button>
@@ -967,7 +963,7 @@ export default function StatisticsView() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`pb-3 px-3 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted hover:text-secondary" }`}
+                  className={`pb-3 px-3 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id ? "border-blue-500 text-blue-600 dark:text-blue-400" : "border-transparent text-muted hover:text-secondary" }`}
                 >
                   {tab.label}
                 </button>
@@ -1624,7 +1620,7 @@ export default function StatisticsView() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 

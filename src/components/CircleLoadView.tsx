@@ -153,7 +153,7 @@ function StationTable({
 
               const alt = i % 2 === 1;
               const rowBg = isBottail
-                ? "bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100/70 dark:hover:bg-teal-950/45"
+                ? "bg-blue-50/70 dark:bg-blue-950/30 hover:bg-blue-100/70 dark:hover:bg-blue-950/50"
                 : alt
                   ? "bg-surface-2/75 hover:bg-surface-3/80"
                   : "bg-surface hover:bg-surface-3/70";
@@ -164,7 +164,7 @@ function StationTable({
                   className={`text-xs group transition-colors duration-150 ${rowBg} hover:!bg-surface-3/80`}
                 >
                   <td
-                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-teal-100 dark:bg-teal-950/80" : "" }`}
+                    className={`time-col-sticky px-2.5 py-1.5 border-b border-r border-app align-middle ${isBottail ? "bg-blue-100 dark:bg-blue-950/80" : "" }`}
                     style={
                       isBottail
                         ? {}
@@ -175,7 +175,7 @@ function StationTable({
                       {s.name.replace(" (Kushtia)", "")}
                     </div>
                     <div
-                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked ? "text-amber-600 dark:text-amber-400" : isBottail ? "text-teal-700 dark:text-teal-400" : can ? "text-accent" : "text-muted" }`}
+                      className={`mt-0.5 text-[8px] uppercase font-bold tracking-wide ${s.editLocked ? "text-amber-600 dark:text-amber-400" : isBottail ? "text-blue-700 dark:text-blue-400" : can ? "text-accent" : "text-muted" }`}
                     >
                       {s.editLocked
                         ? `locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`

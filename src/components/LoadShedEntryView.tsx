@@ -383,7 +383,7 @@ export default function LoadShedEntryView() {
             value={dayKey}
             max={todayKey()}
             onChange={(e) => e.target.value && setDayKey(e.target.value)}
-            className="text-xs sm:text-sm font-medium bg-surface-2 border border-app rounded-lg px-2 sm:px-2.5 py-1.5 text-app focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 min-w-0"
+            className="text-xs sm:text-sm font-medium bg-surface-2 border border-app rounded-lg px-2 sm:px-2.5 py-1.5 text-app focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 min-w-0"
           />
           <button
             type="button"

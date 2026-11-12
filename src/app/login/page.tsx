@@ -69,15 +69,15 @@ export default function LoginPage() {
       <div className="w-full max-w-[52rem] max-h-[min(94dvh,42rem)] bg-surface rounded-2xl sm:rounded-3xl shadow-[var(--app-shadow-lg)] border border-app overflow-hidden flex flex-col sm:flex-row">
         <aside
           data-keep-dark="true"
-          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001e2b] via-[#012433] to-[#023430] border-b sm:border-b-0 sm:border-r border-white/10 text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
+          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#070d1d] via-[#0f1d42] to-[#162d82] border-b sm:border-b-0 sm:border-r border-white/10 text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-500/15 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-sky-500/10 blur-3xl" />
+            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-blue-500/20 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-sky-500/15 blur-3xl" />
             <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:22px_22px]" />
           </div>
           <div className="relative">
-            <p className="text-xs font-semibold tracking-wide text-[#6bffb0] mb-3">
+            <p className="text-xs font-semibold tracking-wide text-[#93c5fd] mb-3">
               WZPDCL · Bottail Control Room
             </p>
             <h1 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight text-white">
@@ -95,7 +95,7 @@ export default function LoginPage() {
               "Secure cookie session",
             ].map((line) => (
               <li key={line} className="flex items-start gap-2.5">
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-400/20 text-[#6bffb0] border border-emerald-400/40">
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-500/20 text-[#93c5fd] border border-blue-400/30">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>

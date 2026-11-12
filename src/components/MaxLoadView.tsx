@@ -22,6 +22,7 @@ import {
   Database,
   Star,
 } from "lucide-react";
+import { motion } from "motion/react";
 import { fetchMaxLoad, fetchSettings, saveMaxLoadRingMode } from "@/lib/api";
 import { FEEDERS, LS_PROTECTED_IDS } from "@/lib/constants";
 import { getNearestHourSlot } from "@/lib/hourSlot";
@@ -458,13 +459,18 @@ export default function MaxLoadView() {
   };
 
   return (
-    <div className="page-frame py-2 sm:py-4 min-h-0 overflow-y-auto overscroll-contain">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="page-frame py-2 sm:py-4 min-h-0 overflow-y-auto overscroll-contain"
+    >
       {/* ── Top Header & Substation Identity ── */}
       <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 shrink-0">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-950/80 text-blue-400 border border-blue-500/30">
                 WZPDCL Substation 33/11 kV
               </span>
               <span className="text-faint text-xs">·</span>
@@ -477,11 +483,11 @@ export default function MaxLoadView() {
             </h1>
             <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl leading-relaxed">
               Peak ranking by{" "}
-              <span className="text-emerald-400 font-semibold font-mono">
+              <span className="text-blue-600 dark:text-blue-400 font-semibold font-mono">
                 {peakBy === "amps" ? "amps" : "MW"}
               </span>
               {" "}(paired column is the value at that same reading). Tracking across feeders and local{" "}
-              <span className="text-teal-400 font-semibold font-mono">H3+T3</span>{" "}
+              <span className="text-cyan-600 dark:text-cyan-400 font-semibold font-mono">H3+T3</span>{" "}
               11 kV bus, prioritizing verified hourly &amp; evening half-hour slots.
             </p>
           </div>
@@ -494,13 +500,13 @@ export default function MaxLoadView() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-3 text-secondary border border-app hover:bg-surface-3 hover:text-app disabled:opacity-50 transition-all shadow-sm"
             >
               <RefreshCw
-                className={`w-3.5 h-3.5 ${ loading ? "animate-spin text-emerald-400" : "text-muted" }`}
+                className={`w-3.5 h-3.5 ${ loading ? "animate-spin text-blue-500" : "text-muted" }`}
               />
               {loading ? "Refreshing…" : "Refresh"}
             </button>
             <Link
               href="/statistics"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-sm shadow-blue-900/30"
             >
               <BarChart3 className="w-3.5 h-3.5" />
               Statistics
@@ -520,7 +526,7 @@ export default function MaxLoadView() {
                   key={o.id}
                   type="button"
                   onClick={() => setRange(o.id)}
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${ range === o.id ? "bg-emerald-600 text-white shadow-sm font-semibold" : "text-muted hover:text-secondary hover:bg-white/5" }`}
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${ range === o.id ? "bg-blue-600 text-white shadow-sm font-semibold shadow-blue-900/30" : "text-muted hover:text-secondary hover:bg-white/5" }`}
                 >
                   {o.label}
                 </button>
@@ -647,7 +653,7 @@ export default function MaxLoadView() {
                   type="button"
                   onClick={() => setTopN(n)}
                   title={`Show top ${n} max load${n > 1 ? "s" : ""}`}
-                  className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ topN === n ? "bg-sky-600 text-white font-semibold shadow-sm" : "text-muted hover:text-secondary" }`}
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ topN === n ? "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-900/30" : "text-muted hover:text-secondary" }`}
                 >
                   Top {n}
                 </button>
@@ -1152,6 +1158,6 @@ export default function MaxLoadView() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

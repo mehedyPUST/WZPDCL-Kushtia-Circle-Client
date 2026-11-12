@@ -25,42 +25,42 @@ export const FEEDERS = [
  * Use for charts, legends, and row accents in JS.
  */
 export const FEEDER_COLORS = {
-  1: "#006cfa", // BRB
-  2: "#00ed64", // MRS
-  3: "#b794f6", // Mozompur
-  4: "#f472b6", // Housing
-  5: "#ff9f1c", // Rajbari
-  6: "#22d3ee", // Campus / GIS
-  7: "#ffc65c", // Koburhat
-  8: "#818cf8", // H-3
-  9: "#ff6b81", // T-3
+  1: "#2563eb", // BRB
+  2: "#10b981", // MRS
+  3: "#8b5cf6", // Mozompur
+  4: "#ec4899", // Housing
+  5: "#f97316", // Rajbari
+  6: "#06b6d4", // Campus / GIS
+  7: "#eab308", // Koburhat
+  8: "#6366f1", // H-3
+  9: "#ef4444", // T-3
 };
 
 /** Ordered series for Recharts / stats */
 export const CHART_COLORS = [
-  "#00ed64",
-  "#006cfa",
-  "#ff9f1c",
-  "#b794f6",
-  "#f472b6",
-  "#22d3ee",
-  "#ffc65c",
-  "#b8c4c2",
+  "#2563eb",
+  "#ef4444",
+  "#10b981",
+  "#f59e0b",
+  "#8b5cf6",
+  "#06b6d4",
+  "#ec4899",
+  "#94a3b8",
 ];
 
 export const BUS_COLORS = {
-  1: "#006cfa",
-  2: "#ffc65c",
+  1: "#2563eb",
+  2: "#f59e0b",
 };
 
 export const STATUS_COLORS = {
-  normal: "#00ed64",
-  high: "#ffc65c",
-  overload: "#ff6b81",
-  shed: "#ff9f1c",
-  offline: "#8a9a96",
-  live: "#00ed64",
-  ring: "#b794f6",
+  normal: "#10b981",
+  high: "#f59e0b",
+  overload: "#ef4444",
+  shed: "#ef4444",
+  offline: "#64748b",
+  live: "#10b981",
+  ring: "#8b5cf6",
 };
 
 /** H3+T3 = sum of feeders H-3 (id 8) + T-3 (id 9) — included in load shed */

@@ -140,7 +140,6 @@ export default function AppShell({ children }) {
         <div className="flex items-center gap-2.5 min-w-0 h-full px-4">
           <Link href="/" className="min-w-0 flex-1 group">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/80 animate-pulse" />
               <div className="text-[13px] sm:text-[14px] font-bold text-app tracking-tight leading-tight group-hover:text-accent transition-colors">
                 WZPDCL · Bottail SS
               </div>

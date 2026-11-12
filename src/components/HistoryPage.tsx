@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import HistoryList from "./HistoryList";
 import HistoryDetail from "./HistoryDetail";
 import LogsheetView from "./LogsheetView";
@@ -20,7 +21,12 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="flex-1 flex flex-col min-h-0 w-full"
+    >
       <div className="w-full max-w-none mx-auto px-2 sm:px-3 lg:px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
         <div
           className={`inline-flex rounded-lg border border-app bg-surface-2 p-0.5 shadow-sm ${viewMode !== "logsheet" ? "opacity-40 pointer-events-none" : "" }`}
@@ -32,7 +38,7 @@ export default function HistoryPage() {
             role="tab"
             aria-selected={unitMode === "mw"}
             onClick={() => setUnitMode("mw")}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap ${unitMode === "mw" ? "bg-sky-600 text-white shadow" : "text-muted hover:text-app" }`}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${unitMode === "mw" ? "bg-blue-600 text-white shadow shadow-blue-900/30" : "text-muted hover:text-app" }`}
           >
             MW view
           </button>
@@ -41,7 +47,7 @@ export default function HistoryPage() {
             role="tab"
             aria-selected={unitMode === "amps"}
             onClick={() => setUnitMode("amps")}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap ${unitMode === "amps" ? "bg-sky-600 text-white shadow" : "text-muted hover:text-app" }`}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${unitMode === "amps" ? "bg-blue-600 text-white shadow shadow-blue-900/30" : "text-muted hover:text-app" }`}
           >
             Amps view
           </button>
@@ -183,6 +189,6 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

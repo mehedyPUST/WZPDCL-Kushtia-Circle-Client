@@ -153,8 +153,7 @@ export default function HomePage() {
                   transition={{ duration: 0.3 }}
                   className="flex items-center gap-2 mb-2.5"
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/80" />
-                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-[#6bffb0] font-mono">
+                  <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-[#93c5fd] font-mono">
                     West Zone Power Distribution Co. Ltd.
                   </p>
                 </motion.div>
@@ -195,7 +194,7 @@ export default function HomePage() {
                 >
                   <Link
                     href="/calculator"
-                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#00ed64] text-[#001e2b] hover:bg-[#6bffb0] border border-transparent"
+                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-blue-900/40 transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#2563eb] text-white hover:bg-[#3b82f6] border border-blue-400/30"
                   >
                     <Calculator className="w-4 h-4" />
                     Open Calculator
@@ -204,7 +203,7 @@ export default function HomePage() {
                     href="/max-load"
                     className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl border border-white/35 bg-white/12 backdrop-blur-md text-white text-xs sm:text-sm font-medium hover:bg-white/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <TrendingUp className="w-4 h-4 text-[#6bffb0]" />
+                    <TrendingUp className="w-4 h-4 text-sky-300" />
                     Max Load Report
                   </Link>
                 </motion.div>

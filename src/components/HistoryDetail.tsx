@@ -52,8 +52,8 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
 
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="p-3 grid grid-cols-2 gap-2 bg-surface-2 border-b border-app">
-          <div className="flex items-center justify-between bg-purple-100 dark:bg-purple-950/40 px-3 py-2.5 rounded-xl border border-purple-300 dark:border-purple-500/35">
-            <span className="text-xs font-semibold text-purple-800 dark:text-purple-300">BUS-2 (kV)</span>
+          <div className="flex items-center justify-between bg-amber-100 dark:bg-amber-950/40 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/35">
+            <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">BUS-2 (kV)</span>
             <span className="text-sm font-bold font-mono tabular-nums text-app">
               {record.busVoltages?.bus2 != null
                 ? Number(record.busVoltages.bus2).toFixed(2)
@@ -98,7 +98,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
                     <td className="text-center font-semibold text-app py-2.5 border-r border-app text-sm">
                       {f.name === "Campus" || f.name === "GIS" ? "Campus / GIS" : f.name}
                       <span
-                        className={`ml-1 text-[10px] font-semibold ${Number(f.bus) === 2 ? "text-purple-700 dark:text-purple-300" : "text-sky-700 dark:text-sky-300" }`}
+                        className={`ml-1 text-[10px] font-semibold ${Number(f.bus) === 2 ? "text-amber-700 dark:text-amber-300" : "text-sky-700 dark:text-sky-300" }`}
                       >
                         B{f.bus}
                       </span>
@@ -129,22 +129,22 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
           )}
 
         <div className="px-3 pb-4 grid grid-cols-2 gap-2">
-          <div className="bg-teal-50 dark:bg-teal-950/40 rounded-xl h-12 flex items-center justify-between px-3 border border-teal-300 dark:border-teal-500/35">
-            <span className="text-xs font-semibold text-teal-800 dark:text-teal-300">
+          <div className="bg-cyan-50 dark:bg-cyan-950/40 rounded-xl h-12 flex items-center justify-between px-3 border border-cyan-300 dark:border-cyan-500/35">
+            <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300">
               H3+T3
             </span>
-            <span className="text-sm font-bold font-mono tabular-nums text-teal-800 dark:text-teal-300">
+            <span className="text-sm font-bold font-mono tabular-nums text-cyan-800 dark:text-cyan-300">
               {(Math.round((Number(record.bottail11kV || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
               <span className="text-[10px] font-medium text-muted">MW</span>
             </span>
           </div>
-          <div className="bg-emerald-50 dark:bg-emerald-950/45 rounded-xl h-12 flex items-center justify-between px-3 border border-emerald-300 dark:border-emerald-500/35">
-            <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+          <div className="bg-blue-50 dark:bg-blue-950/45 rounded-xl h-12 flex items-center justify-between px-3 border border-blue-300 dark:border-blue-500/35">
+            <span className="text-xs font-semibold text-blue-800 dark:text-blue-200">
               Total
             </span>
-            <span className="text-sm font-bold font-mono tabular-nums text-accent">
+            <span className="text-sm font-bold font-mono tabular-nums text-blue-600 dark:text-blue-400">
               {(Math.round((Number(record.totalMW || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
-              <span className="text-[10px] font-medium text-accent/80">MW</span>
+              <span className="text-[10px] font-medium text-blue-500/80">MW</span>
             </span>
           </div>
         </div>
@@ -155,14 +155,14 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
               <button
                 type="button"
                 onClick={() => onEdit(record)}
-                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold tracking-wide shadow-md active:scale-[0.98] transition-all"
+                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md shadow-blue-900/30 active:scale-[0.98] transition-all"
               >
                 Edit this record
               </button>
             ) : (
               <a
                 href={`/manual?edit=${encodeURIComponent(record._id)}`}
-                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold tracking-wide shadow-md active:scale-[0.98] transition-all"
+                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md shadow-blue-900/30 active:scale-[0.98] transition-all"
               >
                 Edit this record
               </a>

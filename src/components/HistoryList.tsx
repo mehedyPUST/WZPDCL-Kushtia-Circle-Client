@@ -418,7 +418,7 @@ export default function HistoryList({
               type="date"
               value={filterDate}
               onChange={(e) => applyDate(e.target.value, filterDateTo)}
-              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500"
+              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
               aria-label="Filter from date"
             />
             <span className="text-[11px] font-medium text-faint">to</span>
@@ -427,7 +427,7 @@ export default function HistoryList({
               value={filterDateTo}
               onChange={(e) => applyDate(filterDate, e.target.value)}
               min={filterDate || undefined}
-              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500"
+              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
               aria-label="Filter to date"
             />
             {(filterDate || filterDateTo) ? (
@@ -463,7 +463,7 @@ export default function HistoryList({
               checked={allSelected}
               onChange={toggleAll}
               disabled={filtered.length === 0 || loading || !isAuthenticated}
-              className="w-4 h-4 rounded border-app bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40"
+              className="w-4 h-4 rounded border-app bg-elevated text-blue-600 focus:ring-blue-500/30 disabled:opacity-40"
             />
             <span className="text-[11px] font-medium text-muted tabular-nums">
               {someSelected ? `${selected.size} selected` : "Select all"}
@@ -620,7 +620,7 @@ export default function HistoryList({
                           checked={checked}
                           onChange={() => toggleOne(r._id)}
                           disabled={!isAuthenticated}
-                          className="w-4 h-4 rounded border-app bg-elevated text-emerald-500 focus:ring-emerald-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-4 h-4 rounded border-app bg-elevated text-blue-600 focus:ring-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
                         />
                       </td>
                       <td className="py-2 text-center text-xs font-semibold text-muted font-mono tabular-nums">
@@ -682,7 +682,7 @@ export default function HistoryList({
                                     else if (typeof onView === "function") onView(r);
                                     else window.location.href = `/manual?edit=${encodeURIComponent(r._id)}`;
                                   }}
-                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm shadow-blue-900/30 active:scale-95 transition-all whitespace-nowrap"
                                 >
                                   Edit
                                 </button>

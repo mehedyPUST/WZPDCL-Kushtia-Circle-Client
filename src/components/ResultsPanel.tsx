@@ -56,7 +56,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
       <motion.div
         data-keep-dark="true"
         whileHover={{ scale: 1.01 }}
-        className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-950/20 border border-emerald-500/40 min-w-0"
+        className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 text-white rounded-xl flex items-center justify-between shadow-md shadow-blue-950/30 border border-blue-400/40 min-w-0"
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
