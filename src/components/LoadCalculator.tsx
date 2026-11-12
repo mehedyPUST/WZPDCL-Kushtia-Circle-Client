@@ -210,19 +210,33 @@ export default function LoadCalculator({ editRecord = null, embedded = false, on
   }, [calculated, totals.totalMW, embedded]);
 
   const handleBusVoltageChange = (bus, value) => {
+    const busNum = bus === "bus1" ? 1 : 2;
+    const prevRaw = String(busVoltages[bus] ?? "").trim();
+    const prevV = parseFloat(prevRaw);
+    const wasShutdown = Number.isFinite(prevV) && prevV === 0;
+
     setBusVoltages((prev) => ({ ...prev, [bus]: value }));
     setCalculated(false);
 
-    // When a bus is shut down (voltage = 0), force all feeders on that bus to 0 A
     const v = parseFloat(String(value ?? "").trim());
-    if (Number.isFinite(v) && v === 0) {
-      const busNum = bus === "bus1" ? 1 : 2;
+    const isShutdown = Number.isFinite(v) && v === 0;
+    const isLive = Number.isFinite(v) && v > 0;
+
+    if (isShutdown) {
+      // Bus shut down → lock related feeder amps at 0
       setAmps((prev) => {
         const next = { ...prev };
         for (const f of FEEDERS) {
-          if (f.bus === busNum) {
-            next[f.id] = "0";
-          }
+          if (f.bus === busNum) next[f.id] = "0";
+        }
+        return next;
+      });
+    } else if (wasShutdown && isLive) {
+      // Bus restored from 0 → reset related amps to initial empty (like other feeders)
+      setAmps((prev) => {
+        const next = { ...prev };
+        for (const f of FEEDERS) {
+          if (f.bus === busNum) next[f.id] = "";
         }
         return next;
       });
