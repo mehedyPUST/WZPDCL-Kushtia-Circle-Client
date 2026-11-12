@@ -32,8 +32,16 @@ export default function FeederTable({
   onCurrentLsBlur = null,
   ringActive = {},
   onRingToggle = null,
+  busVoltages = { bus1: "", bus2: "" },
 }) {
   const isLS = mode === "loadShed";
+
+  /** Bus at 0 kV = shut down → amp input locked at 0 */
+  const isBusShutdown = (busNum) => {
+    const key = busNum === 1 ? "bus1" : "bus2";
+    const v = parseFloat(String(busVoltages?.[key] ?? "").trim());
+    return Number.isFinite(v) && v === 0;
+  };
 
   const onInputKeyDown = (e) => {
     if (navigateInputsByArrow(e)) return;
@@ -250,22 +258,34 @@ export default function FeederTable({
                       className={`cell-input border-r border-app ${tdBase}`}
                       style={tdStyle}
                     >
+                      {(() => {
+                        const busDown = isBusShutdown(item.bus);
+                        return (
                       <input
                         type="text"
                         inputMode="decimal"
                         data-nav="1"
                         data-nav-row={index}
                         data-nav-col={0}
-                        value={amps[item.id] ?? ""}
+                        value={busDown ? "0" : (amps[item.id] ?? "")}
                         placeholder="-"
                         onChange={(e) => onAmpChange(item.id, e.target.value)}
                         onBlur={() => onAmpBlur(item.id)}
                         onWheel={handleWheel}
                         onKeyDown={onInputKeyDown}
-                        className="w-full bg-transparent text-center font-bold text-app placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-[var(--app-accent-dim)] focus:ring-1 focus:ring-inset focus:ring-[var(--app-accent)] font-mono tabular-nums"
+                        disabled={busDown}
+                        title={busDown ? "Bus shut down (0 kV) — amps locked at 0" : undefined}
+                        className={`w-full bg-transparent text-center font-bold font-mono tabular-nums placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-[var(--app-accent-dim)] focus:ring-1 focus:ring-inset focus:ring-[var(--app-accent)] ${
+                          busDown
+                            ? "text-muted cursor-not-allowed opacity-60"
+                            : "text-app"
+                        }`}
                         style={inputStyle}
                         aria-label={`${item.name} amps`}
+                        aria-disabled={busDown || undefined}
                       />
+                        );
+                      })()}
                     </td>
 
                     {/* Feeder */}

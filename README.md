@@ -1,22 +1,16 @@
-# WZPDCL Bottail Load Calculator (TypeScript)
+# WZPDCL Bottail Load Calculator
 
 33/11 kV substation load calculator for **WZPDCL Bottail-Kushtia**.
 
-## Recommended architecture
+## Architecture
 
-**Deploy only the frontend** (this folder).  
-It includes full API routes under `src/app/api/*` and talks to MongoDB directly.  
-No separate backend is required on Vercel.
-
-The `back/` folder is an optional standalone Express API (for local use or separate hosting).
-
----
+Deploy only this Next.js app. API routes live under `src/app/api/*` and talk to MongoDB directly (or an in-memory mock when `MONGODB_URI` is unset).
 
 ## Local development
 
 ```bash
 cp .env.example .env.local
-# set MONGODB_URI and JWT_SECRET
+# set MONGODB_URI, JWT_SECRET, and GROQ_API_KEY
 
 npm install
 npm run dev
@@ -24,44 +18,28 @@ npm run dev
 
 Open http://localhost:3000
 
----
+### Environment variables
 
-## Deploy Frontend to Vercel (recommended)
+| Name | Required | Description |
+|------|----------|-------------|
+| `MONGODB_URI` | Prod | MongoDB connection string |
+| `JWT_SECRET` | Yes | Long random string for auth tokens |
+| `JWT_EXPIRY` | No | Default `7d` |
+| `GROQ_API_KEY` | For AI night log | Groq key (`gsk_...`) for “Generate With AI” |
+| `GROQ_MODEL` | No | Override default Groq model |
+| `NEXT_PUBLIC_API_URL` | No | Leave empty to use same-origin `/api` |
 
-1. Push this project to GitHub (the folder that contains `package.json` + `src/`).
-2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import the repo.
-3. **Root Directory**: leave as `.` (or set to the folder that has `next.config.mjs`).
-4. **Framework Preset**: Next.js (auto-detected).
-5. **Environment Variables** → add:
+## Deploy to Vercel
 
-| Name | Value | Notes |
-|------|-------|-------|
-| `MONGODB_URI` | `mongodb+srv://WZPDCL-BOTTAIL:iKQQCJDPacySHa1S@bottailwzpdcl.wq5c6td.mongodb.net/load-management?appName=cluster-bottailWZPDCL` | No `< >` around user/pass |
-| `JWT_SECRET` | long random string | e.g. 64+ chars |
-| `JWT_EXPIRY` | `7d` | optional |
-
-6. Click **Deploy**.
+1. Push this folder to GitHub.
+2. Import the repo on [vercel.com](https://vercel.com).
+3. Set environment variables from the table above (never put secrets in the repo).
+4. Deploy.
 
 ### Atlas checklist
-- Database user exists and password is correct
-- Network Access → allow `0.0.0.0/0` (or Vercel IPs)
-- Connection string uses the correct database name (`load-management`)
-
----
-
-## Optional: Deploy Backend separately
-
-Only if you want the Express API as its own Vercel project:
-
-```bash
-cd back
-# create .env with MONGODB_URI, JWT_SECRET, FRONTEND_URL
-vercel
-```
-
-Set env vars on that project too. Then set `NEXT_PUBLIC_API_URL` on the frontend to the backend URL.
-
----
+- Database user + password correct
+- Network Access allows `0.0.0.0/0` (or Vercel IPs)
+- Connection string uses the correct database name
 
 ## Scripts
 
@@ -78,4 +56,4 @@ Set env vars on that project too. Then set `NEXT_PUBLIC_API_URL` on the frontend
 - Next.js 15 + TypeScript + React 19
 - Tailwind CSS v4 + CSS variables
 - MongoDB / Mongoose (or in-memory mock if no URI)
-- HeroUI, Recharts, Lucide, Motion
+- Groq API for AI-assisted night log generation

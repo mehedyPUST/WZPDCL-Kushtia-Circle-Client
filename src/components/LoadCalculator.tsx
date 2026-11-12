@@ -299,7 +299,18 @@ export default function LoadCalculator({ editRecord = null, embedded = false, on
     return true;
   };
 
+  const handleClearFields = () => {
+    setBusVoltages({ bus1: "", bus2: "" });
+    setAmps(createInitialAmps());
+    setCurrentLs(createInitialCurrentLs());
+    setAllotment("");
+    setRingActive({});
+    setCalculated(false);
+    toast.success("All fields cleared.", { style: { fontWeight: "bold" } });
+  };
+
   const handleCalculateOnly = () => {
+
     if (!validateVoltages()) return;
     setCalculated(true);
     toast.success("Load calculated successfully.", {
@@ -776,6 +787,7 @@ export default function LoadCalculator({ editRecord = null, embedded = false, on
 
             <div className="flex-1 min-h-0 overflow-hidden">
               <FeederTable
+                busVoltages={busVoltages}
                 amps={amps}
                 getDisplayMW={getDisplayMW}
                 onAmpChange={handleAmpChange}
@@ -803,6 +815,7 @@ export default function LoadCalculator({ editRecord = null, embedded = false, on
               )}
               <CalculatorActionBar
                 mode={mode}
+                onClear={handleClearFields}
                 onCalculateOnly={handleCalculateOnly}
                 onCalculateAndSaveHour={
                   editRecord ? handleUpdateRecord : handleCalculateAndSaveHour

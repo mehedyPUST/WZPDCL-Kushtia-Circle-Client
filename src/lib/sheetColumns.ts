@@ -5,9 +5,6 @@
  */
 export const COL_W = 56;
 export const SN_W = Math.round(COL_W * 0.75); // 42
-/** @deprecated alias */
-export const TIME_W = COL_W;
-
 export const colStyle = {
   width: COL_W,
   minWidth: COL_W,

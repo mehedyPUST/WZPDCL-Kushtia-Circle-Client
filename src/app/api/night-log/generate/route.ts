@@ -22,7 +22,7 @@ function resolveProvider() {
       name: "groq" as const,
       apiKey: groqKey,
       url: "https://api.groq.com/openai/v1/chat/completions",
-      model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
     };
   }
   if (xaiKey) {

@@ -17,6 +17,7 @@ export default function CalculatorActionBar({
   historyLabel,
   onCalculateLoadShed,
   onCopyLoadShed,
+  onClear,
   isSaving,
   saveLabel,
 }) {
@@ -53,7 +54,7 @@ export default function CalculatorActionBar({
       }}
     >
       {isLS ? (
-        <div className="grid grid-cols-2" style={{ gap: "var(--calc-gap)" }}>
+        <div className="grid grid-cols-3" style={{ gap: "var(--calc-gap)" }}>
           <button
             type="button"
             onClick={onCalculateLoadShed}
@@ -68,11 +69,21 @@ export default function CalculatorActionBar({
             className={`${btnBase} calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-indigo-400`}
             style={btnStyle}
           >
-            Copy LS Plan
+            Copy LS
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={isSaving || !onClear}
+            className={`${btnBase} bg-surface-2 text-app border border-app hover:bg-rose-500/15 hover:border-rose-500/50 hover:text-rose-700 dark:hover:text-rose-300 hover:-translate-y-0.5 focus-visible:ring-rose-400`}
+            style={btnStyle}
+            title="Clear all bus voltages and feeder amps"
+          >
+            Clear
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2" style={{ gap: "var(--calc-gap)" }}>
+        <div className="grid grid-cols-3" style={{ gap: "var(--calc-gap)" }}>
           <button
             type="button"
             onClick={onCalculateOnly}
@@ -80,7 +91,7 @@ export default function CalculatorActionBar({
             className={`${btnBase} btn-primary border border-blue-500/80 hover:opacity-95 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
             style={btnStyle}
           >
-            Calculate Only
+            Calculate
           </button>
           <button
             type="button"
@@ -104,6 +115,16 @@ export default function CalculatorActionBar({
                 ? `${saveLabel}${hourSlotLabel ? ` · ${hourSlotLabel}` : ""}`
                 : `Save for ${hourSlotLabel || "—"}`}
             {!saveLabel && hourSlotSpecial ? " ★" : ""}
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={isSaving || !onClear}
+            className={`${btnBase} bg-surface-2 text-app border border-app hover:bg-rose-500/15 hover:border-rose-500/50 hover:text-rose-700 dark:hover:text-rose-300 hover:-translate-y-0.5 focus-visible:ring-rose-400`}
+            style={btnStyle}
+            title="Clear all bus voltages and feeder amps"
+          >
+            Clear
           </button>
         </div>
       )}

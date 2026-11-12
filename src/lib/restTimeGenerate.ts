@@ -9,7 +9,7 @@
  *  - Bus voltage inverse-to-load with practical ceilings
  *  - Deterministic micro-noise so consecutive nights are not identical clones
  *
- * AI path (Groq / xAI) is seeded with this local result and only allowed to
+ * AI path (Groq API — gsk_ key) is seeded with this local result and only allowed to
  * refine intermediate hours; anchors always stay operator-owned.
  */
 import { FEEDERS } from "./constants";

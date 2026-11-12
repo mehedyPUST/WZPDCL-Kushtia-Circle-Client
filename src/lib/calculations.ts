@@ -97,10 +97,6 @@ export function createInitialCurrentLs() {
   return initial;
 }
 
-/** @deprecated use createInitialCurrentLs */
-export function createInitialPriorLs() {
-  return createInitialCurrentLs();
-}
 
 /**
  * Reverse MW → amps
