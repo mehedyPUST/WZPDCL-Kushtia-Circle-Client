@@ -3,18 +3,36 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import {
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  LogIn,
+  X,
+  AlertCircle,
+  Zap,
+  Activity,
+  FileSpreadsheet,
+  ShieldCheck,
+} from "lucide-react";
+import { APP_META } from "@/lib/constants";
 
-/**
- * Modern professional sign-in (split layout inspired by app-style login pages).
- * Props: open | isOpen (both supported)
- */
+interface LoginModalProps {
+  open?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onLogin: (u: string, p: string) => Promise<any>;
+  loading?: boolean;
+}
+
 export default function LoginModal({
   open,
   isOpen,
   onClose,
   onLogin,
   loading: externalLoading,
-}) {
+}: LoginModalProps) {
   const router = useRouter();
   const visible = open ?? isOpen ?? false;
   const [username, setUsername] = useState("");
@@ -34,7 +52,7 @@ export default function LoginModal({
 
   useEffect(() => {
     if (!visible) return;
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !(busy || externalLoading)) onClose?.();
     };
     window.addEventListener("keydown", onKey);
@@ -43,11 +61,11 @@ export default function LoginModal({
 
   if (!visible) return null;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!username.trim() || !password) {
-      setError("Enter username and password.");
+      setError("Please enter your username and password.");
       return;
     }
     setBusy(true);
@@ -58,7 +76,7 @@ export default function LoginModal({
       setPassword("");
       onClose?.();
       router.replace("/");
-    } catch (err) {
+    } catch (err: any) {
       const msg = err?.message || "Sign in failed";
       setError(msg);
       toast.error(msg);
@@ -71,179 +89,222 @@ export default function LoginModal({
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-elevated/90 backdrop-blur-md"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="login-title"
+      aria-labelledby="login-modal-title"
       onClick={(e) => {
         if (e.target === e.currentTarget && !disabled) onClose?.();
       }}
     >
-      <div className="w-full max-w-[52rem] max-h-[min(92dvh,40rem)] bg-surface-2 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 border border-app overflow-hidden flex flex-col sm:flex-row">
-        {/* Brand panel */}
-        <aside
-          data-keep-dark
-          className="relative sm:w-[42%] shrink-0 bg-gradient-to-br from-[#001E2B] via-[#092532] to-[#00684A] border-b sm:border-b-0 sm:border-r border-white/10 text-white px-6 py-7 sm:px-8 sm:py-10 flex flex-col justify-between overflow-hidden"
-        >
+      <div className="w-full max-w-[54rem] max-h-[min(92dvh,39rem)] bg-white dark:bg-[#092532] rounded-3xl shadow-2xl border border-slate-200/90 dark:border-[rgba(0,237,100,0.2)] overflow-hidden flex flex-col md:flex-row transition-all relative">
+        {/* Left Presentation Panel — Light Blue in Light Mode / MongoDB Forest Slate in Dark Mode */}
+        <aside className="relative md:w-[44%] shrink-0 bg-blue-50/70 dark:bg-gradient-to-br dark:from-[#001E2B] dark:via-[#092532] dark:to-[#00684A] border-b md:border-b-0 md:border-r border-blue-100 dark:border-white/10 p-6 sm:p-7 md:p-8 flex flex-col justify-between overflow-hidden">
+          {/* Subtle Ambient Lighting */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-[#00ED64]/15 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-[#0496FF]/15 blur-3xl" />
-            <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:22px_22px]" />
+            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-blue-200/50 dark:bg-[#00ED64]/15 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-indigo-200/40 dark:bg-[#0496FF]/15 blur-3xl" />
           </div>
 
+          {/* Substation Logo & Title */}
           <div className="relative">
-            <p className="text-xs font-semibold tracking-wide text-[#00ED64] mb-3">
-              WZPDCL · Bottail Control Room
-            </p>
-            <h2 className="text-2xl sm:text-[1.65rem] font-semibold tracking-tight leading-tight text-white">
+            <div className="flex items-center gap-3 mb-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-white p-1.5 shadow-md border border-blue-100 dark:border-white/20 shrink-0 flex items-center justify-center">
+                <img
+                  src={APP_META.logoUrl}
+                  alt="WZPDCL Logo"
+                  onError={(e) => {
+                    if (
+                      APP_META.logoFallbackUrl &&
+                      e.currentTarget.src !== APP_META.logoFallbackUrl
+                    ) {
+                      e.currentTarget.src = APP_META.logoFallbackUrl;
+                    }
+                  }}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="min-w-0">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-[#00ED64] font-mono leading-tight">
+                  WZPDCL · Kushtia
+                </span>
+                <span className="block text-xs text-slate-600 dark:text-white/80 font-semibold leading-tight mt-0.5">
+                  S&amp;D Division-1
+                </span>
+              </div>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight text-slate-900 dark:text-white font-display">
               Bottail Substation
             </h2>
-            <p className="mt-2 text-sm text-white/85 leading-relaxed max-w-[18rem]">
-              Load management for control-room operators — calculate, log, and
-              coordinate feeder data.
+            <p className="mt-1 text-xs font-bold text-blue-800 dark:text-emerald-200">
+              33/11 kV SCADA Control Console
+            </p>
+            <p className="mt-2 text-xs text-slate-600 dark:text-white/75 leading-relaxed">
+              Sign in to record hourly feeder calculations, manage loadshed plans,
+              and maintain official shift logs.
             </p>
           </div>
 
-          <ul className="relative mt-8 sm:mt-0 space-y-3 text-[12px] text-white/80">
+          {/* Features */}
+          <div className="relative my-5 md:my-0 space-y-2">
             {[
-              "Hourly load & bus voltage logs",
-              "Loadshed planning with allotment",
-              "History, MAX load & night logs",
-            ].map((line) => (
-              <li key={line} className="flex items-start gap-2.5">
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#00ED64]/15 text-[#00ED64] border border-[#00ED64]/30">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                </span>
-                <span className="leading-snug font-medium text-white/90">{line}</span>
-              </li>
+              { icon: Zap, text: "Real-time feeder MW calculation" },
+              { icon: Activity, text: "Loadshed planner & allotment" },
+              { icon: FileSpreadsheet, text: "Official logs & night sheets" },
+            ].map(({ icon: Icon, text }, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 p-2 rounded-xl bg-white/90 dark:bg-white/[0.06] border border-blue-100/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-white/95 shadow-xs"
+              >
+                <div className="w-5 h-5 rounded-md bg-blue-100 dark:bg-[#00ED64]/20 border border-blue-200 dark:border-[#00ED64]/40 flex items-center justify-center shrink-0 text-blue-700 dark:text-[#00ED64]">
+                  <Icon className="w-3 h-3" />
+                </div>
+                <span>{text}</span>
+              </div>
             ))}
-          </ul>
+          </div>
 
-          <p className="relative hidden sm:block mt-8 text-[11px] text-white/55 font-medium">
-            Authorized personnel only · Contact Bottail SS for access
+          {/* Footer note */}
+          <p className="relative hidden sm:block text-[11px] text-slate-500 dark:text-white/60 font-semibold">
+            Authorized personnel only · S&amp;D-1 Kushtia
           </p>
         </aside>
 
-        {/* Form panel */}
-        <div className="flex-1 flex flex-col min-h-0 bg-surface-2 relative">
+        {/* Right Form Panel */}
+        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#092532] relative">
+          {/* Close button */}
           <button
             type="button"
             onClick={onClose}
             disabled={disabled}
-            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-xl text-muted hover:text-app hover:bg-surface-3 transition-colors disabled:opacity-40"
+            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors flex items-center justify-center disabled:opacity-40 cursor-pointer"
             aria-label="Close"
           >
-            <svg className="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-5 h-5" />
           </button>
 
-          <div className="flex-1 overflow-y-auto px-6 py-7 sm:px-10 sm:py-9">
-            <p className="section-kicker mb-2">
-              Operator Portal
-            </p>
-            <h3
-              id="login-title"
-              className="text-xl sm:text-2xl font-semibold text-app tracking-tight font-display"
-            >
-              Sign in
-            </h3>
-            <p className="mt-1.5 text-sm text-muted leading-relaxed">
-              Use your Bottail SS operator account to continue.
-            </p>
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8 md:p-9 flex flex-col justify-center">
+            <div className="w-full max-w-sm mx-auto">
+              {/* Header Badge & Title */}
+              <div className="mb-5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100/80 dark:bg-[#00ED64]/10 text-blue-800 dark:text-[#00ED64] border border-blue-200 dark:border-[#00ED64]/30 shadow-xs mb-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Operator Login
+                </span>
+                <h3
+                  id="login-modal-title"
+                  className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight font-display"
+                >
+                  Sign in
+                </h3>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Enter your Bottail SS credentials to continue.
+                </p>
+              </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              {/* Error banner */}
               {error ? (
                 <div
                   role="alert"
-                  className="text-sm font-medium text-rose-700 bg-rose-50 dark:text-rose-200 dark:bg-rose-950/50 border border-rose-500/30 rounded-xl px-3.5 py-2.5 leading-snug"
+                  className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900/50 text-rose-900 dark:text-rose-200 text-xs font-semibold flex items-start gap-2 shadow-xs"
                 >
-                  {error}
+                  <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                  <span className="leading-snug">{error}</span>
                 </div>
               ) : null}
 
-              <div>
-                <label
-                  htmlFor="login-username"
-                  className="block field-label"
-                >
-                  Username or email
-                </label>
-                <input
-                  id="login-username"
-                  type="text"
-                  autoComplete="username"
-                  autoFocus
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  disabled={disabled}
-                  className="w-full h-11 px-3.5 rounded-xl border border-app bg-surface text-[15px] font-medium text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-shadow disabled:opacity-60"
-                  placeholder="Enter your username"
-                />
-              </div>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-3.5">
+                <div>
+                  <label
+                    htmlFor="modal-login-username"
+                    className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide mb-1"
+                  >
+                    Username or email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <input
+                      id="modal-login-username"
+                      type="text"
+                      autoComplete="username"
+                      autoFocus
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      disabled={disabled}
+                      className="w-full h-10.5 pl-10 pr-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/25 dark:focus:ring-[#00ED64]/25 focus:border-blue-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                      placeholder="Enter username"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label
-                  htmlFor="login-password"
-                  className="block field-label"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="login-password"
-                    type={showPass ? "text" : "password"}
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={disabled}
-                    className="w-full h-11 pl-3.5 pr-11 rounded-xl border border-app bg-surface text-[15px] font-medium text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-shadow disabled:opacity-60"
-                    placeholder="Enter your password"
-                  />
+                <div>
+                  <label
+                    htmlFor="modal-login-password"
+                    className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide mb-1"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      id="modal-login-password"
+                      type={showPass ? "text" : "password"}
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={disabled}
+                      className="w-full h-10.5 pl-10 pr-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/25 dark:focus:ring-[#00ED64]/25 focus:border-blue-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                      placeholder="Enter password"
+                    />
                     <button
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPass((s) => !s)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-muted hover:text-app hover:bg-surface-3 transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                       aria-label={showPass ? "Hide password" : "Show password"}
                     >
-                    {showPass ? (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    )}
-                  </button>
+                      {showPass ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={disabled}
-                className="w-full h-11 mt-1 rounded-xl text-[14px] font-semibold text-white bg-emerald-600 hover:opacity-95 shadow-lg shadow-emerald-600/20 transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none"
-              >
-                {disabled ? (
-                  <span className="inline-flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                    Signing in…
-                  </span>
-                ) : (
-                  "Sign in"
-                )}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={disabled}
+                  className="w-full h-11 mt-1 rounded-xl text-sm font-bold shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white dark:bg-[#00ED64] dark:text-[#001E2B] dark:hover:bg-[#00c753] shadow-blue-600/20 dark:shadow-[#00ED64]/20"
+                >
+                  {disabled ? (
+                    <>
+                      <span className="w-4 h-4 rounded-full border-2 border-white dark:border-[#001E2B] border-t-transparent animate-spin" />
+                      <span>Signing in…</span>
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4 text-white dark:text-[#001E2B]" />
+                      <span>Sign in</span>
+                    </>
+                  )}
+                </button>
+              </form>
 
-            <p className="mt-6 text-center text-[12px] text-muted leading-relaxed">
-              Need an account? Contact{" "}
-              <span className="font-semibold text-secondary">Bottail SS</span>{" "}
-              administration.
-            </p>
+              <p className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">
+                Need an account? Contact{" "}
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  Bottail SS Admin
+                </span>
+                .
+              </p>
+            </div>
           </div>
         </div>
       </div>
