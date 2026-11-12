@@ -434,9 +434,9 @@ export default function HistoryList({
               <button
                 type="button"
                 onClick={clearDateFilter}
-                className="h-8 px-2.5 rounded-lg text-[11px] font-semibold text-secondary border border-app bg-surface-3 hover:bg-surface-3 transition-all whitespace-nowrap"
+                className="h-8 px-2.5 rounded-lg text-[11px] font-semibold btn-reset-subtle whitespace-nowrap shadow-xs"
               >
-                Clear
+                Reset
               </button>
             ) : null}
           </div>

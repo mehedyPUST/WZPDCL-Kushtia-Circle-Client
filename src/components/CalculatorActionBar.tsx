@@ -75,11 +75,11 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} bg-surface-2 text-app border border-app hover:bg-rose-500/15 hover:border-rose-500/50 hover:text-rose-700 dark:hover:text-rose-300 hover:-translate-y-0.5 focus-visible:ring-rose-400`}
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
-            title="Clear all bus voltages and feeder amps"
+            title="Reset all bus voltages and feeder values"
           >
-            Clear
+            Reset
           </button>
         </div>
       ) : (
@@ -88,7 +88,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} btn-primary border border-blue-500/80 hover:opacity-95 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
+            className={`${btnBase} btn-primary border border-emerald-500/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-400`}
             style={btnStyle}
           >
             Calculate
@@ -120,11 +120,11 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} bg-surface-2 text-app border border-app hover:bg-rose-500/15 hover:border-rose-500/50 hover:text-rose-700 dark:hover:text-rose-300 hover:-translate-y-0.5 focus-visible:ring-rose-400`}
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
-            title="Clear all bus voltages and feeder amps"
+            title="Reset all bus voltages and feeder values"
           >
-            Clear
+            Reset
           </button>
         </div>
       )}

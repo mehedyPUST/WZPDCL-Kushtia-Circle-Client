@@ -686,9 +686,9 @@ export default function LoadShedEntryView() {
                             <button
                               type="button"
                               onClick={() => clearSlotLs(slot.label)}
-                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-semibold bg-surface-3 text-secondary hover:bg-surface-3 border border-app"
+                              className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-semibold btn-reset-subtle shadow-xs"
                             >
-                              Clear
+                              Reset
                             </button>
                             <button
                               type="button"
