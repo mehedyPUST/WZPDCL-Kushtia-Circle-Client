@@ -1,6 +1,6 @@
 "use client";
 
-export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) {
+export default function CalculatorModeToggle({ mode, onChange, onHistory, historyLabel }) {
   const isLS = mode === "loadShed";
 
   return (

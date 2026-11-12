@@ -1,15 +1,15 @@
 "use client";
 
-import Calculator from "./Calculator";
+import LoadCalculator from "./LoadCalculator";
 
 /**
- * Full Calculator UI embedded for history edit.
- * Parent must give a bounded height (overflow handled inside Calculator).
+ * Full LoadCalculator UI embedded for history edit.
+ * Parent must give a bounded height (overflow handled inside LoadCalculator).
  */
 export default function HistoryCalculatorEdit({ record, onClose, onSaved }) {
   if (!record) return null;
   return (
-    <Calculator
+    <LoadCalculator
       editRecord={record}
       embedded
       onClose={onClose}

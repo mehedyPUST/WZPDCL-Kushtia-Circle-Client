@@ -5,12 +5,12 @@ import toast from "react-hot-toast";
 
 import StationHeader from "./StationHeader";
 import LiveClock from "./LiveClock";
-import ModeToggle from "./ModeToggle";
+import CalculatorModeToggle from "./CalculatorModeToggle";
 import BusVoltagePanel from "./BusVoltagePanel";
 import LoadShedPanel from "./LoadShedPanel";
 import FeederTable from "./FeederTable";
-import ResultsPanel from "./ResultsPanel";
-import ActionBar from "./ActionBar";
+import LoadResultsPanel from "./LoadResultsPanel";
+import CalculatorActionBar from "./CalculatorActionBar";
 import AppFooter from "./AppFooter";
 import ErrorBoundary from "./ErrorBoundary";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ import {
   buildCalculationResult,
   buildLoadShedPlan,
 } from "@/lib/calculations";
-import { LS_PROTECTED_IDS, feederAllowsRing } from "@/lib/constants";
+import { LS_PROTECTED_IDS, feederAllowsRing, FEEDERS } from "@/lib/constants";
 import {
   saveCalculation,
   updateCalculation,
@@ -60,7 +60,7 @@ function localDayBounds(refDate = new Date()) {
   return { start, end };
 }
 
-export default function Calculator({ editRecord = null, embedded = false, onClose, onSaved } = {}) {
+export default function LoadCalculator({ editRecord = null, embedded = false, onClose, onSaved } = {}) {
   const router = useRouter();
   const [mode, setMode] = useState("normal");
   const [busVoltages, setBusVoltages] = useState({ bus1: "", bus2: "" });
@@ -82,12 +82,20 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
     if (!editRecord) return;
     const nextAmps = createInitialAmps();
     const rings = {};
+    const b1 = parseFloat(editRecord.busVoltages?.bus1);
+    const b2 = parseFloat(editRecord.busVoltages?.bus2);
     for (const f of editRecord.feeders || []) {
       if (f?.id == null) continue;
-      nextAmps[f.id] =
-        f.amps != null && Number.isFinite(Number(f.amps))
-          ? String(Math.round(Number(f.amps)))
-          : "0";
+      // If the feeder's bus is shut down (0 kV), force amps to 0
+      const busV = f.bus === 1 ? b1 : b2;
+      if (Number.isFinite(busV) && busV === 0) {
+        nextAmps[f.id] = "0";
+      } else {
+        nextAmps[f.id] =
+          f.amps != null && Number.isFinite(Number(f.amps))
+            ? String(Math.round(Number(f.amps)))
+            : "0";
+      }
       if (f.ringActive) rings[f.id] = true;
     }
     setAmps(nextAmps);
@@ -204,9 +212,38 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
   const handleBusVoltageChange = (bus, value) => {
     setBusVoltages((prev) => ({ ...prev, [bus]: value }));
     setCalculated(false);
+
+    // When a bus is shut down (voltage = 0), force all feeders on that bus to 0 A
+    const v = parseFloat(String(value ?? "").trim());
+    if (Number.isFinite(v) && v === 0) {
+      const busNum = bus === "bus1" ? 1 : 2;
+      setAmps((prev) => {
+        const next = { ...prev };
+        for (const f of FEEDERS) {
+          if (f.bus === busNum) {
+            next[f.id] = "0";
+          }
+        }
+        return next;
+      });
+    }
   };
 
   const handleAmpChange = (id, value) => {
+    // Block non-zero amps when the feeder's bus voltage is 0 (bus shut down)
+    const feeder = FEEDERS.find((f) => f.id === id);
+    if (feeder) {
+      const busKey = feeder.bus === 1 ? "bus1" : "bus2";
+      const v = parseFloat(String(busVoltages[busKey] ?? "").trim());
+      if (Number.isFinite(v) && v === 0) {
+        const ampNum = parseFloat(String(value ?? "").trim());
+        if (Number.isFinite(ampNum) && ampNum !== 0) {
+          setAmps((prev) => ({ ...prev, [id]: "0" }));
+          setCalculated(false);
+          return;
+        }
+      }
+    }
     setAmps((prev) => ({ ...prev, [id]: value }));
     setCalculated(false);
   };
@@ -249,10 +286,14 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
     }
     const b1 = parseFloat(b1Raw);
     const b2 = parseFloat(b2Raw);
-    if (!Number.isFinite(b1) || b1 <= 0 || !Number.isFinite(b2) || b2 <= 0) {
-      toast.error("Enter valid positive kV values for both BUS-1 and BUS-2.", {
-        style: { fontWeight: "bold" },
-      });
+    // Allow 0 (bus shut down). Reject only non-finite or negative values.
+    if (!Number.isFinite(b1) || b1 < 0 || !Number.isFinite(b2) || b2 < 0) {
+      toast.error(
+        "Enter valid kV values for both BUS-1 and BUS-2 (0 allowed when bus is shut down).",
+        {
+          style: { fontWeight: "bold" },
+        }
+      );
       return false;
     }
     return true;
@@ -712,7 +753,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
               )}
             </div>
             <div className="shrink-0">
-              <ModeToggle mode={mode} onChange={setMode} onHistory={goHistory} historyLabel={embedded ? "Close" : undefined} />
+              <CalculatorModeToggle mode={mode} onChange={setMode} onHistory={goHistory} historyLabel={embedded ? "Close" : undefined} />
             </div>
 
             <div className="shrink-0">
@@ -753,14 +794,14 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
 
             <div className="flex-shrink-0 bg-surface border-t border-app pt-1">
               {mode === "normal" && (
-                <ResultsPanel
+                <LoadResultsPanel
                   calculate={calculated}
                   bottail11kV={totals.bottail11kV}
                   totalMW={totals.totalMW}
                   onCopy={handleCopyTotal}
                 />
               )}
-              <ActionBar
+              <CalculatorActionBar
                 mode={mode}
                 onCalculateOnly={handleCalculateOnly}
                 onCalculateAndSaveHour={

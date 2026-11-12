@@ -27,7 +27,7 @@ import {
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
-import AppNarrowFooter from "./AppNarrowFooter";
+import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
 import toast from "react-hot-toast";
 import { useLiveClock } from "@/hooks/useLiveClock";
@@ -446,7 +446,7 @@ export default function AppShell({ children }) {
           {children}
         </motion.div>
 
-        {!isCalculator && <AppNarrowFooter />}
+        {!isCalculator && <AppShellFooter />}
       </main>
 
       {/* Global Login Modal */}

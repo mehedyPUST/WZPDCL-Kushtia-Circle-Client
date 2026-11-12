@@ -111,7 +111,7 @@ function fmtMW(v) {
  * Rest-time sheet — same UI language as Manual Input.
  * Special logic: generate intermediate hours from configurable end anchors (+ optional mid anchors).
  */
-export default function RestTimeDataView() {
+export default function NightLogView() {
   const { isAuthenticated, login } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [day, setDay] = useState(todayKey);

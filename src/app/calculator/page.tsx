@@ -1,4 +1,4 @@
-import Calculator from "@/components/Calculator";
+import LoadCalculator from "@/components/LoadCalculator";
 
 export const metadata = {
   title: "Calculator | WZPDCL Bottail",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function CalculatorPage() {
-  return <Calculator />;
+  return <LoadCalculator />;
 }

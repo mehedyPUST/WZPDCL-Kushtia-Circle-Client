@@ -37,7 +37,10 @@ export function getFeederMW(feederId, amps, busVoltages) {
 export function buildCalculationResult(amps, busVoltages, ringActive = {}) {
   const feeders = FEEDERS.map((item) => {
     const voltage = getVoltageForFeeder(item, busVoltages);
-    const ampVal = parseFloat(amps[item.id]) || 0;
+    const vNum = parseFloat(voltage) || 0;
+    // Bus shut down (0 kV) → feeder amps must be 0
+    let ampVal = parseFloat(amps[item.id]) || 0;
+    if (vNum <= 0) ampVal = 0;
     const mw = computeFeederMW(ampVal, voltage);
     const ring =
       feederAllowsRing(item.id) &&

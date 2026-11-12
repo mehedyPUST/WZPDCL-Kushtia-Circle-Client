@@ -7,7 +7,7 @@ import LoginModal from "./LoginModal";
 const btnBase =
   "rounded-xl font-bold tracking-wide uppercase leading-tight shadow-md active:scale-[0.98] transition-all duration-200 ease-out cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 focus-visible:ring-2 focus-visible:ring-offset-1";
 
-export default function ActionBar({
+export default function CalculatorActionBar({
   mode = "normal",
   onCalculateOnly,
   onCalculateAndSaveHour,

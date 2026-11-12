@@ -7,7 +7,7 @@ import { Copy, Check } from "lucide-react";
 const btnBase =
   "rounded-xl font-extrabold tracking-wide uppercase leading-tight shadow-md active:scale-[0.97] transition-all duration-200 ease-out cursor-pointer focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-slate-400";
 
-export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }) {
+export default function LoadResultsPanel({ calculate, bottail11kV, totalMW, onCopy }) {
   const [copied, setCopied] = useState(false);
   const bottail = calculate ? (Math.round((bottail11kV + Number.EPSILON) * 10) / 10).toFixed(1) : "0.0";
   const total = calculate ? (Math.round((totalMW + Number.EPSILON) * 10) / 10).toFixed(1) : "0.0";
