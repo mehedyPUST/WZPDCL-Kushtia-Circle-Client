@@ -31,32 +31,78 @@ export default function LoadResultsPanel({
     setTimeout(() => setCopied(false), 1800);
   };
 
+  if (isLandscape) {
+    return (
+      <section className="flex flex-wrap items-center gap-2.5">
+        <div className="bg-surface-2 text-app rounded-lg flex items-center justify-between gap-3 border border-app px-3.5 h-10 min-w-[9.5rem]">
+          <span className="text-[11px] font-bold tracking-wide uppercase text-secondary whitespace-nowrap">
+            H3+T3
+          </span>
+          <motion.span
+            key={`bottail-${bottail}`}
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            className="font-black font-mono tabular-nums tracking-tight text-accent text-base whitespace-nowrap"
+          >
+            {bottail}{" "}
+            <span className="text-[11px] font-bold opacity-80">MW</span>
+          </motion.span>
+        </div>
+
+        <div className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-lg flex items-center justify-between gap-3 shadow-sm border border-emerald-500/40 dark:border-emerald-400/35 px-4 h-10 min-w-[10.5rem]">
+          <span className="text-[11px] font-bold tracking-wide uppercase text-white/90 whitespace-nowrap">
+            Total
+          </span>
+          <motion.span
+            key={`total-${total}`}
+            initial={{ scale: 0.96 }}
+            animate={{ scale: 1 }}
+            className="font-black font-mono tabular-nums tracking-tight text-white text-lg whitespace-nowrap"
+          >
+            {total}{" "}
+            <span className="text-[11px] font-bold text-white/80">MW</span>
+          </motion.span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleCopyClick}
+          className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } rounded-lg flex items-center justify-center gap-1.5 px-3.5 h-10 text-xs whitespace-nowrap shrink-0`}
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 shrink-0" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 shrink-0" />
+              <span>Copy Total</span>
+            </>
+          )}
+        </button>
+      </section>
+    );
+  }
+
   return (
     <section
-      className={
-        isLandscape
-          ? "grid grid-cols-3 max-w-2xl mx-auto w-full px-3 pb-2 gap-2.5"
-          : "grid grid-cols-3"
-      }
-      style={
-        isLandscape
-          ? undefined
-          : {
-              paddingLeft: "var(--calc-section-px)",
-              paddingRight: "var(--calc-section-px)",
-              paddingBottom: "var(--calc-gap)",
-              gap: "var(--calc-gap)",
-            }
-      }
+      className="grid grid-cols-3"
+      style={{
+        paddingLeft: "var(--calc-section-px)",
+        paddingRight: "var(--calc-section-px)",
+        paddingBottom: "var(--calc-gap)",
+        gap: "var(--calc-gap)",
+      }}
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-surface-2 dark:bg-gradient-to-br dark:from-surface-2 dark:to-surface text-app rounded-xl flex items-center justify-between shadow-xs border border-app min-w-0 px-2.5"
-        style={{ height: isLandscape ? "2.5rem" : "var(--calc-badge-h)" }}
+        className="bg-surface-2 dark:bg-gradient-to-br dark:from-surface-2 dark:to-surface text-app rounded-xl flex items-center justify-between shadow-xs border border-app min-w-0"
+        style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
           className="font-bold tracking-wide uppercase text-secondary truncate"
-          style={{ fontSize: isLandscape ? "0.72rem" : "var(--calc-badge-label)" }}
+          style={{ fontSize: "var(--calc-badge-label)" }}
         >
           H3+T3
         </span>
@@ -65,12 +111,12 @@ export default function LoadResultsPanel({
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           className="font-black font-mono tabular-nums tracking-tight text-accent shrink-0 ml-1"
-          style={{ fontSize: isLandscape ? "1.05rem" : "var(--calc-badge-text)" }}
+          style={{ fontSize: "var(--calc-badge-text)" }}
         >
           {bottail}{" "}
           <span
             className="font-bold opacity-80"
-            style={{ fontSize: isLandscape ? "0.7rem" : "var(--calc-badge-label)" }}
+            style={{ fontSize: "var(--calc-badge-label)" }}
           >
             MW
           </span>
@@ -79,12 +125,12 @@ export default function LoadResultsPanel({
 
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-900/20 dark:shadow-black/50 border border-emerald-500/40 dark:border-emerald-400/35 min-w-0 px-2.5"
-        style={{ height: isLandscape ? "2.5rem" : "var(--calc-badge-h)" }}
+        className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-900/20 dark:shadow-black/50 border border-emerald-500/40 dark:border-emerald-400/35 min-w-0"
+        style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
           className="font-bold tracking-wide uppercase text-white/90 truncate"
-          style={{ fontSize: isLandscape ? "0.72rem" : "var(--calc-badge-label)" }}
+          style={{ fontSize: "var(--calc-badge-label)" }}
         >
           Total
         </span>
@@ -93,12 +139,12 @@ export default function LoadResultsPanel({
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           className="font-black font-mono tabular-nums tracking-tight text-white shrink-0 ml-1"
-          style={{ fontSize: isLandscape ? "1.05rem" : "var(--calc-badge-text)" }}
+          style={{ fontSize: "var(--calc-badge-text)" }}
         >
           {total}{" "}
           <span
             className="font-bold text-white/80"
-            style={{ fontSize: isLandscape ? "0.7rem" : "var(--calc-badge-label)" }}
+            style={{ fontSize: "var(--calc-badge-label)" }}
           >
             MW
           </span>
@@ -108,10 +154,12 @@ export default function LoadResultsPanel({
       <button
         type="button"
         onClick={handleCopyClick}
-        className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } flex items-center justify-center gap-1.5 hover:-translate-y-0.5 px-2`}
+        className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } flex items-center justify-center gap-1.5 hover:-translate-y-0.5`}
         style={{
-          height: isLandscape ? "2.5rem" : "var(--calc-badge-h)",
-          fontSize: isLandscape ? "0.75rem" : "var(--calc-btn-text)",
+          height: "var(--calc-badge-h)",
+          fontSize: "var(--calc-btn-text)",
+          paddingLeft: "0.25rem",
+          paddingRight: "0.25rem",
         }}
       >
         {copied ? (

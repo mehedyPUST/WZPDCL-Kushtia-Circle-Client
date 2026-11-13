@@ -111,6 +111,10 @@ export default function BusVoltagePanel({
   allotment = "",
   onAllotmentChange,
   layout = "portrait",
+  bus1MW = 0,
+  bus2MW = 0,
+  ringCount = 0,
+  calculated = false,
 }: {
   busVoltages: { bus1: string; bus2: string };
   onChange: (bus: string, value: string) => void;
@@ -120,39 +124,125 @@ export default function BusVoltagePanel({
   allotment?: string;
   onAllotmentChange?: (value: string) => void;
   layout?: "portrait" | "landscape";
+  bus1MW?: number;
+  bus2MW?: number;
+  ringCount?: number;
+  calculated?: boolean;
 }) {
   const isLS = mode === "loadShed";
   const isLandscape = layout === "landscape";
 
+  if (isLandscape) {
+    const b1Val = parseFloat(String(busVoltages.bus1 ?? "").trim());
+    const b2Val = parseFloat(String(busVoltages.bus2 ?? "").trim());
+    const b1Down = Number.isFinite(b1Val) && b1Val === 0;
+    const b2Down = Number.isFinite(b2Val) && b2Val === 0;
+
+    return (
+      <section className="border-b border-app bg-surface-2/75 px-3 sm:px-4 py-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="w-[10.5rem]">
+              <Field
+                label="BUS-2"
+                value={busVoltages.bus2}
+                onChange={(v) => onChange("bus2", v)}
+                handleWheel={handleWheel}
+                handleKeyDown={handleKeyDown}
+                placeholder="-"
+                unit="kV"
+                tone="amber"
+                required
+                navRow={-1}
+                navCol={0}
+              />
+            </div>
+            <div className="w-[10.5rem]">
+              <Field
+                label="BUS-1"
+                value={busVoltages.bus1}
+                onChange={(v) => onChange("bus1", v)}
+                handleWheel={handleWheel}
+                handleKeyDown={handleKeyDown}
+                placeholder="-"
+                unit="kV"
+                tone="sky"
+                required
+                navRow={-1}
+                navCol={1}
+              />
+            </div>
+            {isLS && (
+              <div className="w-[12.25rem]">
+                <Field
+                  label="Allotment"
+                  value={allotment}
+                  onChange={(v) => onAllotmentChange?.(v)}
+                  handleWheel={handleWheel}
+                  handleKeyDown={handleKeyDown}
+                  placeholder="-"
+                  unit="MW"
+                  tone="amber"
+                  required
+                  navRow={-1}
+                  navCol={2}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="hidden lg:flex items-center divide-x divide-app text-xs font-mono tabular-nums">
+            <div className="pr-3.5 flex flex-col items-end">
+              <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
+                BUS-2 Feeders
+              </span>
+              <span className={`font-bold ${b2Down ? "text-danger" : "text-bus-2"}`}>
+                {b2Down
+                  ? "Shutdown"
+                  : calculated
+                    ? `${(Math.round((bus2MW + Number.EPSILON) * 10) / 10).toFixed(1)} MW`
+                    : "— MW"}
+              </span>
+            </div>
+            <div className="px-3.5 flex flex-col items-end">
+              <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
+                BUS-1 Feeders
+              </span>
+              <span className={`font-bold ${b1Down ? "text-danger" : "text-bus-1"}`}>
+                {b1Down
+                  ? "Shutdown"
+                  : calculated
+                    ? `${(Math.round((bus1MW + Number.EPSILON) * 10) / 10).toFixed(1)} MW`
+                    : "— MW"}
+              </span>
+            </div>
+            <div className="pl-3.5 flex flex-col items-end">
+              <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
+                Ring Lines
+              </span>
+              <span className={`font-bold ${ringCount > 0 ? "text-warning" : "text-secondary"}`}>
+                {ringCount > 0 ? `${ringCount} Active` : "None"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
-      className={
-        isLandscape
-          ? "border-b border-app bg-surface-2/80 px-3 py-2"
-          : "border-b border-app bg-surface-2"
-      }
-      style={
-        isLandscape
-          ? undefined
-          : {
-              paddingLeft: "var(--calc-section-px)",
-              paddingRight: "var(--calc-section-px)",
-              paddingTop: "var(--calc-bus-py)",
-              paddingBottom: "var(--calc-bus-py)",
-            }
-      }
+      className="border-b border-app bg-surface-2"
+      style={{
+        paddingLeft: "var(--calc-section-px)",
+        paddingRight: "var(--calc-section-px)",
+        paddingTop: "var(--calc-bus-py)",
+        paddingBottom: "var(--calc-bus-py)",
+      }}
     >
       <div
-        className={`grid ${
-          isLandscape
-            ? isLS
-              ? "grid-cols-3 max-w-2xl mx-auto gap-2.5"
-              : "grid-cols-2 max-w-lg mx-auto gap-2.5"
-            : isLS
-              ? "grid-cols-3"
-              : "grid-cols-2"
-        }`}
-        style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
+        className={`grid ${isLS ? "grid-cols-3" : "grid-cols-2"}`}
+        style={{ gap: "var(--calc-gap)" }}
       >
         <Field
           label="BUS-2"
@@ -182,7 +272,7 @@ export default function BusVoltagePanel({
         />
         {isLS && (
           <Field
-            label={isLandscape ? "Allotment" : "Allot"}
+            label="Allot"
             value={allotment}
             onChange={(v) => onAllotmentChange?.(v)}
             handleWheel={handleWheel}

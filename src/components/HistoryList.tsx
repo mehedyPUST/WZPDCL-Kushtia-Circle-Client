@@ -47,6 +47,7 @@ export default function HistoryList({
   selectedId,
   refreshKey,
   onDeleted,
+  onDeleteAction,
   pageMode = false,
 }: {
   open?: boolean;
@@ -56,6 +57,7 @@ export default function HistoryList({
   selectedId?: any;
   refreshKey?: any;
   onDeleted?: (id: any) => void;
+  onDeleteAction?: () => void;
   pageMode?: boolean;
 }) {
   const { isAdmin, canWrite } = useAuth();
@@ -403,14 +405,15 @@ export default function HistoryList({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() =>
+                onClick={() => {
+                  onDeleteAction?.();
                   setConfirm({
                     type: "empty_trash",
                     ids: [],
                     title: "Empty Trash?",
                     message: `Permanently delete all ${trashCount} item(s) in Trash?`,
-                  })
-                }
+                  });
+                }}
                 className="shrink-0 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 underline disabled:opacity-50 whitespace-nowrap"
               >
                 Empty trash
@@ -485,14 +488,15 @@ export default function HistoryList({
             <button
               type="button"
               disabled={busy}
-              onClick={() =>
+              onClick={() => {
+                onDeleteAction?.();
                 setConfirm({
                   type: "trash",
                   ids: [...selected],
                   title: "Move to Trash?",
                   message: `${selected.size} item(s) will be moved to Trash.`,
-                })
-              }
+                });
+              }}
               className="h-7 px-2.5 rounded-lg text-[11px] font-semibold bg-rose-600 text-white hover:bg-rose-500 shadow-sm active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
             >
               Move to Trash
@@ -519,14 +523,15 @@ export default function HistoryList({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() =>
+                onClick={() => {
+                  onDeleteAction?.();
                   setConfirm({
                     type: "purge",
                     ids: [...selected],
                     title: "Delete forever?",
                     message: `${selected.size} item(s) will be permanently deleted.`,
-                  })
-                }
+                  });
+                }}
                 className="h-7 px-2.5 rounded-lg text-[11px] font-semibold bg-rose-700 text-white hover:bg-rose-600 shadow-sm active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
               >
                 Delete forever
@@ -697,14 +702,15 @@ export default function HistoryList({
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() =>
+                                  onClick={() => {
+                                    onDeleteAction?.();
                                     setConfirm({
                                       type: "trash",
                                       ids: [r._id],
                                       title: "Move to Trash?",
                                       message: `This calculation will move to Trash.`,
-                                    })
-                                  }
+                                    });
+                                  }}
                                   className="min-w-[2.6rem] px-2 py-1 rounded-md bg-rose-600/90 hover:bg-rose-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                 >
                                   Trash
@@ -737,14 +743,15 @@ export default function HistoryList({
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() =>
+                                    onClick={() => {
+                                      onDeleteAction?.();
                                       setConfirm({
                                         type: "purge",
                                         ids: [r._id],
                                         title: "Delete forever?",
                                         message: "This calculation will be permanently deleted.",
-                                      })
-                                    }
+                                      });
+                                    }}
                                     className="min-w-[2.6rem] px-2 py-1 rounded-md bg-rose-700 hover:bg-rose-600 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                   >
                                     Forever

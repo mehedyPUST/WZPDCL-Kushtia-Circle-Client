@@ -225,6 +225,22 @@ export default function LoadCalculator({
     ? buildCalculationResult(amps, busVoltages, ringActive)
     : { totalMW: 0, bottail11kV: 0 };
 
+  const busTelemetry = useMemo(() => {
+    let bus1MW = 0;
+    let bus2MW = 0;
+    if (calculated) {
+      for (const f of FEEDERS) {
+        const mw = getFeederMW(f.id, amps, busVoltages);
+        if (mw > 0) {
+          if (f.bus === 1) bus1MW += mw;
+          else bus2MW += mw;
+        }
+      }
+    }
+    const ringCount = Object.values(ringActive).filter(Boolean).length;
+    return { bus1MW, bus2MW, ringCount };
+  }, [calculated, amps, busVoltages, ringActive]);
+
   const loadShedPlan = useMemo(() => {
     if (!calculated || mode !== "loadShed") return null;
     return buildLoadShedPlan(amps, busVoltages, allotment, {
@@ -763,13 +779,13 @@ export default function LoadCalculator({
             {isLandscape ? (
               <>
                 {/* Desktop landscape unified command header */}
-                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-1.5 px-4 items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight truncate">
+                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-2 px-4 items-center justify-between gap-4">
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight whitespace-nowrap">
                       {editRecord ? "Edit Calculation" : "Load Calculator"}
                     </h1>
-                    <span className="text-[10px] font-bold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-dim text-accent border border-accent/35 shrink-0">
-                      Landscape
+                    <span className="text-xs text-muted whitespace-nowrap truncate hidden lg:inline">
+                      · Bottail 33/11 kV
                     </span>
                   </div>
 
@@ -894,6 +910,10 @@ export default function LoadCalculator({
                     allotment={allotment}
                     onAllotmentChange={handleAllotmentChange}
                     layout="landscape"
+                    bus1MW={busTelemetry.bus1MW}
+                    bus2MW={busTelemetry.bus2MW}
+                    ringCount={busTelemetry.ringCount}
+                    calculated={calculated}
                   />
                 </div>
 
@@ -919,48 +939,51 @@ export default function LoadCalculator({
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 bg-surface border-t border-app pt-2">
-                  {mode === "normal" && (
-                    <LoadResultsPanel
-                      calculate={calculated}
-                      bottail11kV={totals.bottail11kV}
-                      totalMW={totals.totalMW}
-                      onCopy={handleCopyTotal}
+                <div className="flex-shrink-0 bg-elevated/50 border-t border-app px-3 sm:px-4 py-2.5">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+                    <div className="min-w-0 flex-1">
+                      {mode === "normal" ? (
+                        <LoadResultsPanel
+                          calculate={calculated}
+                          bottail11kV={totals.bottail11kV}
+                          totalMW={totals.totalMW}
+                          onCopy={handleCopyTotal}
+                          layout="landscape"
+                        />
+                      ) : (
+                        <LoadShedPanel
+                          plan={loadShedPlan}
+                          calculated={calculated}
+                          layout="landscape"
+                        />
+                      )}
+                    </div>
+                    <CalculatorActionBar
+                      mode={mode}
+                      onClear={handleClearFields}
+                      onCalculateOnly={handleCalculateOnly}
+                      onCalculateAndSaveHour={
+                        editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
+                      }
+                      hourSlotLabel={
+                        editRecord
+                          ? editRecord.hourSlot || hourSlot?.label
+                          : hourSlot?.label
+                      }
+                      hourSlotSpecial={
+                        editRecord
+                          ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
+                          : hourSlot?.isSpecial
+                      }
+                      onHistory={goHistory}
+                      historyLabel={embedded ? "Close" : undefined}
+                      onCalculateLoadShed={handleCalculateLoadShed}
+                      onCopyLoadShed={handleCopyLoadShed}
+                      isSaving={isSaving}
+                      saveLabel={editRecord ? "Update" : undefined}
                       layout="landscape"
                     />
-                  )}
-                  {mode === "loadShed" && (
-                    <LoadShedPanel
-                      plan={loadShedPlan}
-                      calculated={calculated}
-                      layout="landscape"
-                    />
-                  )}
-                  <CalculatorActionBar
-                    mode={mode}
-                    onClear={handleClearFields}
-                    onCalculateOnly={handleCalculateOnly}
-                    onCalculateAndSaveHour={
-                      editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
-                    }
-                    hourSlotLabel={
-                      editRecord
-                        ? editRecord.hourSlot || hourSlot?.label
-                        : hourSlot?.label
-                    }
-                    hourSlotSpecial={
-                      editRecord
-                        ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
-                        : hourSlot?.isSpecial
-                    }
-                    onHistory={goHistory}
-                    historyLabel={embedded ? "Close" : undefined}
-                    onCalculateLoadShed={handleCalculateLoadShed}
-                    onCopyLoadShed={handleCopyLoadShed}
-                    isSaving={isSaving}
-                    saveLabel={editRecord ? "Update" : undefined}
-                    layout="landscape"
-                  />
+                  </div>
                 </div>
               </div>
             ) : (

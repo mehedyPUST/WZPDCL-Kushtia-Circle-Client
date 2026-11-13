@@ -49,35 +49,59 @@ export default function LoadShedPanel({
   layout?: "portrait" | "landscape";
 }) {
   const hasPlan = calculated && plan?.valid;
-  if (!hasPlan) return null;
+  const isLandscape = layout === "landscape";
+
+  if (!hasPlan) {
+    if (!isLandscape) return null;
+    return (
+      <p className="text-xs text-muted">
+        Enter allotment MW and feeder amps, then click{" "}
+        <span className="font-semibold text-warning">Calculate LS</span>.
+      </p>
+    );
+  }
 
   const over = plan.needsShed;
   const protectedMW = plan.protectedMW ?? 0;
   const available = Math.max(0, (plan.allotment ?? 0) - protectedMW);
-  const isLandscape = layout === "landscape";
+
+  if (isLandscape) {
+    return (
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <Metric label="Running" value={(Math.round((plan.totalMW + Number.EPSILON) * 10) / 10).toFixed(1)} unit="MW" tone="neutral" />
+        <Metric
+          label="Cur LS"
+          value={(Math.round(((plan.totalCurrentLsMW ?? 0) + Number.EPSILON) * 10) / 10).toFixed(1)}
+          unit="MW"
+          tone="slate"
+        />
+        <Metric
+          label="For others"
+          value={(Math.round((available + Number.EPSILON) * 10) / 10).toFixed(1)}
+          unit="MW"
+          tone="accent"
+        />
+        <Metric
+          label="More LS"
+          value={over ? (Math.round((plan.shedTotalMW + Number.EPSILON) * 10) / 10).toFixed(1) : "0.0"}
+          unit="MW"
+          tone={over ? "danger" : "ok"}
+        />
+      </section>
+    );
+  }
 
   return (
     <section
-      className={
-        isLandscape
-          ? "px-3 pb-2"
-          : "border-b border-app bg-surface-2/60 dark:bg-surface/70"
-      }
-      style={
-        isLandscape
-          ? undefined
-          : {
-              paddingLeft: "var(--calc-section-px)",
-              paddingRight: "var(--calc-section-px)",
-              paddingTop: "calc(var(--calc-gap) * 0.7)",
-              paddingBottom: "calc(var(--calc-gap) * 0.7)",
-            }
-      }
+      className="border-b border-app bg-surface-2/60 dark:bg-surface/70"
+      style={{
+        paddingLeft: "var(--calc-section-px)",
+        paddingRight: "var(--calc-section-px)",
+        paddingTop: "calc(var(--calc-gap) * 0.7)",
+        paddingBottom: "calc(var(--calc-gap) * 0.7)",
+      }}
     >
-      <div
-        className={`grid ${isLandscape ? "grid-cols-4 max-w-2xl mx-auto gap-2" : "grid-cols-4"}`}
-        style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
-      >
+      <div className="grid grid-cols-4" style={{ gap: "var(--calc-gap)" }}>
         <Metric label="Running" value={(Math.round((plan.totalMW + Number.EPSILON) * 10) / 10).toFixed(1)} unit="MW" tone="neutral" />
         <Metric
           label="Cur LS"

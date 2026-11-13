@@ -152,17 +152,17 @@ export default function FeederTable({
   };
 
   if (isLandscape) {
-    const rowH = isLS ? "2.15rem" : "2.65rem";
-    const rowText = isLS ? "0.8125rem" : "0.875rem";
+    const rowH = isLS ? "2.2rem" : "2.85rem";
+    const rowText = isLS ? "0.8125rem" : "0.9375rem";
     const stickyLabelBase =
-      "sticky left-0 z-20 text-left font-bold uppercase tracking-wider px-2.5 border-r border-app shadow-[var(--sticky-shadow)] whitespace-nowrap align-middle text-[11px]";
+      "sticky left-0 z-20 text-left font-semibold px-3 border-r border-app shadow-[var(--sticky-shadow)] whitespace-nowrap align-middle text-[11px] tracking-wide";
 
     return (
-      <section className="w-full px-2.5 sm:px-4 py-2">
+      <section className="w-full px-3 sm:px-4 py-2.5">
         <div
-          className={`rounded-xl shadow-sm overflow-hidden border bg-surface dark:bg-elevated/70 ${
+          className={`rounded-xl overflow-hidden border bg-surface ${
             isLS
-              ? "border-orange-300 dark:border-amber-500/25"
+              ? "border-orange-300 dark:border-amber-500/30"
               : "border-app"
           }`}
         >
@@ -177,16 +177,16 @@ export default function FeederTable({
               }
             >
               <colgroup>
-                <col style={{ width: "5.75rem" }} />
+                <col style={{ width: "6.5rem" }} />
                 {FEEDERS.map((f) => (
                   <col key={f.id} />
                 ))}
               </colgroup>
 
               <thead>
-                <tr className="border-b border-app bg-surface-2">
+                <tr className="border-b border-app bg-surface-2/90">
                   <th
-                    className={`${stickyLabelBase} z-30 py-2 bg-zinc-100 text-zinc-800 dark:bg-surface-3 dark:text-app`}
+                    className={`${stickyLabelBase} z-30 py-2.5 bg-zinc-100 text-zinc-800 dark:bg-surface-3 dark:text-app uppercase`}
                   >
                     Feeder
                   </th>
@@ -196,26 +196,30 @@ export default function FeederTable({
                     return (
                       <th
                         key={item.id}
-                        className="py-2 px-1 text-center border-r border-app last:border-r-0 align-middle"
+                        className={`py-2 px-1.5 text-center border-r border-app last:border-r-0 align-middle border-t-2 ${
+                          item.bus === 1
+                            ? "border-t-sky-500/70"
+                            : "border-t-amber-500/70"
+                        }`}
                       >
                         <div className="flex flex-col items-center justify-center gap-0.5 min-w-0">
-                          <span className="text-[11px] sm:text-xs font-bold text-app truncate max-w-full">
+                          <span className="text-xs font-bold text-app truncate max-w-full">
                             {item.name}
                           </span>
-                          <div className="flex items-center justify-center gap-1">
+                          <span className="text-[10px] font-mono tabular-nums text-muted whitespace-nowrap">
                             <span
-                              className={`text-[10px] font-mono font-bold ${
+                              className={`font-semibold ${
                                 item.bus === 1 ? "text-bus-1" : "text-bus-2"
                               }`}
                             >
                               B{item.bus}
                             </span>
-                            {isProtected && (
-                              <span className="text-[9px] font-bold text-accent rounded px-1 bg-accent-dim border border-accent">
-                                FREE
+                            {isProtected ? (
+                              <span className="text-accent font-semibold">
+                                {" · "}Free
                               </span>
-                            )}
-                          </div>
+                            ) : null}
+                          </span>
                         </div>
                       </th>
                     );
@@ -228,17 +232,17 @@ export default function FeederTable({
                 <tr className="border-b border-app bg-surface hover:bg-[var(--history-row-hover)] transition-colors">
                   <th
                     scope="row"
-                    className={`${stickyLabelBase} bg-orange-50 text-orange-700 dark:bg-[#271e0b] dark:text-amber-300`}
+                    className={`${stickyLabelBase} bg-orange-50/90 text-orange-800 dark:bg-[#241c0c] dark:text-amber-300`}
                     style={{ height: rowH }}
                   >
-                    Ring
+                    Ring Line
                   </th>
                   {FEEDERS.map((item) => {
                     const active = isRingOn(ringActive, item.id);
                     return (
                       <td
                         key={item.id}
-                        className="border-r border-app last:border-r-0 text-center align-middle px-1"
+                        className="border-r border-app last:border-r-0 text-center align-middle px-1.5"
                         style={{ height: rowH }}
                       >
                         {feederAllowsRing(item.id) ? (
@@ -249,18 +253,18 @@ export default function FeederTable({
                             aria-pressed={active}
                             title={RING_BY_FEEDER[item.id]?.partner || "Ring line"}
                             aria-label={`${item.name} ring line`}
-                            className={`mx-auto inline-flex items-center justify-center rounded px-2 py-0.5 text-[11px] font-bold tracking-wide uppercase transition-colors cursor-pointer border ${
+                            className={`mx-auto inline-flex items-center justify-center rounded-md px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase transition-colors cursor-pointer border ${
                               active
                                 ? "bg-orange-500 text-white border-orange-600 dark:bg-amber-500 dark:border-amber-600 shadow-xs"
-                                : "bg-surface-3 text-muted border-app hover:border-app-strong hover:text-app"
+                                : "bg-surface-2 text-muted border-app hover:border-app-strong hover:text-app"
                             }`}
                           >
                             {active ? "ON" : "OFF"}
                           </button>
                         ) : (
                           <span
-                            className="text-muted font-bold text-xs"
-                            title="No ring line"
+                            className="text-faint font-medium text-xs"
+                            title="Radial only — no ring line"
                           >
                             —
                           </span>
@@ -271,13 +275,13 @@ export default function FeederTable({
                 </tr>
 
                 {/* Row 2: Amps */}
-                <tr className="border-b border-app bg-surface-2/60 hover:bg-[var(--history-row-hover)] transition-colors">
+                <tr className="border-b border-app bg-surface-2/40 hover:bg-[var(--history-row-hover)] transition-colors">
                   <th
                     scope="row"
-                    className={`${stickyLabelBase} bg-blue-50 text-blue-700 dark:bg-[#0c263b] dark:text-bus-1`}
+                    className={`${stickyLabelBase} bg-blue-50 text-blue-800 dark:bg-[#0c2438] dark:text-bus-1`}
                     style={{ height: rowH }}
                   >
-                    Amps
+                    Amps <span className="text-muted font-normal">(A)</span>
                   </th>
                   {FEEDERS.map((item, index) => {
                     const busDown = isBusShutdown(item.bus);
@@ -305,7 +309,7 @@ export default function FeederTable({
                               ? "Bus shut down (0 kV) — amps locked at 0"
                               : `${item.name} amps`
                           }
-                          className={`w-full bg-transparent text-center font-bold font-mono tabular-nums placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-[var(--app-accent-dim)] focus:ring-1 focus:ring-inset focus:ring-[var(--app-accent)] ${
+                          className={`w-full bg-transparent text-center font-bold font-mono tabular-nums placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-[var(--app-accent-dim)] focus:ring-2 focus:ring-inset focus:ring-[var(--app-accent)] ${
                             busDown
                               ? "text-muted cursor-not-allowed opacity-60"
                               : "text-app"
@@ -325,21 +329,21 @@ export default function FeederTable({
 
                 {/* Row 3: MW */}
                 <tr
-                  className={`${isLS ? "border-b border-app" : ""} bg-[var(--app-accent-dim)]`}
+                  className={`${isLS ? "border-b border-app" : ""} bg-[var(--app-accent-dim)]/75`}
                 >
                   <th
                     scope="row"
-                    className={`${stickyLabelBase} bg-emerald-50 text-emerald-700 dark:bg-[#0b2922] dark:text-accent`}
+                    className={`${stickyLabelBase} bg-emerald-50 text-emerald-800 dark:bg-[#0b2922] dark:text-accent`}
                     style={{ height: rowH }}
                   >
-                    MW
+                    Load <span className="font-normal opacity-80">(MW)</span>
                   </th>
                   {FEEDERS.map((item) => {
                     const mw = getDisplayMW(item.id);
                     return (
                       <td
                         key={item.id}
-                        className="border-r border-app last:border-r-0 text-center align-middle font-black font-mono tabular-nums text-accent bg-[var(--app-accent-dim)]"
+                        className="border-r border-app last:border-r-0 text-center align-middle font-bold font-mono tabular-nums text-accent bg-[var(--app-accent-dim)]/75"
                         style={{ height: rowH, fontSize: rowText }}
                       >
                         {mw !== null
@@ -356,11 +360,11 @@ export default function FeederTable({
                     <tr className="border-b border-app bg-surface hover:bg-[var(--history-row-hover)] transition-colors">
                       <th
                         scope="row"
-                        className={`${stickyLabelBase} bg-orange-50 text-orange-700 dark:bg-[#271e0b] dark:text-amber-300`}
+                        className={`${stickyLabelBase} bg-orange-50 text-orange-800 dark:bg-[#241c0c] dark:text-amber-300`}
                         style={{ height: rowH }}
                         title="Already applied LS (MW)"
                       >
-                        Cur LS
+                        Cur LS <span className="font-normal opacity-80">(MW)</span>
                       </th>
                       {FEEDERS.map((item, index) => {
                         const plan = planMap[item.id];
@@ -388,7 +392,7 @@ export default function FeederTable({
                                 onBlur={() => onCurrentLsBlur?.(item.id)}
                                 onWheel={handleWheel}
                                 onKeyDown={onInputKeyDown}
-                                className="w-full bg-transparent text-center font-bold text-orange-700 dark:text-amber-200 placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-orange-50 dark:focus:bg-amber-950/40 focus:ring-1 focus:ring-inset focus:ring-orange-500 dark:focus:ring-amber-500 font-mono tabular-nums"
+                                className="w-full bg-transparent text-center font-bold text-orange-700 dark:text-amber-200 placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-orange-50 dark:focus:bg-amber-950/40 focus:ring-2 focus:ring-inset focus:ring-orange-500 dark:focus:ring-amber-500 font-mono tabular-nums"
                                 style={{
                                   height: rowH,
                                   minHeight: rowH,
@@ -407,11 +411,11 @@ export default function FeederTable({
                     <tr className="border-b border-app bg-rose-50/50 dark:bg-rose-950/15">
                       <th
                         scope="row"
-                        className={`${stickyLabelBase} bg-rose-50 text-rose-700 dark:bg-[#2b131b] dark:text-rose-300`}
+                        className={`${stickyLabelBase} bg-rose-50 text-rose-800 dark:bg-[#2b131b] dark:text-rose-300`}
                         style={{ height: rowH }}
                         title="Additional LS required (MW)"
                       >
-                        More LS
+                        More LS <span className="font-normal opacity-80">(MW)</span>
                       </th>
                       {FEEDERS.map((item) => {
                         const plan = planMap[item.id];
@@ -420,7 +424,7 @@ export default function FeederTable({
                         return (
                           <td
                             key={item.id}
-                            className="border-r border-app last:border-r-0 text-center align-middle font-black font-mono tabular-nums text-rose-700 dark:text-rose-400"
+                            className="border-r border-app last:border-r-0 text-center align-middle font-bold font-mono tabular-nums text-rose-700 dark:text-rose-400"
                             style={{ height: rowH, fontSize: rowText }}
                           >
                             {showPlan
@@ -437,10 +441,10 @@ export default function FeederTable({
                     <tr className="border-b border-app bg-emerald-50/60 dark:bg-emerald-950/15">
                       <th
                         scope="row"
-                        className={`${stickyLabelBase} bg-emerald-50 text-emerald-700 dark:bg-[#0b2922] dark:text-accent`}
+                        className={`${stickyLabelBase} bg-emerald-50 text-emerald-800 dark:bg-[#0b2922] dark:text-accent`}
                         style={{ height: rowH }}
                       >
-                        Target A
+                        Target <span className="font-normal opacity-80">(A)</span>
                       </th>
                       {FEEDERS.map((item) => {
                         const plan = planMap[item.id];
@@ -449,7 +453,7 @@ export default function FeederTable({
                         return (
                           <td
                             key={item.id}
-                            className="border-r border-app last:border-r-0 text-center align-middle font-black font-mono tabular-nums text-accent"
+                            className="border-r border-app last:border-r-0 text-center align-middle font-bold font-mono tabular-nums text-accent"
                             style={{ height: rowH, fontSize: rowText }}
                           >
                             {showPlan
@@ -466,11 +470,11 @@ export default function FeederTable({
                     <tr className="bg-blue-50/50 dark:bg-teal-950/15">
                       <th
                         scope="row"
-                        className={`${stickyLabelBase} bg-sky-50 text-sky-700 dark:bg-[#0c263b] dark:text-teal-300`}
+                        className={`${stickyLabelBase} bg-sky-50 text-sky-800 dark:bg-[#0c2438] dark:text-teal-300`}
                         style={{ height: rowH }}
                         title="Total LS = Cur + More (MW)"
                       >
-                        Total LS
+                        Total LS <span className="font-normal opacity-80">(MW)</span>
                       </th>
                       {FEEDERS.map((item) => {
                         const plan = planMap[item.id];
@@ -479,7 +483,7 @@ export default function FeederTable({
                         return (
                           <td
                             key={item.id}
-                            className="border-r border-app last:border-r-0 text-center align-middle font-black font-mono tabular-nums text-blue-700 dark:text-teal-300"
+                            className="border-r border-app last:border-r-0 text-center align-middle font-bold font-mono tabular-nums text-blue-700 dark:text-teal-300"
                             style={{ height: rowH, fontSize: rowText }}
                           >
                             {showPlan

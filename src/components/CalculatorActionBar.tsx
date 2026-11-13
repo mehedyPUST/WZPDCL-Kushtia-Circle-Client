@@ -54,10 +54,10 @@ export default function CalculatorActionBar({
 
   const btnStyle = isLandscape
     ? {
-        height: "2.4rem",
+        height: "2.5rem",
         fontSize: "0.75rem",
-        paddingLeft: "0.5rem",
-        paddingRight: "0.5rem",
+        paddingLeft: "1rem",
+        paddingRight: "1rem",
       }
     : {
         height: "var(--calc-btn-h)",
@@ -70,7 +70,7 @@ export default function CalculatorActionBar({
     <section
       className={
         isLandscape
-          ? "flex flex-col max-w-2xl mx-auto w-full px-3 pb-2 gap-2"
+          ? "flex flex-col items-stretch lg:items-end gap-1.5 shrink-0"
           : "flex flex-col"
       }
       style={
@@ -86,13 +86,17 @@ export default function CalculatorActionBar({
     >
       {isLS ? (
         <div
-          className={`grid grid-cols-3 ${isLandscape ? "gap-2.5" : ""}`}
+          className={
+            isLandscape
+              ? "flex flex-wrap items-center justify-end gap-2"
+              : "grid grid-cols-3"
+          }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
         >
           <button
             type="button"
             onClick={onCalculateLoadShed}
-            className={`${btnBase} bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
+            className={`${btnBase} whitespace-nowrap shrink-0 bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
             style={btnStyle}
           >
             Calculate LS
@@ -100,7 +104,7 @@ export default function CalculatorActionBar({
           <button
             type="button"
             onClick={onCopyLoadShed}
-            className={`${btnBase} calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
+            className={`${btnBase} whitespace-nowrap shrink-0 calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Copy LS
@@ -109,7 +113,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
+            className={`${btnBase} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
@@ -118,14 +122,18 @@ export default function CalculatorActionBar({
         </div>
       ) : (
         <div
-          className={`grid grid-cols-3 ${isLandscape ? "gap-2.5" : ""}`}
+          className={
+            isLandscape
+              ? "flex flex-wrap items-center justify-end gap-2"
+              : "grid grid-cols-3"
+          }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
         >
           <button
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
+            className={`${btnBase} whitespace-nowrap shrink-0 btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Calculate
@@ -134,7 +142,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={handleHourSaveClick}
             disabled={isSaving || (isAuthenticated && !canWrite)}
-            className={`${btnBase} bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 text-white border border-blue-600/70 dark:border-sky-500/80 hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
+            className={`${btnBase} whitespace-nowrap shrink-0 bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 text-white border border-blue-600/70 dark:border-sky-500/80 hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
             style={btnStyle}
             title={
               isAuthenticated && !canWrite
@@ -157,7 +165,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
+            className={`${btnBase} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
@@ -170,16 +178,16 @@ export default function CalculatorActionBar({
         <button
           type="button"
           onClick={() => setShowLogin(true)}
-          className="w-full text-center font-semibold text-orange-700 dark:text-amber-300 bg-orange-50 dark:bg-amber-950/40 rounded-lg border border-orange-200 dark:border-amber-500/30 hover:bg-orange-100 dark:hover:bg-amber-950/60 transition-colors cursor-pointer shadow-xs"
-          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
+          className={`${isLandscape ? "px-3 py-1 text-[11px] self-end" : "w-full"} text-center font-semibold text-orange-700 dark:text-amber-300 bg-orange-50 dark:bg-amber-950/40 rounded-lg border border-orange-200 dark:border-amber-500/30 hover:bg-orange-100 dark:hover:bg-amber-950/60 transition-colors cursor-pointer shadow-xs`}
+          style={isLandscape ? undefined : { fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
         >
           Login required to save history — tap to sign in
         </button>
       )}
       {isAuthenticated && isViewer && !isLS && (
         <p
-          className="w-full text-center font-semibold text-secondary bg-surface-2 rounded-lg border border-app shadow-xs"
-          style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
+          className={`${isLandscape ? "px-3 py-1 text-[11px] self-end" : "w-full"} text-center font-semibold text-secondary bg-surface-2 rounded-lg border border-app shadow-xs`}
+          style={isLandscape ? undefined : { fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
         >
           Viewer role — calculate only; saving is disabled
         </p>
