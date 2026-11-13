@@ -30,7 +30,7 @@ export default function ModeToggle({ mode, onChange, onHistory, historyLabel }) 
           <button
             type="button"
             onClick={() => onChange("loadShed")}
-            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${ isLS ? "bg-amber-600 text-white shadow-xs" : "text-muted hover:bg-surface-3 hover:text-app" }`}
+            className={`rounded-md px-3.5 font-bold tracking-wide uppercase transition-all cursor-pointer ${ isLS ? "bg-orange-500 dark:bg-amber-600 text-white shadow-xs" : "text-muted hover:bg-surface-3 hover:text-app" }`}
             style={{
               fontSize: "var(--calc-btn-text)",
               height: "calc(var(--calc-btn-h) * 0.8)",

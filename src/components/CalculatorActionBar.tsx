@@ -58,7 +58,7 @@ export default function CalculatorActionBar({
           <button
             type="button"
             onClick={onCalculateLoadShed}
-            className={`${btnBase} bg-amber-600 text-white border border-amber-500/80 hover:bg-amber-500 hover:shadow-lg hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-amber-400`}
+            className={`${btnBase} bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
             style={btnStyle}
           >
             Calculate LS
@@ -66,7 +66,7 @@ export default function CalculatorActionBar({
           <button
             type="button"
             onClick={onCopyLoadShed}
-            className={`${btnBase} calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-indigo-400`}
+            className={`${btnBase} calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Copy LS
@@ -88,7 +88,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} btn-primary border border-emerald-500/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-400`}
+            className={`${btnBase} btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Calculate
@@ -97,7 +97,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={handleHourSaveClick}
             disabled={isSaving || (isAuthenticated && !canWrite)}
-            className={`${btnBase} bg-sky-600 text-white border border-sky-500/80 hover:bg-sky-500 hover:shadow-lg hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-sky-400`}
+            className={`${btnBase} bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 text-white border border-blue-600/70 dark:border-sky-500/80 hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
             style={btnStyle}
             title={
               isAuthenticated && !canWrite
@@ -133,7 +133,7 @@ export default function CalculatorActionBar({
         <button
           type="button"
           onClick={() => setShowLogin(true)}
-          className="w-full text-center font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors cursor-pointer shadow-xs"
+          className="w-full text-center font-semibold text-orange-700 dark:text-amber-300 bg-orange-50 dark:bg-amber-950/40 rounded-lg border border-orange-200 dark:border-amber-500/30 hover:bg-orange-100 dark:hover:bg-amber-950/60 transition-colors cursor-pointer shadow-xs"
           style={{ fontSize: "var(--calc-btn-text)", paddingTop: "0.35rem", paddingBottom: "0.35rem" }}
         >
           Login required to save history — tap to sign in

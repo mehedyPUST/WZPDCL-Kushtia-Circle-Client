@@ -144,7 +144,7 @@ export default function FeederTable({
       }}
     >
       <div
-        className={`rounded-lg shadow-sm overflow-hidden flex-1 min-h-0 flex flex-col border bg-elevated/70 ${ isLS ? "border-amber-500/25" : "border-app" }`}
+        className={`rounded-lg shadow-sm overflow-hidden flex-1 min-h-0 flex flex-col border bg-surface dark:bg-elevated/70 ${ isLS ? "border-orange-300 dark:border-amber-500/25" : "border-app" }`}
       >
         <div
           ref={scrollRef}
@@ -179,13 +179,13 @@ export default function FeederTable({
             >
               <tr className="border-b border-app">
                 <th
-                  className={`${thBase} border-r border-app bg-bus-1-soft text-app dark:bg-[var(--bus-1-bg)] dark:text-bus-1`}
+                  className={`${thBase} border-r border-app bg-blue-50 text-blue-700 dark:bg-[var(--bus-1-bg)] dark:text-bus-1`}
                   style={thStyle}
                 >
                   Amps
                 </th>
                 <th
-                  className={`${thBase} border-r border-app bg-[var(--app-violet-dim)] text-app dark:bg-[var(--app-violet-dim)] dark:text-app`}
+                  className={`${thBase} border-r border-app bg-zinc-100 text-zinc-800 dark:bg-[var(--app-violet-dim)] dark:text-app`}
                   style={thStyle}
                 >
                   Feeder
@@ -335,7 +335,7 @@ export default function FeederTable({
                           aria-pressed={isRingOn(ringActive, item.id)}
                           title={RING_BY_FEEDER[item.id]?.partner || "Ring line"}
                           aria-label={`${item.name} ring line`}
-                          className={`mx-auto inline-flex items-center justify-center rounded px-1.5 font-bold tracking-wide uppercase transition-colors cursor-pointer border ${ isRingOn(ringActive, item.id) ? "bg-amber-500 text-white border-amber-600 shadow-xs" : "bg-surface-3 text-muted border-app hover:border-app-strong hover:text-app" }`}
+                          className={`mx-auto inline-flex items-center justify-center rounded px-1.5 font-bold tracking-wide uppercase transition-colors cursor-pointer border ${ isRingOn(ringActive, item.id) ? "bg-orange-500 text-white border-orange-600 dark:bg-amber-500 dark:border-amber-600 shadow-xs" : "bg-surface-3 text-muted border-app hover:border-app-strong hover:text-app" }`}
                           style={{
                             fontSize: "calc(var(--calc-row-text) * 0.7)",
                             height: "calc(var(--calc-row-h) * 0.78)",
@@ -379,7 +379,7 @@ export default function FeederTable({
                               onBlur={() => onCurrentLsBlur?.(item.id)}
                               onWheel={handleWheel}
                               onKeyDown={onInputKeyDown}
-                              className="w-full bg-transparent text-center font-bold text-amber-900 dark:text-amber-200 placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-amber-50 dark:focus:bg-amber-950/40 focus:ring-1 focus:ring-inset focus:ring-amber-500 font-mono tabular-nums"
+                              className="w-full bg-transparent text-center font-bold text-orange-700 dark:text-amber-200 placeholder:text-muted placeholder:font-normal focus:placeholder:text-transparent focus:outline-none focus:bg-orange-50 dark:focus:bg-amber-950/40 focus:ring-1 focus:ring-inset focus:ring-orange-500 dark:focus:ring-amber-500 font-mono tabular-nums"
                               style={inputStyle}
                               aria-label={`${item.name} current LS MW`}
                               title="Already applied LS (MW)"
@@ -401,7 +401,7 @@ export default function FeederTable({
 
                         {/* Target A */}
                         <td
-                          className={`border-l border-app bg-emerald-50/50 dark:bg-emerald-950/15 ${tdBase} font-black font-mono tabular-nums text-accent`}
+                          className={`border-l border-app bg-emerald-50/60 dark:bg-emerald-950/15 ${tdBase} font-black font-mono tabular-nums text-accent`}
                           style={tdStyle}
                         >
                           {showPlan
@@ -413,7 +413,7 @@ export default function FeederTable({
 
                         {/* Total LS */}
                         <td
-                          className={`border-l border-app bg-teal-50/50 dark:bg-teal-950/15 ${tdBase} font-black font-mono tabular-nums text-teal-800 dark:text-teal-300`}
+                          className={`border-l border-app bg-blue-50/50 dark:bg-teal-950/15 ${tdBase} font-black font-mono tabular-nums text-blue-700 dark:text-teal-300`}
                           style={tdStyle}
                         >
                           {showPlan

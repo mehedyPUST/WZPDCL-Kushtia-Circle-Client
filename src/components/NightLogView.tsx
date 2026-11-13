@@ -746,14 +746,14 @@ export default function NightLogView() {
         </span>
 
         <label
-          className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border text-[11px] font-bold cursor-pointer select-none transition-colors ${prevLoadedCount === 2 ? "border-emerald-500/35 bg-emerald-950/50 text-accent" : prevLoadedCount === 1 ? "border-amber-500/35 bg-amber-950/50 text-amber-300" : "border-app bg-surface-2 text-secondary"}`}
+          className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border text-[11px] font-bold cursor-pointer select-none transition-colors ${prevLoadedCount === 2 ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/35 dark:bg-emerald-950/50 dark:text-accent" : prevLoadedCount === 1 ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-amber-500/35 dark:bg-amber-950/50 dark:text-amber-300" : "border-app bg-surface-2 text-secondary"}`}
           title={`Previous evening (${shiftYmd(day, -1)}) · loaded ${prevLoadedCount}/2`}
         >
           <input
             type="checkbox"
             checked={showPrev}
             onChange={(e) => setShowPrev(e.target.checked)}
-            className="accent-emerald-500"
+            className="accent-emerald-600 dark:accent-emerald-500"
           />
           22–23h ({prevLoadedCount}/2)
         </label>
@@ -777,14 +777,14 @@ export default function NightLogView() {
             role="tab"
             aria-selected={sheetMode === "ring"}
             onClick={() => setSheetMode("ring")}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-amber-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app"}`}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-orange-500 dark:bg-amber-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app"}`}
           >
             Ring
           </button>
         </div>
 
         {meta?.friday && (
-          <span className="text-[10px] font-extrabold uppercase tracking-wide text-amber-700 bg-amber-50 dark:text-amber-300 dark:bg-amber-950/60 border border-amber-500/35 rounded-md px-2 py-1">
+          <span className="text-[10px] font-extrabold uppercase tracking-wide text-orange-700 bg-orange-50 border-orange-200 dark:text-amber-300 dark:bg-amber-950/60 border dark:border-amber-500/35 rounded-md px-2 py-1">
             Friday BRB rule
           </span>
         )}
@@ -973,7 +973,7 @@ export default function NightLogView() {
                                   <button
                                     type="button"
                                     onClick={() => toggleRing(slot, f.id)}
-                                    className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300"}`}
+                                    className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${getRingOn(slot, f.id) ? "bg-orange-500 text-white border-orange-600 dark:bg-amber-600 dark:border-amber-500" : "bg-surface-2 text-muted border-app hover:border-orange-400 hover:text-orange-700 dark:hover:border-amber-400 dark:hover:text-amber-300"}`}
                                     title={`${f.name} · ${ringPartnerHint(f.id)} · ${getRingOn(slot, f.id) ? "ON" : "OFF"
                                       }`}
                                   >
@@ -1039,7 +1039,7 @@ export default function NightLogView() {
                               <button
                                 type="button"
                                 onClick={() => enableRowEdit(slot)}
-                                className="min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
+                                className="min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 active:scale-95 transition-all"
                               >
                                 Modify
                               </button>
@@ -1049,7 +1049,7 @@ export default function NightLogView() {
                                   type="button"
                                   disabled={savingSlot === slot}
                                   onClick={() => saveOneSlot(slot)}
-                                  className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95"}`}
+                                  className={`min-w-[3rem] px-2 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${existingIds[slot] ? "bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500" : "btn-primary hover:opacity-95"}`}
                                 >
                                   {savingSlot === slot
                                     ? "…"
@@ -1106,7 +1106,7 @@ export default function NightLogView() {
                   type="button"
                   onClick={handleModifyAll}
                   disabled={!generated || saving || aiBusy}
-                  className={`min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 border ${bulkEditMode ? "bg-sky-500 border-sky-300" : "bg-sky-600 hover:bg-sky-500 border-sky-400/30"}`}
+                  className={`min-h-[44px] px-2 sm:px-3 rounded-xl text-[10px] sm:text-[12px] font-extrabold uppercase tracking-wide text-white shadow-md transition-all active:scale-[0.98] disabled:opacity-50 border ${bulkEditMode ? "bg-blue-600 border-blue-400 dark:bg-sky-500 dark:border-sky-300" : "bg-blue-500 hover:bg-blue-600 border-blue-400 dark:bg-sky-600 dark:hover:bg-sky-500 dark:border-sky-400/30"}`}
                 >
                   {bulkEditMode ? "Editing…" : "Modify"}
                 </button>

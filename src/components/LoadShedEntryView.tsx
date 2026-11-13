@@ -677,7 +677,7 @@ export default function LoadShedEntryView() {
                           <button
                             type="button"
                             onClick={() => enableRowEdit(slot.label)}
-                            className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-bold bg-sky-600 text-white hover:bg-sky-500 border border-sky-500/40 transition-colors"
+                            className="w-full max-w-[48px] rounded px-1 py-0.5 text-[9px] font-bold bg-blue-500 text-white hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 border border-blue-500/40 dark:border-sky-500/40 transition-colors"
                           >
                             Edit
                           </button>

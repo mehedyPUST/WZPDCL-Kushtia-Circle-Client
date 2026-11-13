@@ -352,9 +352,9 @@ export default function HistoryList({
         </div>
 
         {!isAuthenticated && (
-          <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-500/25 shrink-0">
-            <p className="text-[11px] font-medium text-amber-800 dark:text-amber-200/90 text-center">
-              <span className="font-semibold text-amber-900 dark:text-amber-300">Read-only mode.</span> Sign in to manage calculations.
+          <div className="px-3 py-2 bg-orange-50 dark:bg-amber-950/40 border-b border-orange-200 dark:border-amber-500/25 shrink-0">
+            <p className="text-[11px] font-medium text-orange-700 dark:text-amber-200/90 text-center">
+              <span className="font-semibold text-orange-800 dark:text-amber-300">Read-only mode.</span> Sign in to manage calculations.
             </p>
           </div>
         )}
@@ -386,8 +386,8 @@ export default function HistoryList({
         </div>
 
         {isTrash && (
-          <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/35 border-b border-amber-200 dark:border-amber-500/20 shrink-0 flex items-start justify-between gap-2">
-            <p className="text-[10px] font-medium text-amber-800 dark:text-amber-200/85 leading-snug">
+          <div className="px-3 py-2 bg-orange-50 dark:bg-amber-950/35 border-b border-orange-200 dark:border-amber-500/20 shrink-0 flex items-start justify-between gap-2">
+            <p className="text-[10px] font-medium text-orange-800 dark:text-amber-200/85 leading-snug">
               Deleted items stay in Trash until an admin permanently deletes them.
             </p>
             {trashCount > 0 && isAdmin && (
@@ -629,14 +629,14 @@ export default function HistoryList({
                       <td className="py-2 text-center text-[10px] font-medium text-secondary tabular-nums">
                         {date}
                         {r.isOffline && (
-                          <span className="block text-[9px] font-semibold text-amber-400">
+                          <span className="block text-[9px] font-semibold text-orange-600 dark:text-amber-400">
                             Offline
                           </span>
                         )}
                         {(r.hasActiveRing ||
                           (r.feeders || []).some((f) => f.ringActive)) && (
                             <span
-                              className="block mt-0.5 text-[9px] font-semibold text-amber-400"
+                              className="block mt-0.5 text-[9px] font-semibold text-orange-600 dark:text-amber-400"
                               title="Ring line active"
                             >
                               Ring
@@ -644,7 +644,7 @@ export default function HistoryList({
                           )}
                         {isTrash && left != null && (
                           <span
-                            className={`block text-[9px] font-semibold ${left <= 3 ? "text-rose-400" : "text-amber-400" }`}
+                            className={`block text-[9px] font-semibold ${left <= 3 ? "text-rose-600 dark:text-rose-400" : "text-orange-600 dark:text-amber-400" }`}
                           >
                             {left === 0 ? "Expires today" : `${left}d left`}
                           </span>
@@ -682,7 +682,7 @@ export default function HistoryList({
                                     else if (typeof onView === "function") onView(r);
                                     else window.location.href = `/manual?edit=${encodeURIComponent(r._id)}`;
                                   }}
-                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm shadow-blue-900/30 active:scale-95 transition-all whitespace-nowrap"
+                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                 >
                                   Edit
                                 </button>
@@ -742,7 +742,7 @@ export default function HistoryList({
                                   </button>
                                 </>
                               ) : (
-                                <span className="text-[10px] font-medium text-amber-400 px-1 whitespace-nowrap">
+                                <span className="text-[10px] font-medium text-orange-600 dark:text-amber-400 px-1 whitespace-nowrap">
                                   Sign in
                                 </span>
                               )}

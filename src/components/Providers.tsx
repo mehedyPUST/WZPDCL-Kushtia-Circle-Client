@@ -3,6 +3,7 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { Toaster } from "react-hot-toast";
+import TableCellNavigator from "@/components/TableCellNavigator";
 
 function ThemedToaster() {
   const { isDark } = useTheme();
@@ -24,16 +25,16 @@ function ThemedToaster() {
       }
     : {
         background: "#ffffff",
-        color: "#0f172a",
+        color: "#27272a",
         fontSize: "13px",
         fontWeight: 500,
         letterSpacing: "0.01em",
         lineHeight: 1.45,
         padding: "12px 16px",
         borderRadius: "12px",
-        border: "1px solid #cbd5e1",
+        border: "1px solid #e4e4e7",
         boxShadow:
-          "0 10px 30px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(15, 23, 42, 0.04)",
+          "0 10px 30px -10px rgba(24, 24, 27, 0.12), 0 0 0 1px rgba(24, 24, 27, 0.04)",
         maxWidth: "min(420px, calc(100vw - 24px))",
       };
 
@@ -54,7 +55,7 @@ function ThemedToaster() {
         success: {
           duration: 2800,
           iconTheme: {
-            primary: "#10b981",
+            primary: isDark ? "#10b981" : "#059669",
             secondary: "#ecfdf5",
           },
           style: isDark
@@ -71,7 +72,7 @@ function ThemedToaster() {
                 background: "#ecfdf5",
                 color: "#065f46",
                 border: "1px solid #6ee7b7",
-                boxShadow: "0 12px 30px -12px rgba(16, 185, 129, 0.22)",
+                boxShadow: "0 12px 30px -12px rgba(5, 150, 105, 0.22)",
               },
         },
         error: {
@@ -100,8 +101,8 @@ function ThemedToaster() {
         loading: {
           duration: Infinity,
           iconTheme: {
-            primary: isDark ? "#38bdf8" : "#0284c7",
-            secondary: isDark ? "#0c4a6e" : "#e0f2fe",
+            primary: isDark ? "#38bdf8" : "#3b82f6",
+            secondary: isDark ? "#0c4a6e" : "#eff6ff",
           },
           style: isDark
             ? {
@@ -112,9 +113,9 @@ function ThemedToaster() {
               }
             : {
                 ...baseStyle,
-                background: "#f0f9ff",
-                color: "#075985",
-                border: "1px solid #7dd3fc",
+                background: "#eff6ff",
+                color: "#1d4ed8",
+                border: "1px solid #bfdbfe",
               },
         },
         blank: {
@@ -124,8 +125,6 @@ function ThemedToaster() {
     />
   );
 }
-
-import TableCellNavigator from "@/components/TableCellNavigator";
 
 export default function Providers({ children }) {
   return (

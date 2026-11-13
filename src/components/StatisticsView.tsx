@@ -134,18 +134,18 @@ function hasRingActive(r) {
 
 export default function StatisticsView() {
   const { isDark } = useTheme();
-  const chartGridColor = isDark ? "#334155" : "#e2e8f0";
-  const chartTickColor = isDark ? "#94a3b8" : "#475569";
-  const chartCategoryTickColor = isDark ? "#f1f5f9" : "#0f172a";
+  const chartGridColor = isDark ? "#334155" : "#e4e4e7";
+  const chartTickColor = isDark ? "#94a3b8" : "#52525b";
+  const chartCategoryTickColor = isDark ? "#f1f5f9" : "#27272a";
   const activeTooltipStyle = isDark
     ? chartTooltipStyle
     : {
         backgroundColor: "#ffffff",
-        border: "1px solid #cbd5e1",
+        border: "1px solid #e4e4e7",
         borderRadius: 10,
         fontSize: 12,
-        color: "#0f172a",
-        boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.14)",
+        color: "#27272a",
+        boxShadow: "0 10px 25px -5px rgba(24, 24, 27, 0.12)",
         padding: "10px 14px",
       };
 
@@ -611,7 +611,7 @@ export default function StatisticsView() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-950/80 text-blue-400 border border-blue-500/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-400 dark:border-blue-500/30">
                 WZPDCL Substation 33/11 kV
               </span>
               <span className="text-app text-xs">·</span>
@@ -646,7 +646,7 @@ export default function StatisticsView() {
             </button>
             <Link
               href="/loadshed"
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-sm shadow-blue-900/30"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition-colors shadow-sm"
             >
               Load Shed Entry
             </Link>
@@ -665,7 +665,7 @@ export default function StatisticsView() {
                 key={r.id}
                 type="button"
                 onClick={() => setRangeId(r.id)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id ? "bg-blue-600 text-white shadow-sm font-semibold shadow-blue-900/30" : "text-muted hover:text-secondary hover:bg-white/5" }`}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${rangeId === r.id ? "bg-blue-500 dark:bg-blue-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app hover:bg-zinc-200/70 dark:hover:bg-white/5" }`}
               >
                 {r.label}
               </button>
@@ -692,7 +692,7 @@ export default function StatisticsView() {
               <button
                 type="button"
                 onClick={loadData}
-                className="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+                className="px-2 py-0.5 rounded bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold transition-colors"
               >
                 Apply
               </button>
@@ -700,7 +700,7 @@ export default function StatisticsView() {
           )}
 
           {/* Ring Line Toggle */}
-          <div className="flex items-center gap-1 bg-elevated/60 p-1 rounded-lg border border-white/5">
+          <div className="flex items-center gap-1 bg-elevated/60 p-1 rounded-lg border border-app dark:border-white/5">
             <span className="text-[10px] font-semibold text-app uppercase tracking-wider px-1.5 hidden md:inline">
               Ring:
             </span>
@@ -713,7 +713,7 @@ export default function StatisticsView() {
                 key={rf.id}
                 type="button"
                 onClick={() => setRingFilter(rf.id)}
-                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ringFilter === rf.id ? rf.id === "with" ? "bg-amber-600 text-white font-semibold" : "bg-surface-3 text-white font-semibold" : "text-muted hover:text-secondary" }`}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ringFilter === rf.id ? rf.id === "with" ? "bg-orange-500 dark:bg-amber-600 text-white font-semibold" : "bg-zinc-800 dark:bg-surface-3 text-white font-semibold" : "text-muted hover:text-app" }`}
               >
                 {rf.label}
               </button>
@@ -793,9 +793,9 @@ export default function StatisticsView() {
       {!loading && !error && !analytics.empty && (
         <>
           {/* ── Automated Engineering Intelligence Bar ── */}
-          <div className="rounded-xl bg-slate-50/90 dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border border-emerald-300/60 dark:border-emerald-500/20 p-4 mb-6 shadow-xs dark:shadow-lg dark:shadow-black/20">
+          <div className="rounded-xl bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/20 p-4 mb-6 shadow-xs dark:shadow-lg dark:shadow-black/20">
             <div className="flex items-center gap-2 mb-3">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+              <span className="inline-block h-2 w-2 rounded-sm bg-emerald-600 dark:bg-emerald-400" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                 Operational Engineering Diagnostics & Summary
               </span>
@@ -976,14 +976,14 @@ export default function StatisticsView() {
             <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6 mb-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+                  <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
                     24-Hour Diurnal Load Profile & Grid Allotment
                   </h2>
                   <p className="text-xs text-muted mt-0.5">
                     Chronological progression across 26 logsheet slots (00:00 to 23:00, including 18:30 and 19:30).
-                    Visualizes <span className="text-purple-400 font-semibold">Demand</span> vs{" "}
-                    <span className="text-emerald-400 font-semibold">Supplied Consumption</span> vs{" "}
-                    <span className="text-amber-400 font-semibold">Grid Allotment</span>.
+                    Visualizes <span className="text-purple-700 dark:text-purple-400 font-semibold">Demand</span> vs{" "}
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Supplied Consumption</span> vs{" "}
+                    <span className="text-orange-600 dark:text-amber-400 font-semibold">Grid Allotment</span>.
                   </p>
                 </div>
                 <div className="flex items-center gap-4 text-xs font-mono">
@@ -1089,34 +1089,34 @@ export default function StatisticsView() {
               </div>
 
               {/* Slot Data Cards Ribbon */}
-              <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+              <div className="mt-4 pt-4 border-t border-app grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
                   <span className="text-muted block text-[11px]">Evening Peak Slot (19:00/20:00)</span>
-                  <span className="text-white font-bold font-mono text-sm">
+                  <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "19:00" || d.slot === "20:00")?.demand || 0)} MW
                   </span>
-                  <span className="text-app text-[10px] block mt-0.5">Maximum residential & commercial load</span>
+                  <span className="text-muted text-[10px] block mt-0.5">Maximum residential & commercial load</span>
                 </div>
-                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
                   <span className="text-muted block text-[11px]">Day Peak Slot (13:00/14:00)</span>
-                  <span className="text-white font-bold font-mono text-sm">
+                  <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "13:00" || d.slot === "14:00")?.demand || 0)} MW
                   </span>
-                  <span className="text-app text-[10px] block mt-0.5">Industrial & commercial operations</span>
+                  <span className="text-muted text-[10px] block mt-0.5">Industrial & commercial operations</span>
                 </div>
-                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
                   <span className="text-muted block text-[11px]">Night Base Load (03:00)</span>
-                  <span className="text-white font-bold font-mono text-sm">
+                  <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "03:00")?.supplied || 0)} MW
                   </span>
-                  <span className="text-app text-[10px] block mt-0.5">Minimum nighttime grid draw</span>
+                  <span className="text-muted text-[10px] block mt-0.5">Minimum nighttime grid draw</span>
                 </div>
-                <div className="bg-surface-3/40 p-2.5 rounded-lg border border-white/5">
+                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
                   <span className="text-muted block text-[11px]">Peak Load Shed Slot</span>
-                  <span className="text-rose-400 font-bold font-mono text-sm">
+                  <span className="text-rose-600 dark:text-rose-400 font-bold font-mono text-sm">
                     {formatMW(analytics.peakLs)} MW
                   </span>
-                  <span className="text-app text-[10px] block mt-0.5">
+                  <span className="text-muted text-[10px] block mt-0.5">
                     {analytics.peakLsRecord?.slot ? `Occurred at ${analytics.peakLsRecord.slot}` : "No shedding recorded"}
                   </span>
                 </div>
@@ -1188,7 +1188,7 @@ export default function StatisticsView() {
 
               {/* Shift Comparison Bar Chart */}
               <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
-                <h3 className="text-sm font-semibold text-white tracking-tight mb-1">
+                <h3 className="text-sm font-semibold text-app dark:text-white tracking-tight mb-1">
                   Shift Load & Curtailment Comparison
                 </h3>
                 <p className="text-xs text-muted mb-4">
@@ -1219,7 +1219,7 @@ export default function StatisticsView() {
               <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                   <div>
-                    <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+                    <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
                       Feeder Average & Peak Power Dispatch
                     </h2>
                     <p className="text-xs text-muted mt-0.5">
@@ -1267,7 +1267,7 @@ export default function StatisticsView() {
               {/* Feeder Detailed Ledger */}
               <div className="rounded-xl bg-surface-2/60 border border-app overflow-hidden">
                 <div className="p-4 sm:p-5 border-b border-app flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-white">
+                  <h3 className="text-sm font-semibold text-app dark:text-white">
                     Feeder Technical Ledger & Load Shed Audit
                   </h3>
                   <span className="text-xs text-muted font-mono">
@@ -1277,27 +1277,27 @@ export default function StatisticsView() {
                 <div className="overflow-x-auto relative sheet-scroll-x">
                   <table className="w-full text-left text-xs min-w-[720px]">
                     <thead className="sticky top-0 z-30 shadow-sm">
-                      <tr className="text-slate-900 text-secondary bg-slate-200 dark:bg-elevated border-b border-slate-300 dark:border-app text-[11px] uppercase tracking-wider">
+                      <tr className="text-zinc-800 dark:text-secondary bg-zinc-100 dark:bg-elevated border-b border-zinc-200 dark:border-app text-[11px] uppercase tracking-wider">
                         <th
-                          className="py-2.5 px-3 font-bold bg-slate-200 text-slate-900 dark:bg-elevated text-app border-r border-slate-300 dark:border-app/80"
+                          className="py-2.5 px-3 font-bold bg-zinc-100 text-zinc-800 dark:bg-elevated dark:text-app border-r border-zinc-200 dark:border-app/80"
                           style={{ position: "sticky", left: 0, top: 0, zIndex: 40, boxShadow: "var(--sticky-shadow)" }}
                         >
                           Feeder Name
                         </th>
-                        <th className="py-2.5 px-3 font-semibold bg-purple-100 text-purple-900 dark:bg-purple-950/75 dark:text-purple-200 border-r border-slate-300 dark:border-app/80">Source Bus</th>
-                        <th className="py-2.5 px-3 font-semibold bg-teal-100 text-teal-900 dark:bg-teal-950/75 dark:text-teal-200 border-r border-slate-300 dark:border-app/80">Classification</th>
-                        <th className="py-2.5 px-3 font-semibold text-right bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300 border-r border-slate-300 dark:border-app/80">Mean Load</th>
-                        <th className="py-2.5 px-3 font-semibold text-right bg-sky-100 text-sky-900 dark:bg-sky-950/75 dark:text-sky-200 border-r border-slate-300 dark:border-app/80">Peak Load</th>
-                        <th className="py-2.5 px-3 font-semibold text-right bg-amber-100 text-amber-900 dark:bg-amber-950/75 dark:text-amber-200 border-r border-slate-300 dark:border-app/80">Station Share</th>
-                        <th className="py-2.5 px-3 font-semibold text-right bg-rose-100 text-rose-900 dark:bg-rose-950/75 dark:text-rose-300 border-r border-slate-300 dark:border-app/80">Peak Load Shed</th>
-                        <th className="py-2.5 px-3 font-semibold text-center bg-emerald-100 text-emerald-900 dark:bg-emerald-950/75 dark:text-emerald-200">Status</th>
+                        <th className="py-2.5 px-3 font-semibold bg-zinc-100 text-zinc-800 dark:bg-purple-950/75 dark:text-purple-200 border-r border-zinc-200 dark:border-app/80">Source Bus</th>
+                        <th className="py-2.5 px-3 font-semibold bg-zinc-100 text-zinc-800 dark:bg-teal-950/75 dark:text-teal-200 border-r border-zinc-200 dark:border-app/80">Classification</th>
+                        <th className="py-2.5 px-3 font-semibold text-right bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-r border-zinc-200 dark:border-app/80">Mean Load</th>
+                        <th className="py-2.5 px-3 font-semibold text-right bg-blue-50 text-blue-700 dark:bg-sky-950/75 dark:text-sky-200 border-r border-zinc-200 dark:border-app/80">Peak Load</th>
+                        <th className="py-2.5 px-3 font-semibold text-right bg-orange-50 text-orange-700 dark:bg-amber-950/75 dark:text-amber-200 border-r border-zinc-200 dark:border-app/80">Station Share</th>
+                        <th className="py-2.5 px-3 font-semibold text-right bg-rose-50 text-rose-700 dark:bg-rose-950/75 dark:text-rose-300 border-r border-zinc-200 dark:border-app/80">Peak Load Shed</th>
+                        <th className="py-2.5 px-3 font-semibold text-center bg-emerald-50 text-emerald-700 dark:bg-emerald-950/75 dark:text-emerald-200">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 dark:divide-white/5 font-mono">
+                    <tbody className="divide-y divide-zinc-200 dark:divide-white/5 font-mono">
                       {analytics.feederList.map((f) => (
-                        <tr key={f.name} className="hover:bg-slate-100/60 dark:hover:bg-white/[0.02] text-slate-800 text-secondary transition-colors">
+                        <tr key={f.name} className="hover:bg-zinc-50 dark:hover:bg-white/[0.02] text-zinc-700 dark:text-secondary transition-colors">
                           <td
-                            className="py-2.5 px-3 font-sans font-bold text-app border-r border-slate-200 dark:border-app/80 bg-slate-50 dark:bg-surface"
+                            className="py-2.5 px-3 font-sans font-bold text-app border-r border-zinc-200 dark:border-app/80 bg-white dark:bg-surface"
                             style={{ position: "sticky", left: 0, zIndex: 20, boxShadow: "var(--sticky-shadow)" }}
                           >
                             <span className="inline-flex items-center gap-2">
@@ -1306,20 +1306,20 @@ export default function StatisticsView() {
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-secondary">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${f.bus === 1 ? "bg-sky-950 text-sky-400 border border-sky-800/40" : "bg-purple-950 text-purple-400 border border-purple-800/40" }`}>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${f.bus === 1 ? "bg-blue-50 text-blue-700 border border-blue-200 dark:bg-sky-950 dark:text-sky-400 dark:border-sky-800/40" : "bg-orange-50 text-orange-700 border border-orange-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800/40" }`}>
                               BUS-{f.bus}
                             </span>
                           </td>
                           <td className="py-2.5 px-3 font-sans">
                             {f.isProtected ? (
-                              <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
+                              <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
                                 </svg>
                                 Protected (No LS)
                               </span>
                             ) : BOTTAIL_11KV_IDS.includes(f.id) ? (
-                              <span className="text-amber-400">Local 11kV (H3+T3)</span>
+                              <span className="text-orange-600 dark:text-amber-400">Local 11kV (H3+T3)</span>
                             ) : (
                               <span className="text-muted">33kV Outgoing (Sheddable)</span>
                             )}
@@ -1335,22 +1335,22 @@ export default function StatisticsView() {
                           </td>
                           <td className="py-2.5 px-3 text-right">
                             {f.peakShedMW > 0 ? (
-                              <span className="text-rose-400 font-bold">{formatMW(f.peakShedMW)} MW</span>
+                              <span className="text-rose-600 dark:text-rose-400 font-bold">{formatMW(f.peakShedMW)} MW</span>
                             ) : (
-                              <span className="text-app">0.0 MW</span>
+                              <span className="text-muted">0.0 MW</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-center">
                             {f.isProtected ? (
-                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/40">
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800/40">
                                 Protected 100%
                               </span>
                             ) : f.peakShedMW > 0 ? (
-                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800/40">
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800/40">
                                 Shed Active
                               </span>
                             ) : (
-                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-surface-3 text-muted">
+                              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-surface-3 dark:text-muted dark:border-transparent">
                                 Normal
                               </span>
                             )}
@@ -1371,7 +1371,7 @@ export default function StatisticsView() {
               <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <div>
-                    <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+                    <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
                       33 kV Bus Voltage Stability Profile
                     </h2>
                     <p className="text-xs text-muted mt-0.5">
@@ -1433,34 +1433,34 @@ export default function StatisticsView() {
               {/* Bus Transformer Loading Comparison */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Bus 1 Card */}
-                <div className="rounded-xl bg-surface border border-sky-300/60 dark:border-sky-500/20 p-5 shadow-xs">
+                <div className="rounded-xl bg-surface border border-blue-200 dark:border-sky-500/20 p-5 shadow-xs">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-sky-400">
                       BUS-1 Incomer & Transformers
                     </span>
-                    <span className="text-xs font-mono font-bold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950 px-2 py-0.5 rounded border border-sky-300 dark:border-sky-800/40">
+                    <span className="text-xs font-mono font-bold text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-sky-950 px-2 py-0.5 rounded border border-blue-200 dark:border-sky-800/40">
                       {analytics.bus1SharePct}% of Station Load
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 py-3 border-y border-app text-xs font-mono">
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Average kV</span>
+                      <span className="text-muted block text-[10px]">Average kV</span>
                       <span className="text-base font-bold text-app">{formatKV(analytics.bus1AvgVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Minimum kV</span>
-                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus1MinVolt)} kV</span>
+                      <span className="text-muted block text-[10px]">Minimum kV</span>
+                      <span className="text-base font-bold text-secondary">{formatKV(analytics.bus1MinVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Maximum kV</span>
-                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus1MaxVolt)} kV</span>
+                      <span className="text-muted block text-[10px]">Maximum kV</span>
+                      <span className="text-base font-bold text-secondary">{formatKV(analytics.bus1MaxVolt)} kV</span>
                     </div>
                   </div>
-                  <div className="mt-3 text-xs text-slate-600 text-muted">
-                    <span className="font-semibold text-slate-800 text-secondary block mb-1">Connected Feeders:</span>
+                  <div className="mt-3 text-xs text-muted">
+                    <span className="font-semibold text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 1).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-slate-100 bg-surface-3 text-slate-700 text-secondary text-[11px] border border-slate-200 dark:border-transparent">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-surface-3 text-zinc-700 dark:text-secondary text-[11px] border border-zinc-200 dark:border-transparent">
                           {f.name}
                         </span>
                       ))}
@@ -1469,34 +1469,34 @@ export default function StatisticsView() {
                 </div>
 
                 {/* Bus 2 Card */}
-                <div className="rounded-xl bg-surface border border-purple-300/60 dark:border-purple-500/20 p-5 shadow-xs">
+                <div className="rounded-xl bg-surface border border-orange-200 dark:border-purple-500/20 p-5 shadow-xs">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-purple-400">
                       BUS-2 Incomer & Transformers
                     </span>
-                    <span className="text-xs font-mono font-bold text-purple-800 dark:text-purple-300 bg-purple-50 dark:bg-purple-950 px-2 py-0.5 rounded border border-purple-300 dark:border-purple-800/40">
+                    <span className="text-xs font-mono font-bold text-orange-700 dark:text-purple-300 bg-orange-50 dark:bg-purple-950 px-2 py-0.5 rounded border border-orange-200 dark:border-purple-800/40">
                       {analytics.bus2SharePct}% of Station Load
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 py-3 border-y border-app text-xs font-mono">
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Average kV</span>
+                      <span className="text-muted block text-[10px]">Average kV</span>
                       <span className="text-base font-bold text-app">{formatKV(analytics.bus2AvgVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Minimum kV</span>
-                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus2MinVolt)} kV</span>
+                      <span className="text-muted block text-[10px]">Minimum kV</span>
+                      <span className="text-base font-bold text-secondary">{formatKV(analytics.bus2MinVolt)} kV</span>
                     </div>
                     <div>
-                      <span className="text-app text-muted block text-[10px]">Maximum kV</span>
-                      <span className="text-base font-bold text-slate-700 text-secondary">{formatKV(analytics.bus2MaxVolt)} kV</span>
+                      <span className="text-muted block text-[10px]">Maximum kV</span>
+                      <span className="text-base font-bold text-secondary">{formatKV(analytics.bus2MaxVolt)} kV</span>
                     </div>
                   </div>
-                  <div className="mt-3 text-xs text-slate-600 text-muted">
+                  <div className="mt-3 text-xs text-muted">
                     <span className="font-semibold text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 2).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-surface-3 text-secondary text-[11px] border border-app">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-surface-3 text-zinc-700 dark:text-secondary text-[11px] border border-zinc-200 dark:border-app">
                           {f.name}
                         </span>
                       ))}
@@ -1595,25 +1595,25 @@ export default function StatisticsView() {
           )}
 
           {/* ── Engineering Context & Formula References ── */}
-          <div className="rounded-xl bg-surface-2/40 border border-white/5 p-4 text-xs text-muted space-y-2">
+          <div className="rounded-xl bg-surface-2/40 border border-app dark:border-white/5 p-4 text-xs text-muted space-y-2">
             <p className="font-semibold text-secondary">
               Technical Calculation Methodology (WZPDCL Standards):
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] leading-relaxed">
-              <div className="bg-elevated/40 p-2.5 rounded border border-white/5">
-                <span className="text-emerald-400 font-bold block mb-1">True Demand (MW)</span>
+              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold block mb-1">True Demand (MW)</span>
                 <code>Demand = Supplied (Total) + Load Shed (LS)</code>. Represents uncurtailed consumer demand.
               </div>
-              <div className="bg-elevated/40 p-2.5 rounded border border-white/5">
-                <span className="text-sky-400 font-bold block mb-1">Station Mean Load (MW)</span>
+              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
+                <span className="text-blue-600 dark:text-sky-400 font-bold block mb-1">Station Mean Load (MW)</span>
                 <code>Mean Load = Σ (Sample MW) ÷ Total Samples</code>. Represents average power delivery.
               </div>
-              <div className="bg-elevated/40 p-2.5 rounded border border-white/5">
-                <span className="text-amber-400 font-bold block mb-1">Load Factor (%)</span>
+              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
+                <span className="text-orange-600 dark:text-amber-400 font-bold block mb-1">Load Factor (%)</span>
                 <code>LF = (Mean Load ÷ Peak Load) × 100</code>. Reflects station capacity efficiency.
               </div>
-              <div className="bg-elevated/40 p-2.5 rounded border border-white/5">
-                <span className="text-purple-400 font-bold block mb-1">Power Formula</span>
+              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
+                <span className="text-zinc-800 dark:text-purple-400 font-bold block mb-1">Power Formula</span>
                 <code>MW = (√3 × V_kV × 0.9 PF × I_A) ÷ 1000</code>.
               </div>
             </div>
@@ -1626,22 +1626,22 @@ export default function StatisticsView() {
 
 function SubstationKpi({ label, value, unit, sub, accent = "slate" }) {
   const accentClasses = {
-    purple: "from-purple-50/90 via-white to-purple-100/40 border-purple-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
-    emerald: "from-emerald-50/90 via-white to-emerald-100/40 border-emerald-200 dark:from-emerald-950/50 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
-    sky: "from-sky-50/90 via-white to-sky-100/40 border-sky-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
-    rose: "from-rose-50/90 via-white to-rose-100/40 border-rose-200 dark:from-rose-950/50 dark:via-transparent dark:to-slate-900 dark:border-rose-500/25",
-    amber: "from-amber-50/90 via-white to-amber-100/40 border-amber-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
-    teal: "from-teal-50/90 via-white to-teal-100/40 border-teal-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
-    slate: "from-slate-50/90 via-white to-slate-100/40 border-slate-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-white/[0.07]",
+    purple: "from-orange-50/70 via-white to-orange-50/20 border-orange-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
+    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/50 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
+    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
+    rose: "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-transparent dark:to-slate-900 dark:border-rose-500/25",
+    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
+    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
+    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-white/[0.07]",
   };
 
   const valueClasses = {
-    purple: "text-purple-900 dark:text-purple-200",
-    emerald: "text-emerald-900 dark:text-emerald-200",
-    sky: "text-sky-900 dark:text-sky-200",
-    rose: "text-rose-900 dark:text-rose-200",
-    amber: "text-amber-900 dark:text-amber-200",
-    teal: "text-teal-900 dark:text-teal-200",
+    purple: "text-zinc-800 dark:text-purple-200",
+    emerald: "text-emerald-700 dark:text-emerald-200",
+    sky: "text-blue-700 dark:text-sky-200",
+    rose: "text-rose-700 dark:text-rose-200",
+    amber: "text-orange-600 dark:text-amber-200",
+    teal: "text-emerald-700 dark:text-teal-200",
     slate: "text-app",
   };
 

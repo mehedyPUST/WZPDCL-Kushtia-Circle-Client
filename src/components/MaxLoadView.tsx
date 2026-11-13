@@ -191,28 +191,28 @@ function readCachedRingMode() {
 
 function PeakKpiCard({ label, value, unit, sub, badge, accent = "slate", icon: Icon }) {
   const accentClasses = {
-    emerald: "from-emerald-50/90 via-white to-emerald-100/40 border-emerald-200 dark:from-emerald-950/55 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
-    purple: "from-purple-50/90 via-white to-purple-100/40 border-purple-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
-    sky: "from-sky-50/90 via-white to-sky-100/40 border-sky-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
-    teal: "from-teal-50/90 via-white to-teal-100/40 border-teal-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
-    amber: "from-amber-50/90 via-white to-amber-100/40 border-amber-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
-    slate: "from-slate-50/90 via-white to-slate-100/40 border-slate-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-app",
+    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
+    purple: "from-orange-50/80 via-white to-orange-50/30 border-orange-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
+    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
+    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
+    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
+    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-app",
   };
   const valueColors = {
-    emerald: "text-emerald-900 dark:text-emerald-200",
-    purple: "text-purple-900 dark:text-purple-200",
-    sky: "text-sky-900 dark:text-sky-200",
-    teal: "text-teal-900 dark:text-teal-200",
-    amber: "text-amber-900 dark:text-amber-200",
-    slate: "text-slate-900 dark:text-white",
+    emerald: "text-emerald-700 dark:text-emerald-200",
+    purple: "text-zinc-800 dark:text-purple-200",
+    sky: "text-blue-700 dark:text-sky-200",
+    teal: "text-emerald-700 dark:text-teal-200",
+    amber: "text-orange-600 dark:text-amber-200",
+    slate: "text-zinc-800 dark:text-white",
   };
   const iconColors = {
-    emerald: "text-emerald-700 bg-emerald-100 border-emerald-300 dark:text-emerald-400 dark:bg-emerald-950/80 dark:border-emerald-500/30",
-    purple: "text-purple-700 bg-purple-100 border-purple-300 dark:text-purple-400 dark:bg-purple-950/80 dark:border-purple-500/30",
-    sky: "text-sky-700 bg-sky-100 border-sky-300 dark:text-sky-400 dark:bg-sky-950/80 dark:border-sky-500/30",
-    teal: "text-teal-700 bg-teal-100 border-teal-300 dark:text-teal-400 dark:bg-teal-950/80 dark:border-teal-500/30",
-    amber: "text-amber-700 bg-amber-100 border-amber-300 dark:text-amber-400 dark:bg-amber-950/80 dark:border-amber-500/30",
-    slate: "text-slate-600 bg-slate-100 border-slate-300 dark:text-muted dark:bg-surface-3 dark:border-app",
+    emerald: "text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/80 dark:border-emerald-500/30",
+    purple: "text-orange-600 bg-orange-50 border-orange-200 dark:text-purple-400 dark:bg-purple-950/80 dark:border-purple-500/30",
+    sky: "text-blue-600 bg-blue-50 border-blue-200 dark:text-sky-400 dark:bg-sky-950/80 dark:border-sky-500/30",
+    teal: "text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-teal-400 dark:bg-teal-950/80 dark:border-teal-500/30",
+    amber: "text-orange-600 bg-orange-50 border-orange-200 dark:text-amber-400 dark:bg-amber-950/80 dark:border-amber-500/30",
+    slate: "text-zinc-600 bg-zinc-100 border-zinc-200 dark:text-muted dark:bg-surface-3 dark:border-app",
   };
 
   return (
@@ -243,7 +243,7 @@ function PeakKpiCard({ label, value, unit, sub, badge, accent = "slate", icon: I
         </div>
       </div>
       {sub ? (
-        <div className="text-[11px] text-slate-600 dark:text-muted mt-2.5 pt-2 border-t border-slate-200/80 dark:border-white/5 leading-snug font-mono">
+        <div className="text-[11px] text-zinc-600 dark:text-muted mt-2.5 pt-2 border-t border-zinc-200/80 dark:border-white/5 leading-snug font-mono">
           {sub}
         </div>
       ) : null}
@@ -470,7 +470,7 @@ export default function MaxLoadView() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-950/80 text-blue-400 border border-blue-500/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/80 dark:text-blue-400 dark:border-blue-500/30">
                 WZPDCL Substation 33/11 kV
               </span>
               <span className="text-faint text-xs">·</span>
@@ -487,7 +487,7 @@ export default function MaxLoadView() {
                 {peakBy === "amps" ? "amps" : "MW"}
               </span>
               {" "}(paired column is the value at that same reading). Tracking across feeders and local{" "}
-              <span className="text-cyan-600 dark:text-cyan-400 font-semibold font-mono">H3+T3</span>{" "}
+              <span className="text-emerald-600 dark:text-cyan-400 font-semibold font-mono">H3+T3</span>{" "}
               11 kV bus, prioritizing verified hourly &amp; evening half-hour slots.
             </p>
           </div>
@@ -506,7 +506,7 @@ export default function MaxLoadView() {
             </button>
             <Link
               href="/statistics"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-sm shadow-blue-900/30"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition-colors shadow-sm"
             >
               <BarChart3 className="w-3.5 h-3.5" />
               Statistics
@@ -526,7 +526,7 @@ export default function MaxLoadView() {
                   key={o.id}
                   type="button"
                   onClick={() => setRange(o.id)}
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${ range === o.id ? "bg-blue-600 text-white shadow-sm font-semibold shadow-blue-900/30" : "text-muted hover:text-secondary hover:bg-white/5" }`}
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${ range === o.id ? "bg-blue-500 dark:bg-blue-600 text-white shadow-sm font-semibold" : "text-muted hover:text-app hover:bg-zinc-200/70 dark:hover:bg-white/5" }`}
                 >
                   {o.label}
                 </button>
@@ -600,14 +600,14 @@ export default function MaxLoadView() {
                   type="button"
                   onClick={handleSetRingWith}
                   title="All samples including ring/coupler. Individual peaks may be shared-path. Station total & 11 kV total always use all data."
-                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "with" ? "bg-amber-600 text-white shadow-sm shadow-amber-600/20" : "text-muted hover:text-app hover:bg-surface-3" }`}
+                  className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ ringMode === "with" ? "bg-orange-500 dark:bg-amber-600 text-white shadow-sm shadow-orange-500/20 dark:shadow-amber-600/20" : "text-muted hover:text-app hover:bg-surface-3" }`}
                 >
                   + Ring
                 </button>
               </div>
               <p className="text-[10px] text-faint leading-snug max-w-xs hidden lg:block">
                 <span className="text-secondary font-semibold">No Ring</span> radial / own-TX ·{" "}
-                <span className="text-amber-600 dark:text-amber-400 font-semibold">+ Ring</span> all samples · 11 kV total always full
+                <span className="text-orange-600 dark:text-amber-400 font-semibold">+ Ring</span> all samples · 11 kV total always full
               </p>
             </div>
 
@@ -632,7 +632,7 @@ export default function MaxLoadView() {
                 type="button"
                 onClick={() => setPeakBy("amps")}
                 title="Rank peaks by amps; MW column shows power at that amp peak (voltage may differ)"
-                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "amps" ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-app hover:bg-surface-3" }`}
+                className={`min-h-[2rem] px-3 rounded-lg text-[11px] font-semibold transition-all ${ peakBy === "amps" ? "bg-blue-500 dark:bg-sky-600 text-white shadow-sm" : "text-muted hover:text-app hover:bg-surface-3" }`}
               >
                 Amps
               </button>
@@ -653,7 +653,7 @@ export default function MaxLoadView() {
                   type="button"
                   onClick={() => setTopN(n)}
                   title={`Show top ${n} max load${n > 1 ? "s" : ""}`}
-                  className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ topN === n ? "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-900/30" : "text-muted hover:text-secondary" }`}
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors ${ topN === n ? "bg-blue-500 dark:bg-blue-600 text-white font-semibold shadow-sm" : "text-muted hover:text-secondary" }`}
                 >
                   Top {n}
                 </button>
@@ -818,16 +818,16 @@ export default function MaxLoadView() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono">
-                <span className="inline-flex items-center gap-1.5 text-slate-700 text-secondary">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-sky-500" />
+                <span className="inline-flex items-center gap-1.5 text-secondary">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 dark:bg-sky-500" />
                   BUS-1 Feeders
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-slate-700 text-secondary">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-purple-500" />
+                <span className="inline-flex items-center gap-1.5 text-secondary">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-orange-500 dark:bg-purple-500" />
                   BUS-2 Feeders
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-slate-700 text-secondary">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-teal-500" />
+                <span className="inline-flex items-center gap-1.5 text-secondary">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 dark:bg-teal-500" />
                   H3+T3 (11kV)
                 </span>
               </div>
@@ -841,22 +841,22 @@ export default function MaxLoadView() {
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke={isDark ? "#1e293b" : "#e2e8f0"}
+                    stroke={isDark ? "#1e293b" : "#e4e4e7"}
                     vertical={false}
                   />
                   <XAxis
                     dataKey="name"
                     tick={{
-                      fill: isDark ? "#cbd5e1" : "#334155",
+                      fill: isDark ? "#cbd5e1" : "#27272a",
                       fontSize: 11,
                       fontWeight: 600,
                     }}
-                    axisLine={{ stroke: isDark ? "#334155" : "#cbd5e1" }}
+                    axisLine={{ stroke: isDark ? "#334155" : "#d4d4d8" }}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: isDark ? "#94a3b8" : "#475569", fontSize: 10 }}
-                    axisLine={{ stroke: isDark ? "#334155" : "#cbd5e1" }}
+                    tick={{ fill: isDark ? "#94a3b8" : "#52525b", fontSize: 10 }}
+                    axisLine={{ stroke: isDark ? "#334155" : "#d4d4d8" }}
                     tickLine={false}
                     width={46}
                     unit=" MW"
@@ -865,18 +865,18 @@ export default function MaxLoadView() {
                     cursor={{
                       fill: isDark
                         ? "rgba(148, 163, 184, 0.06)"
-                        : "rgba(15, 23, 42, 0.05)",
+                        : "rgba(39, 39, 42, 0.05)",
                     }}
                     contentStyle={
                       isDark
                         ? chartTooltipStyle
                         : {
                             backgroundColor: "#ffffff",
-                            border: "1px solid #cbd5e1",
+                            border: "1px solid #e4e4e7",
                             borderRadius: 10,
                             fontSize: 12,
-                            color: "#0f172a",
-                            boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.14)",
+                            color: "#27272a",
+                            boxShadow: "0 10px 25px -5px rgba(24, 24, 27, 0.12)",
                             padding: "10px 14px",
                           }
                     }
@@ -893,12 +893,18 @@ export default function MaxLoadView() {
                   />
                   <Bar dataKey="peakMW" radius={[6, 6, 0, 0]} maxBarSize={44}>
                     {overview.chartData.map((entry) => {
-                      const fill = entry.isBottail
-                        ? "#14b8a6"
-                        : entry.bus === 1
-                          ? "#0ea5e9"
-                          : "#a855f7";
-                      return <Cell key={entry.name} fill={fill} fillOpacity={0.88} />;
+                      const fill = isDark
+                        ? entry.isBottail
+                          ? "#14b8a6"
+                          : entry.bus === 1
+                            ? "#0ea5e9"
+                            : "#a855f7"
+                        : entry.isBottail
+                          ? "#059669"
+                          : entry.bus === 1
+                            ? "#3b82f6"
+                            : "#f97316";
+                      return <Cell key={entry.name} fill={fill} fillOpacity={0.9} />;
                     })}
                   </Bar>
                 </BarChart>
@@ -930,7 +936,7 @@ export default function MaxLoadView() {
                   <span>33 kV ring active</span>
                 </span>
                 <span>
-                  <strong className="text-sky-400 font-mono">Slot</strong> = nearest logsheet hour
+                  <strong className="text-blue-600 dark:text-sky-400 font-mono">Slot</strong> = nearest logsheet hour
                 </span>
               </div>
             </div>
@@ -938,29 +944,29 @@ export default function MaxLoadView() {
             <div className="overflow-x-auto relative sheet-scroll-x">
               <table className="w-full border-collapse text-left min-w-[680px]">
                 <thead className="sticky top-0 z-30 shadow-sm">
-                  <tr className="bg-surface-2 text-slate-900 text-secondary border-b border-slate-300 dark:border-app text-[10px] sm:text-[11px] uppercase tracking-wider">
-                    <th className="px-3 py-3 font-bold text-center border-r border-slate-300 dark:border-app/80 w-12 bg-indigo-100 text-indigo-900 dark:bg-indigo-950/75 dark:text-indigo-200">
+                  <tr className="bg-zinc-100 dark:bg-surface-2 text-zinc-800 dark:text-secondary border-b border-zinc-200 dark:border-app text-[10px] sm:text-[11px] uppercase tracking-wider">
+                    <th className="px-3 py-3 font-bold text-center border-r border-zinc-200 dark:border-app/80 w-12 bg-zinc-100 text-zinc-700 dark:bg-indigo-950/75 dark:text-indigo-200">
                       SN
                     </th>
-                    <th className="px-3.5 py-3 font-bold text-left border-r border-slate-300 dark:border-app/80 w-44 bg-purple-100 text-purple-900 dark:bg-purple-950/75 dark:text-purple-200">
+                    <th className="px-3.5 py-3 font-bold text-left border-r border-zinc-200 dark:border-app/80 w-44 bg-zinc-100 text-zinc-800 dark:bg-purple-950/75 dark:text-purple-200">
                       Feeder &amp; Bus
                     </th>
-                    <th className="px-2.5 py-3 font-bold text-center border-r border-slate-300 dark:border-app/80 w-16 bg-amber-100 text-amber-900 dark:bg-amber-950/75 dark:text-amber-200">
+                    <th className="px-2.5 py-3 font-bold text-center border-r border-zinc-200 dark:border-app/80 w-16 bg-orange-50 text-orange-700 dark:bg-amber-950/75 dark:text-amber-200">
                       Rank
                     </th>
-                    <th className={`px-3 py-3 font-bold text-right border-r border-slate-300 dark:border-app/80 w-28 ${ peakBy === "amps" ? "bg-sky-700 text-white dark:bg-sky-800 dark:text-sky-100" : "bg-sky-100 text-sky-900 dark:bg-sky-950/75 dark:text-sky-200" }`}>
+                    <th className={`px-3 py-3 font-bold text-right border-r border-zinc-200 dark:border-app/80 w-28 ${ peakBy === "amps" ? "bg-blue-500 text-white dark:bg-sky-800 dark:text-sky-100" : "bg-blue-50 text-blue-700 dark:bg-sky-950/75 dark:text-sky-200" }`}>
                       {peakBy === "amps" ? "Peak Amps" : "Amps @ peak"}
                     </th>
-                    <th className={`px-3.5 py-3 font-bold text-left border-r border-slate-300 dark:border-app/80 w-52 ${ peakBy === "mw" ? "bg-emerald-700 text-white dark:bg-emerald-800 dark:text-emerald-100" : "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300" }`}>
+                    <th className={`px-3.5 py-3 font-bold text-left border-r border-zinc-200 dark:border-app/80 w-52 ${ peakBy === "mw" ? "bg-emerald-600 text-white dark:bg-emerald-800 dark:text-emerald-100" : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300" }`}>
                       {peakBy === "mw" ? "Peak MW" : "MW @ peak"}
                     </th>
-                    <th className="px-3 py-3 font-bold text-center border-r border-slate-300 dark:border-app/80 w-24 bg-teal-100 text-teal-900 dark:bg-teal-950/75 dark:text-teal-300">
+                    <th className="px-3 py-3 font-bold text-center border-r border-zinc-200 dark:border-app/80 w-24 bg-blue-50 text-blue-700 dark:bg-teal-950/75 dark:text-teal-300">
                       Log Slot
                     </th>
-                    <th className="px-3 py-3 font-bold font-mono text-center border-r border-slate-300 dark:border-app/80 w-28 bg-slate-200 text-slate-900 dark:bg-surface-2 dark:text-app text-[11px] uppercase tracking-wider">
+                    <th className="px-3 py-3 font-bold font-mono text-center border-r border-zinc-200 dark:border-app/80 w-28 bg-zinc-100 text-zinc-800 dark:bg-surface-2 dark:text-app text-[11px] uppercase tracking-wider">
                       Exact Time
                     </th>
-                    <th className="px-3.5 py-3 font-bold text-center w-32 bg-indigo-100 text-indigo-900 dark:bg-indigo-950/75 dark:text-indigo-200">
+                    <th className="px-3.5 py-3 font-bold text-center w-32 bg-zinc-100 text-zinc-700 dark:bg-indigo-950/75 dark:text-indigo-200">
                       Date
                     </th>
                   </tr>
@@ -982,10 +988,10 @@ export default function MaxLoadView() {
                     const groupTopBorder =
                       gIdx > 0 ? "border-t-2 border-app" : "";
                     const groupCellBg = g.isBottail
-                      ? "bg-teal-950/25"
+                      ? "bg-emerald-50/70 dark:bg-teal-950/25"
                       : gIdx % 2 === 0
-                        ? "bg-surface-2/55"
-                        : "bg-elevated/45";
+                        ? "bg-white dark:bg-surface-2/55"
+                        : "bg-zinc-50/80 dark:bg-elevated/45";
 
                     return g.peaks.map((p, i) => {
                       const empty = p.mw == null && (p.slot === "—" || !p.slot);
@@ -997,11 +1003,11 @@ export default function MaxLoadView() {
 
                       const rowBg = isTop
                         ? g.isBottail
-                          ? "bg-teal-950/35 hover:bg-teal-900/30"
-                          : "bg-emerald-950/20 hover:bg-emerald-950/35"
+                          ? "bg-emerald-50/70 hover:bg-emerald-100/50 dark:bg-teal-950/35 dark:hover:bg-teal-900/30"
+                          : "bg-emerald-50/60 hover:bg-emerald-100/40 dark:bg-emerald-950/20 dark:hover:bg-emerald-950/35"
                         : i % 2 === 1
-                          ? "bg-surface-2/35 hover:bg-surface-3/45"
-                          : "bg-elevated/25 hover:bg-surface-3/45";
+                          ? "bg-zinc-50/70 hover:bg-zinc-100/80 dark:bg-surface-2/35 dark:hover:bg-surface-3/45"
+                          : "bg-white hover:bg-zinc-50 dark:bg-elevated/25 dark:hover:bg-surface-3/45";
 
                       const topBorder = i === 0 ? groupTopBorder : "border-t border-app/60";
 
@@ -1024,18 +1030,18 @@ export default function MaxLoadView() {
                               >
                                 <div className="flex flex-col gap-1">
                                   <span
-                                    className={`font-bold text-sm tracking-tight ${ g.isBottail ? "text-teal-300" : "text-app" }`}
+                                    className={`font-bold text-sm tracking-tight ${ g.isBottail ? "text-emerald-700 dark:text-teal-300" : "text-app" }`}
                                   >
                                     {g.name}
                                   </span>
                                   <div className="flex flex-wrap items-center gap-1">
                                     {g.isBottail ? (
-                                      <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase bg-teal-950/80 text-teal-300 border border-teal-500/30">
+                                      <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-500/30">
                                         11 kV Local Sum
                                       </span>
                                     ) : (
                                       <span
-                                        className={`inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase border ${ g.bus === 1 ? "bg-sky-950/70 text-sky-300 border-sky-500/25" : "bg-purple-950/70 text-purple-300 border-purple-500/25" }`}
+                                        className={`inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase border ${ g.bus === 1 ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-500/25" : "bg-orange-50 text-orange-700 border-orange-200 dark:bg-purple-950/70 dark:text-purple-300 dark:border-purple-500/25" }`}
                                       >
                                         BUS-{g.bus}
                                       </span>
@@ -1054,9 +1060,9 @@ export default function MaxLoadView() {
                           {/* Rank */}
                           <td className="px-2.5 py-2 text-center font-mono border-r border-app/80">
                             {empty ? (
-                              <span className="text-slate-600">—</span>
+                              <span className="text-muted">—</span>
                             ) : isTop ? (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 text-[10px] font-bold">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-orange-50 dark:bg-amber-500/15 text-orange-700 dark:text-amber-300 border border-orange-200 dark:border-amber-500/30 text-[10px] font-bold">
                                 #{i + 1}
                               </span>
                             ) : (
@@ -1068,7 +1074,7 @@ export default function MaxLoadView() {
 
                           {/* Max Amps */}
                           <td
-                            className={`px-3 py-2 text-right font-mono tabular-nums border-r border-app/80 ${ empty ? "text-slate-600" : isTop ? "text-app dark:text-white font-bold" : "text-secondary" }`}
+                            className={`px-3 py-2 text-right font-mono tabular-nums border-r border-app/80 ${ empty ? "text-muted" : isTop ? "text-app dark:text-white font-bold" : "text-secondary" }`}
                           >
                             {empty ? (
                               "—"
@@ -1083,12 +1089,12 @@ export default function MaxLoadView() {
                           {/* Max MW + Proportional Bar */}
                           <td className="px-3.5 py-2 border-r border-app/80">
                             {empty ? (
-                              <span className="font-mono text-slate-600">—</span>
+                              <span className="font-mono text-muted">—</span>
                             ) : (
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center justify-between gap-2">
                                   <span
-                                    className={`font-mono tabular-nums font-bold inline-flex items-center gap-1.5 ${ g.isBottail ? isTop ? "text-teal-800 dark:text-teal-300 text-sm" : "text-teal-700 dark:text-teal-400/90" : isTop ? "text-emerald-800 dark:text-emerald-300 text-sm" : "text-emerald-700 dark:text-emerald-400/85" }`}
+                                    className={`font-mono tabular-nums font-bold inline-flex items-center gap-1.5 ${ g.isBottail ? isTop ? "text-emerald-700 dark:text-teal-300 text-sm" : "text-emerald-600 dark:text-teal-400/90" : isTop ? "text-emerald-700 dark:text-emerald-300 text-sm" : "text-emerald-600 dark:text-emerald-400/85" }`}
                                   >
                                     {formatMW(p.mw)}
                                     <span className="text-[10px] font-normal text-muted">
@@ -1096,7 +1102,7 @@ export default function MaxLoadView() {
                                     </span>
                                     {isTop && (
                                       <Star
-                                        className="w-3 h-3 text-amber-500 fill-amber-500 dark:text-amber-400 dark:fill-amber-400 shrink-0"
+                                        className="w-3 h-3 text-orange-500 fill-orange-500 dark:text-amber-400 dark:fill-amber-400 shrink-0"
                                         aria-label="Highest peak"
                                       />
                                     )}
@@ -1105,16 +1111,16 @@ export default function MaxLoadView() {
                                   {p.hasActiveRing && (
                                     <span
                                       title="Peak from active ring record"
-                                      className="inline-flex items-center justify-center px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase tracking-tight bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/40 leading-tight shrink-0"
+                                      className="inline-flex items-center justify-center px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase tracking-tight bg-orange-50 dark:bg-amber-500/20 text-orange-700 dark:text-amber-300 border border-orange-200 dark:border-amber-500/40 leading-tight shrink-0"
                                     >
                                       R
                                     </span>
                                   )}
                                 </div>
 
-                                <div className="h-1.5 w-full rounded-full bg-surface-3/90 overflow-hidden">
+                                <div className="h-1.5 w-full rounded-full bg-zinc-200 dark:bg-surface-3/90 overflow-hidden">
                                   <div
-                                    className={`h-full rounded-full ${ g.isBottail ? "bg-teal-400" : isTop ? "bg-emerald-400" : g.bus === 1 ? "bg-sky-500/75" : "bg-purple-500/75" }`}
+                                    className={`h-full rounded-full ${ g.isBottail ? "bg-emerald-600 dark:bg-teal-400" : isTop ? "bg-emerald-600 dark:bg-emerald-400" : g.bus === 1 ? "bg-blue-500 dark:bg-sky-500/75" : "bg-orange-500 dark:bg-purple-500/75" }`}
                                     style={{ width: `${pct}%` }}
                                   />
                                 </div>
@@ -1123,12 +1129,12 @@ export default function MaxLoadView() {
                           </td>
 
                           {/* Slot */}
-                          <td className="px-3 py-2 text-center font-mono border-r border-slate-200 dark:border-app/80">
+                          <td className="px-3 py-2 text-center font-mono border-r border-zinc-200 dark:border-app/80">
                             {empty ? (
-                              <span className="text-muted dark:text-slate-600 font-mono">—</span>
+                              <span className="text-muted font-mono">—</span>
                             ) : (
                               <span
-                                className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[11px] font-bold tabular-nums ${ String(p.slot).includes("30") ? "bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30" : isTop ? "bg-sky-100 dark:bg-sky-950/70 text-sky-900 dark:text-sky-300 border border-sky-300 dark:border-sky-500/30" : "bg-slate-100 dark:bg-surface-3/70 text-slate-900 dark:text-secondary border border-slate-200 dark:border-white/5" }`}
+                                className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[11px] font-bold tabular-nums ${ String(p.slot).includes("30") ? "bg-orange-50 dark:bg-amber-950/60 text-orange-700 dark:text-amber-300 border border-orange-200 dark:border-amber-500/30" : isTop ? "bg-blue-50 dark:bg-sky-950/70 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-sky-500/30" : "bg-zinc-100 dark:bg-surface-3/70 text-zinc-800 dark:text-secondary border border-zinc-200 dark:border-white/5" }`}
                               >
                                 {p.slot || "—"}
                               </span>
@@ -1137,14 +1143,14 @@ export default function MaxLoadView() {
 
                           {/* Exact Time */}
                           <td
-                            className={`px-3 py-2 text-center font-mono tabular-nums font-bold text-xs sm:text-[13px] border-r border-slate-200 dark:border-app/80 ${ empty ? "text-muted dark:text-slate-600 font-normal" : isTop ? "text-emerald-700 dark:text-emerald-300 font-extrabold" : "text-slate-900 dark:text-app" }`}
+                            className={`px-3 py-2 text-center font-mono tabular-nums font-bold text-xs sm:text-[13px] border-r border-zinc-200 dark:border-app/80 ${ empty ? "text-muted font-normal" : isTop ? "text-emerald-700 dark:text-emerald-300 font-extrabold" : "text-zinc-800 dark:text-app" }`}
                           >
                             {p.time}
                           </td>
 
                           {/* Date */}
                           <td
-                            className={`px-3.5 py-2 text-center font-mono whitespace-nowrap ${ empty ? "text-slate-600" : isTop ? "text-secondary font-semibold" : "text-muted" }`}
+                            className={`px-3.5 py-2 text-center font-mono whitespace-nowrap ${ empty ? "text-muted" : isTop ? "text-secondary font-semibold" : "text-muted" }`}
                           >
                             {p.date}
                           </td>

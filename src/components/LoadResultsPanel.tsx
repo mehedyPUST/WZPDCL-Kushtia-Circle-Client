@@ -55,7 +55,7 @@ export default function LoadResultsPanel({ calculate, bottail11kV, totalMW, onCo
 
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 dark:from-[#00684A] dark:via-[#004D36] dark:to-[#001E2B] text-white rounded-xl flex items-center justify-between shadow-md shadow-blue-950/30 dark:shadow-black/50 border border-blue-400/40 dark:border-[#00ED64]/40 min-w-0"
+        className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-[#00684A] dark:via-[#004D36] dark:to-[#001E2B] text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-900/20 dark:shadow-black/50 border border-emerald-500/40 dark:border-[#00ED64]/40 min-w-0"
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span

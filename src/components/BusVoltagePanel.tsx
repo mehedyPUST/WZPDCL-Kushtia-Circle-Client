@@ -17,20 +17,20 @@ function Field({
 }) {
   const cardCls =
     tone === "amber"
-      ? "bg-amber-500/10 dark:bg-amber-950/35 border-amber-500/30 hover:border-amber-500/60"
+      ? "bg-orange-50/90 dark:bg-amber-950/35 border-orange-200 dark:border-amber-500/30 hover:border-orange-400 dark:hover:border-amber-500/60"
       : tone === "purple"
         ? "bg-purple-500/10 dark:bg-purple-950/25 border-purple-500/30 hover:border-purple-500/60"
         : tone === "sky"
-          ? "bg-sky-500/10 dark:bg-sky-950/25 border-sky-500/30 hover:border-sky-500/60"
+          ? "bg-blue-50/90 dark:bg-sky-950/25 border-blue-200 dark:border-sky-500/30 hover:border-blue-400 dark:hover:border-sky-500/60"
           : "bg-surface-2 border-app hover:border-accent";
 
   const labelCls =
     tone === "amber"
-      ? "text-amber-800 dark:text-amber-300"
+      ? "text-orange-700 dark:text-amber-300"
       : tone === "purple"
         ? "text-purple-800 dark:text-purple-300"
         : tone === "sky"
-          ? "text-sky-800 dark:text-sky-300"
+          ? "text-blue-700 dark:text-sky-300"
           : "text-secondary";
 
   const inputCls =

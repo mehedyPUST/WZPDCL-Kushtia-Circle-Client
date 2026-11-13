@@ -735,7 +735,7 @@ export default function ManualEntryView({
               role="tab"
               aria-selected={!isAmps}
               onClick={() => switchUnitMode("mw")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${!isAmps ? "bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${!isAmps ? "bg-blue-500 dark:bg-sky-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
             >
               MW
             </button>
@@ -751,7 +751,7 @@ export default function ManualEntryView({
               role="tab"
               aria-selected={sheetMode === "general"}
               onClick={() => setSheetMode("general")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "general" ? "bg-surface-3 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "general" ? "bg-surface-3 text-app dark:text-white shadow-sm" : "text-muted hover:text-secondary" }`}
             >
               General
             </button>
@@ -774,7 +774,7 @@ export default function ManualEntryView({
                   return next;
                 });
               }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-amber-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase transition-colors ${sheetMode === "ring" ? "bg-orange-500 dark:bg-amber-600 text-white shadow-sm" : "text-muted hover:text-secondary" }`}
               title="Enter ring ON/OFF for each feeder"
             >
               Ring mode
@@ -1039,7 +1039,7 @@ export default function ManualEntryView({
                                   onClick={() =>
                                     toggleRingDraft(slot.label, f.id)
                                   }
-                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn ? "bg-amber-600 text-white border-amber-500" : "bg-surface-2 text-muted border-app hover:border-amber-400 hover:text-amber-800 dark:hover:text-amber-300" }`}
+                                  className={`text-[8px] font-extrabold uppercase tracking-wide rounded px-1 py-0.5 border transition-colors ${ringOn ? "bg-orange-500 text-white border-orange-600 dark:bg-amber-600 dark:border-amber-500" : "bg-surface-2 text-muted border-app hover:border-orange-400 hover:text-orange-700 dark:hover:border-amber-400 dark:hover:text-amber-300" }`}
                                   title={(RING_BY_FEEDER[f.id]?.partner || f.name) + ` · ring ${ringOn ? "ON" : "OFF"}`}
                                 >
                                   {ringOn ? "R ON" : "R OFF"}
@@ -1097,7 +1097,7 @@ export default function ManualEntryView({
                           <button
                             type="button"
                             onClick={() => enableRowEdit(slot.label)}
-                            className="w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
+                            className="w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 active:scale-95 transition-all"
                           >
                             Edit
                           </button>
@@ -1107,7 +1107,7 @@ export default function ManualEntryView({
                               type="button"
                               disabled={savingSlot === slot.label}
                               onClick={() => handleSaveSlot(slot)}
-                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled ? "bg-amber-600 hover:bg-amber-500" : "btn-primary hover:opacity-95" }`}
+                              className={`w-full max-w-full px-1 py-1 rounded-md text-[9px] font-extrabold uppercase text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 ${filled ? "bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500" : "btn-primary hover:opacity-95" }`}
                             >
                               {savingSlot === slot.label
                                 ? "…"
