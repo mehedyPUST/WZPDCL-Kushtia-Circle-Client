@@ -20,10 +20,26 @@ export default function CalculatorActionBar({
   onClear,
   isSaving,
   saveLabel,
+  layout = "portrait",
+}: {
+  mode?: string;
+  onCalculateOnly?: () => void;
+  onCalculateAndSaveHour?: () => void;
+  hourSlotLabel?: string;
+  hourSlotSpecial?: boolean;
+  onHistory?: () => void;
+  historyLabel?: string;
+  onCalculateLoadShed?: () => void;
+  onCopyLoadShed?: () => void;
+  onClear?: () => void;
+  isSaving?: boolean;
+  saveLabel?: string;
+  layout?: "portrait" | "landscape";
 }) {
   const { isAuthenticated, login, canWrite, isViewer } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const isLS = mode === "loadShed";
+  const isLandscape = layout === "landscape";
 
   const handleHourSaveClick = () => {
     if (!isAuthenticated) {
@@ -36,25 +52,39 @@ export default function CalculatorActionBar({
     onCalculateAndSaveHour?.();
   };
 
-  const btnStyle = {
-    height: "var(--calc-btn-h)",
-    fontSize: "var(--calc-btn-text)",
-    paddingLeft: "0.25rem",
-    paddingRight: "0.25rem",
-  };
+  const btnStyle = isLandscape
+    ? {
+        height: "2.35rem",
+        fontSize: "0.72rem",
+        paddingLeft: "0.5rem",
+        paddingRight: "0.5rem",
+      }
+    : {
+        height: "var(--calc-btn-h)",
+        fontSize: "var(--calc-btn-text)",
+        paddingLeft: "0.25rem",
+        paddingRight: "0.25rem",
+      };
 
   return (
     <section
-      className="flex flex-col"
-      style={{
-        paddingLeft: "var(--calc-section-px)",
-        paddingRight: "var(--calc-section-px)",
-        paddingBottom: "var(--calc-gap)",
-        gap: "var(--calc-gap)",
-      }}
+      className={isLandscape ? "flex flex-col px-3 pb-2.5 gap-2" : "flex flex-col"}
+      style={
+        isLandscape
+          ? undefined
+          : {
+              paddingLeft: "var(--calc-section-px)",
+              paddingRight: "var(--calc-section-px)",
+              paddingBottom: "var(--calc-gap)",
+              gap: "var(--calc-gap)",
+            }
+      }
     >
       {isLS ? (
-        <div className="grid grid-cols-3" style={{ gap: "var(--calc-gap)" }}>
+        <div
+          className={`grid ${isLandscape ? "grid-cols-2 gap-2" : "grid-cols-3"}`}
+          style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
+        >
           <button
             type="button"
             onClick={onCalculateLoadShed}
@@ -75,15 +105,22 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
-            style={btnStyle}
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400 ${isLandscape ? "col-span-2" : ""}`}
+            style={
+              isLandscape
+                ? { ...btnStyle, height: "2rem" }
+                : btnStyle
+            }
             title="Reset all bus voltages and feeder values"
           >
-            Reset
+            {isLandscape ? "Reset All Fields" : "Reset"}
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-3" style={{ gap: "var(--calc-gap)" }}>
+        <div
+          className={`grid ${isLandscape ? "grid-cols-2 gap-2" : "grid-cols-3"}`}
+          style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
+        >
           <button
             type="button"
             onClick={onCalculateOnly}
@@ -120,11 +157,15 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
-            style={btnStyle}
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400 ${isLandscape ? "col-span-2" : ""}`}
+            style={
+              isLandscape
+                ? { ...btnStyle, height: "2rem" }
+                : btnStyle
+            }
             title="Reset all bus voltages and feeder values"
           >
-            Reset
+            {isLandscape ? "Reset All Fields" : "Reset"}
           </button>
         </div>
       )}

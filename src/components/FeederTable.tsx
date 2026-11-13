@@ -33,8 +33,26 @@ export default function FeederTable({
   ringActive = {},
   onRingToggle = null,
   busVoltages = { bus1: "", bus2: "" },
+  layout = "portrait",
+}: {
+  amps: Record<string, string>;
+  getDisplayMW: (id: any) => number | null;
+  onAmpChange: (id: any, value: string) => void;
+  onAmpBlur: (id: any) => void;
+  handleWheel?: (e: any) => void;
+  handleKeyDown?: (e: any) => void;
+  mode?: string;
+  loadShedPlan?: any;
+  currentLs?: Record<string, string> | null;
+  onCurrentLsChange?: ((id: any, value: string) => void) | null;
+  onCurrentLsBlur?: ((id: any) => void) | null;
+  ringActive?: Record<string, boolean>;
+  onRingToggle?: ((id: any) => void) | null;
+  busVoltages?: { bus1: string; bus2: string };
+  layout?: "portrait" | "landscape";
 }) {
   const isLS = mode === "loadShed";
+  const isLandscape = layout === "landscape";
 
   /** Bus at 0 kV = shut down → amp input locked at 0 */
   const isBusShutdown = (busNum) => {
@@ -78,7 +96,7 @@ export default function FeederTable({
         const bodySpace = Math.max(0, available - theadH - 1);
         // Prefer fitting all rows; stay usable on tiny screens
         const ideal = bodySpace / rowCount;
-        const rowPx = clamp(Math.floor(ideal), 28, 48);
+        const rowPx = clamp(Math.floor(ideal), isLandscape ? 26 : 28, isLandscape ? 54 : 48);
         const thPy = clamp(Math.round(rowPx * 0.16), 3, 8);
         const rowText = clamp(Math.round(rowPx * 0.42), 12, 16);
         const thSize = clamp(Math.round(rowPx * 0.36), 11, 14);
@@ -109,7 +127,7 @@ export default function FeederTable({
       ro.disconnect();
       window.removeEventListener("resize", fit);
     };
-  }, [rowCount, isLS]);
+  }, [rowCount, isLS, isLandscape]);
 
   const thStyle = {
     paddingTop: "var(--calc-th-py)",
@@ -136,12 +154,21 @@ export default function FeederTable({
   return (
     <section
       className="calc-feeder-wrap bg-surface"
-      style={{
-        paddingLeft: "var(--calc-section-px)",
-        paddingRight: "var(--calc-section-px)",
-        paddingTop: "calc(var(--calc-gap) * 0.4)",
-        paddingBottom: "calc(var(--calc-gap) * 0.4)",
-      }}
+      style={
+        isLandscape
+          ? {
+              paddingLeft: "0.5rem",
+              paddingRight: "0.5rem",
+              paddingTop: "0.5rem",
+              paddingBottom: "0.5rem",
+            }
+          : {
+              paddingLeft: "var(--calc-section-px)",
+              paddingRight: "var(--calc-section-px)",
+              paddingTop: "calc(var(--calc-gap) * 0.4)",
+              paddingBottom: "calc(var(--calc-gap) * 0.4)",
+            }
+      }
     >
       <div
         className={`rounded-lg shadow-sm overflow-hidden flex-1 min-h-0 flex flex-col border bg-surface dark:bg-elevated/70 ${ isLS ? "border-orange-300 dark:border-amber-500/25" : "border-app" }`}

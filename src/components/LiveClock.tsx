@@ -2,9 +2,26 @@
 
 import { useLiveClock } from "@/hooks/useLiveClock";
 
-export default function LiveClock({ time }: { time?: string | null } = {}) {
+export default function LiveClock({
+  time,
+  compact = false,
+}: { time?: string | null; compact?: boolean } = {}) {
   const liveTime = useLiveClock();
   const displayTime = time !== undefined ? time : liveTime;
+
+  if (compact) {
+    return (
+      <span
+        className="inline-flex items-center bg-surface rounded-md border border-accent/60 shadow-xs px-2.5 py-0.5 text-[11px] font-extrabold tracking-widest font-mono text-accent uppercase shrink-0"
+        suppressHydrationWarning
+      >
+        <span className="opacity-70 mr-1" aria-hidden>
+          ⏱
+        </span>
+        <span suppressHydrationWarning>{displayTime ?? "—"}</span>
+      </span>
+    );
+  }
 
   return (
     <div

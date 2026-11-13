@@ -84,6 +84,32 @@ export default function LoadCalculator({
   const [ringActive, setRingActive] = useState<Record<string, boolean>>({});
   const [hourSlot, setHourSlot] = useState<any>(() => getNearestHourSlot());
   const [slotConflict, setSlotConflict] = useState<any>(null); // { payload, existing, slot, dateLabel }
+  const [layout, setLayout] = useState<"portrait" | "landscape">("portrait");
+
+  useEffect(() => {
+    if (embedded) return;
+    try {
+      const saved = localStorage.getItem("calculatorLayout");
+      if (saved === "landscape" || saved === "portrait") {
+        setLayout(saved);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [embedded]);
+
+  const handleLayoutChange = (next: "portrait" | "landscape") => {
+    setLayout(next);
+    try {
+      localStorage.setItem("calculatorLayout", next);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const effectiveLayout: "portrait" | "landscape" =
+    !embedded && layout === "landscape" ? "landscape" : "portrait";
+  const isLandscape = effectiveLayout === "landscape";
 
   const { handleWheel, handleKeyDown } = useNumberInputGuards();
 
@@ -699,7 +725,7 @@ export default function LoadCalculator({
           className={
             embedded
               ? "w-full h-full min-h-0 flex justify-center"
-              : "w-full max-w-xl flex justify-center min-h-0"
+              : `w-full ${isLandscape ? "max-w-6xl" : "max-w-xl"} flex justify-center min-h-0 transition-[max-width] duration-300 ease-out`
           }
           style={
             embedded
@@ -712,6 +738,7 @@ export default function LoadCalculator({
         >
           <div
             data-mode={mode}
+            data-layout={effectiveLayout}
             data-nav-root
             onFocusCapture={() => {
               if (!editRecord) setHourSlot(getNearestHourSlot());
@@ -726,143 +753,310 @@ export default function LoadCalculator({
                   }`
             }
           >
-            {/* Mobile: full station header (logo + titles). Large screen: title only. */}
+            {/* Mobile: full station header (logo + titles). Large screen: title bar. */}
             {!embedded && (
               <div className="md:hidden flex-shrink-0">
                 <StationHeader />
               </div>
             )}
-            <div className="hidden md:flex flex-shrink-0 bg-elevated text-app text-center border-b border-app py-2.5 px-3 items-center justify-center relative">
-              <h1 className="font-bold text-base tracking-tight text-app leading-tight">
-                {editRecord ? "Edit Calculation" : "Load Calculator"}
-              </h1>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                {!embedded && <ThemeToggle compact />}
-                {embedded && typeof onClose === "function" && (
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-2 py-1 rounded-md text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-app border border-app"
-                  >
-                    Close
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className={`px-2 md:px-4 py-0.5 border-b flex justify-end shrink-0 ${ mode === "loadShed" ? "bg-surface-2 border-[var(--app-highlight-border)]" : "bg-surface-2 border-app" }`}>
-              <OfflineBadge
-                online={online}
-                pendingCount={pendingCount}
-                syncing={syncing}
-                onSyncNow={syncPending}
-              />
-            </div>
-            <div className="shrink-0">
-              {embedded && editRecord ? (
-                <div className="bg-surface-2 text-accent text-center font-semibold tracking-wide font-mono border-b border-app py-1.5 text-[12px] sm:text-[13px]">
-                  <span className="opacity-70 mr-1.5">📅</span>
-                  <span suppressHydrationWarning>
-                    {(() => {
-                      const iso = editRecord.calculatedAt || editRecord.createdAt;
-                      if (!iso) return "—";
-                      const d = new Date(iso);
-                      if (Number.isNaN(d.getTime())) return "—";
-                      const date = d.toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      });
-                      const time = d.toLocaleTimeString("en-GB", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: false,
-                      });
-                      const slot = editRecord.hourSlot ? ` · ${editRecord.hourSlot}` : "";
-                      return `${date} · ${time}${slot}`;
-                    })()}
-                  </span>
+
+            {isLandscape ? (
+              <>
+                {/* Desktop landscape unified command header */}
+                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-1.5 px-4 items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight truncate">
+                      {editRecord ? "Edit Calculation" : "Load Calculator"}
+                    </h1>
+                    <span className="text-[10px] font-bold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-dim text-accent border border-accent/35 shrink-0">
+                      Landscape
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-center shrink-0">
+                    <LiveClock compact />
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <OfflineBadge
+                      online={online}
+                      pendingCount={pendingCount}
+                      syncing={syncing}
+                      onSyncNow={syncPending}
+                    />
+                    <ThemeToggle compact />
+                  </div>
                 </div>
-              ) : (
-                <LiveClock />
-              )}
-            </div>
-            <div className="shrink-0">
-              <CalculatorModeToggle mode={mode} onChange={setMode} onHistory={goHistory} historyLabel={embedded ? "Close" : undefined} />
-            </div>
 
-            <div className="shrink-0">
-              <BusVoltagePanel
-                busVoltages={busVoltages}
-                onChange={handleBusVoltageChange}
-                handleWheel={handleWheel}
-                handleKeyDown={handleKeyDown}
-                mode={mode}
-                allotment={allotment}
-                onAllotmentChange={handleAllotmentChange}
-              />
-            </div>
-
-            {mode === "loadShed" && (
-              <div className="shrink-0">
-                <LoadShedPanel plan={loadShedPlan} calculated={calculated} />
-              </div>
+                {/* Mobile landscape compact clock + offline row */}
+                <div
+                  className={`md:hidden px-2.5 py-1 border-b flex items-center justify-between gap-2 shrink-0 ${
+                    mode === "loadShed"
+                      ? "bg-surface-2 border-[var(--app-highlight-border)]"
+                      : "bg-surface-2 border-app"
+                  }`}
+                >
+                  <LiveClock compact />
+                  <OfflineBadge
+                    online={online}
+                    pendingCount={pendingCount}
+                    syncing={syncing}
+                    onSyncNow={syncPending}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app text-center border-b border-app py-2.5 px-3 items-center justify-center relative">
+                  <h1 className="font-bold text-base tracking-tight text-app leading-tight">
+                    {editRecord ? "Edit Calculation" : "Load Calculator"}
+                  </h1>
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    {!embedded && <ThemeToggle compact />}
+                    {embedded && typeof onClose === "function" && (
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="px-2 py-1 rounded-md text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-app border border-app"
+                      >
+                        Close
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div
+                  className={`px-2 md:px-4 py-0.5 border-b flex justify-end shrink-0 ${
+                    mode === "loadShed"
+                      ? "bg-surface-2 border-[var(--app-highlight-border)]"
+                      : "bg-surface-2 border-app"
+                  }`}
+                >
+                  <OfflineBadge
+                    online={online}
+                    pendingCount={pendingCount}
+                    syncing={syncing}
+                    onSyncNow={syncPending}
+                  />
+                </div>
+                <div className="shrink-0">
+                  {embedded && editRecord ? (
+                    <div className="bg-surface-2 text-accent text-center font-semibold tracking-wide font-mono border-b border-app py-1.5 text-[12px] sm:text-[13px]">
+                      <span className="opacity-70 mr-1.5">📅</span>
+                      <span suppressHydrationWarning>
+                        {(() => {
+                          const iso = editRecord.calculatedAt || editRecord.createdAt;
+                          if (!iso) return "—";
+                          const d = new Date(iso);
+                          if (Number.isNaN(d.getTime())) return "—";
+                          const date = d.toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          });
+                          const time = d.toLocaleTimeString("en-GB", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          });
+                          const slot = editRecord.hourSlot ? ` · ${editRecord.hourSlot}` : "";
+                          return `${date} · ${time}${slot}`;
+                        })()}
+                      </span>
+                    </div>
+                  ) : (
+                    <LiveClock />
+                  )}
+                </div>
+              </>
             )}
 
-            <div className="flex-1 min-h-0 overflow-hidden">
-              <FeederTable
-                busVoltages={busVoltages}
-                amps={amps}
-                getDisplayMW={getDisplayMW}
-                onAmpChange={handleAmpChange}
-                onAmpBlur={handleAmpBlur}
-                handleWheel={handleWheel}
-                handleKeyDown={handleKeyDown}
+            <div className="shrink-0">
+              <CalculatorModeToggle
                 mode={mode}
-                loadShedPlan={loadShedPlan}
-                currentLs={currentLs}
-                onCurrentLsChange={handleCurrentLsChange}
-                onCurrentLsBlur={handleCurrentLsBlur}
-                ringActive={ringActive}
-                onRingToggle={handleRingToggle}
+                onChange={setMode}
+                onHistory={goHistory}
+                historyLabel={embedded ? "Close" : undefined}
+                layout={effectiveLayout}
+                onLayoutChange={!embedded ? handleLayoutChange : undefined}
               />
             </div>
 
-            <div className="flex-shrink-0 bg-surface border-t border-app pt-1">
-              {mode === "normal" && (
-                <LoadResultsPanel
-                  calculate={calculated}
-                  bottail11kV={totals.bottail11kV}
-                  totalMW={totals.totalMW}
-                  onCopy={handleCopyTotal}
-                />
-              )}
-              <CalculatorActionBar
-                mode={mode}
-                onClear={handleClearFields}
-                onCalculateOnly={handleCalculateOnly}
-                onCalculateAndSaveHour={
-                  editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
-                }
-                hourSlotLabel={
-                  editRecord
-                    ? editRecord.hourSlot || hourSlot?.label
-                    : hourSlot?.label
-                }
-                hourSlotSpecial={
-                  editRecord
-                    ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
-                    : hourSlot?.isSpecial
-                }
-                onHistory={goHistory}
-                historyLabel={embedded ? "Close" : undefined}
-                onCalculateLoadShed={handleCalculateLoadShed}
-                onCopyLoadShed={handleCopyLoadShed}
-                isSaving={isSaving}
-                saveLabel={editRecord ? "Update" : undefined}
-              />
-              <AppFooter />
-            </div>
+            {isLandscape ? (
+              <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden flex flex-col">
+                <div className="flex-1 min-h-0 min-w-[600px] sm:min-w-0 grid grid-cols-[minmax(0,1fr)_16.5rem] sm:grid-cols-[minmax(0,1fr)_18.5rem] md:grid-cols-[minmax(0,1fr)_20.5rem] lg:grid-cols-[minmax(0,1fr)_22.5rem] xl:grid-cols-[minmax(0,1fr)_24rem]">
+                  {/* LEFT PANE — Feeder Telemetry Table */}
+                  <div className="min-w-0 min-h-0 flex flex-col overflow-hidden bg-surface">
+                    <FeederTable
+                      busVoltages={busVoltages}
+                      amps={amps}
+                      getDisplayMW={getDisplayMW}
+                      onAmpChange={handleAmpChange}
+                      onAmpBlur={handleAmpBlur}
+                      handleWheel={handleWheel}
+                      handleKeyDown={handleKeyDown}
+                      mode={mode}
+                      loadShedPlan={loadShedPlan}
+                      currentLs={currentLs}
+                      onCurrentLsChange={handleCurrentLsChange}
+                      onCurrentLsBlur={handleCurrentLsBlur}
+                      ringActive={ringActive}
+                      onRingToggle={handleRingToggle}
+                      layout="landscape"
+                    />
+                  </div>
+
+                  {/* RIGHT PANE — Control & Output Rail */}
+                  <aside className="min-w-0 min-h-0 flex flex-col justify-between border-l border-app bg-surface-2/55 overflow-y-auto">
+                    <div className="flex flex-col">
+                      <BusVoltagePanel
+                        busVoltages={busVoltages}
+                        onChange={handleBusVoltageChange}
+                        handleWheel={handleWheel}
+                        handleKeyDown={handleKeyDown}
+                        mode={mode}
+                        allotment={allotment}
+                        onAllotmentChange={handleAllotmentChange}
+                        layout="landscape"
+                      />
+
+                      {mode === "loadShed" && (
+                        calculated && loadShedPlan?.valid ? (
+                          <LoadShedPanel
+                            plan={loadShedPlan}
+                            calculated={calculated}
+                            layout="landscape"
+                          />
+                        ) : (
+                          <div className="m-3 rounded-xl border border-dashed border-app-strong bg-surface/60 px-3 py-3 text-center">
+                            <p className="text-[11px] font-semibold text-secondary">
+                              Loadshed Plan Preview
+                            </p>
+                            <p className="text-[10px] text-muted mt-0.5 leading-relaxed">
+                              Enter bus voltages, allotment MW, and feeder amps, then click{" "}
+                              <span className="font-bold text-warning">Calculate LS</span>.
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    <div className="mt-auto flex flex-col border-t border-app bg-surface/90 pt-2.5">
+                      {mode === "normal" && (
+                        <LoadResultsPanel
+                          calculate={calculated}
+                          bottail11kV={totals.bottail11kV}
+                          totalMW={totals.totalMW}
+                          onCopy={handleCopyTotal}
+                          layout="landscape"
+                        />
+                      )}
+                      <CalculatorActionBar
+                        mode={mode}
+                        onClear={handleClearFields}
+                        onCalculateOnly={handleCalculateOnly}
+                        onCalculateAndSaveHour={
+                          editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
+                        }
+                        hourSlotLabel={
+                          editRecord
+                            ? editRecord.hourSlot || hourSlot?.label
+                            : hourSlot?.label
+                        }
+                        hourSlotSpecial={
+                          editRecord
+                            ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
+                            : hourSlot?.isSpecial
+                        }
+                        onHistory={goHistory}
+                        historyLabel={embedded ? "Close" : undefined}
+                        onCalculateLoadShed={handleCalculateLoadShed}
+                        onCopyLoadShed={handleCopyLoadShed}
+                        isSaving={isSaving}
+                        saveLabel={editRecord ? "Update" : undefined}
+                        layout="landscape"
+                      />
+                    </div>
+                  </aside>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="shrink-0">
+                  <BusVoltagePanel
+                    busVoltages={busVoltages}
+                    onChange={handleBusVoltageChange}
+                    handleWheel={handleWheel}
+                    handleKeyDown={handleKeyDown}
+                    mode={mode}
+                    allotment={allotment}
+                    onAllotmentChange={handleAllotmentChange}
+                  />
+                </div>
+
+                {mode === "loadShed" && (
+                  <div className="shrink-0">
+                    <LoadShedPanel plan={loadShedPlan} calculated={calculated} />
+                  </div>
+                )}
+
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <FeederTable
+                    busVoltages={busVoltages}
+                    amps={amps}
+                    getDisplayMW={getDisplayMW}
+                    onAmpChange={handleAmpChange}
+                    onAmpBlur={handleAmpBlur}
+                    handleWheel={handleWheel}
+                    handleKeyDown={handleKeyDown}
+                    mode={mode}
+                    loadShedPlan={loadShedPlan}
+                    currentLs={currentLs}
+                    onCurrentLsChange={handleCurrentLsChange}
+                    onCurrentLsBlur={handleCurrentLsBlur}
+                    ringActive={ringActive}
+                    onRingToggle={handleRingToggle}
+                  />
+                </div>
+
+                <div className="flex-shrink-0 bg-surface border-t border-app pt-1">
+                  {mode === "normal" && (
+                    <LoadResultsPanel
+                      calculate={calculated}
+                      bottail11kV={totals.bottail11kV}
+                      totalMW={totals.totalMW}
+                      onCopy={handleCopyTotal}
+                    />
+                  )}
+                  <CalculatorActionBar
+                    mode={mode}
+                    onClear={handleClearFields}
+                    onCalculateOnly={handleCalculateOnly}
+                    onCalculateAndSaveHour={
+                      editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
+                    }
+                    hourSlotLabel={
+                      editRecord
+                        ? editRecord.hourSlot || hourSlot?.label
+                        : hourSlot?.label
+                    }
+                    hourSlotSpecial={
+                      editRecord
+                        ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
+                        : hourSlot?.isSpecial
+                    }
+                    onHistory={goHistory}
+                    historyLabel={embedded ? "Close" : undefined}
+                    onCalculateLoadShed={handleCalculateLoadShed}
+                    onCopyLoadShed={handleCopyLoadShed}
+                    isSaving={isSaving}
+                    saveLabel={editRecord ? "Update" : undefined}
+                  />
+                </div>
+              </>
+            )}
+
+            <AppFooter />
           </div>
         </div>
       </div>

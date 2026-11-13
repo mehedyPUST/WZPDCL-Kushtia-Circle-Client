@@ -110,22 +110,47 @@ export default function BusVoltagePanel({
   mode = "normal",
   allotment = "",
   onAllotmentChange,
+  layout = "portrait",
+}: {
+  busVoltages: { bus1: string; bus2: string };
+  onChange: (bus: string, value: string) => void;
+  handleWheel?: (e: any) => void;
+  handleKeyDown?: (e: any) => void;
+  mode?: string;
+  allotment?: string;
+  onAllotmentChange?: (value: string) => void;
+  layout?: "portrait" | "landscape";
 }) {
   const isLS = mode === "loadShed";
+  const isLandscape = layout === "landscape";
 
   return (
     <section
-      className="border-b border-app bg-surface-2"
-      style={{
-        paddingLeft: "var(--calc-section-px)",
-        paddingRight: "var(--calc-section-px)",
-        paddingTop: "var(--calc-bus-py)",
-        paddingBottom: "var(--calc-bus-py)",
-      }}
+      className={isLandscape ? "px-3 pt-2.5 pb-2.5 border-b border-app bg-surface/60" : "border-b border-app bg-surface-2"}
+      style={
+        isLandscape
+          ? undefined
+          : {
+              paddingLeft: "var(--calc-section-px)",
+              paddingRight: "var(--calc-section-px)",
+              paddingTop: "var(--calc-bus-py)",
+              paddingBottom: "var(--calc-bus-py)",
+            }
+      }
     >
+      {isLandscape && (
+        <div className="flex items-center justify-between mb-1.5 px-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted font-mono">
+            Bus Telemetry
+          </span>
+          <span className="text-[10px] font-mono text-faint">
+            0 = Shut down
+          </span>
+        </div>
+      )}
       <div
-        className={`grid ${isLS ? "grid-cols-3" : "grid-cols-2"}`}
-        style={{ gap: "var(--calc-gap)" }}
+        className={`grid ${isLandscape ? "grid-cols-2 gap-2" : isLS ? "grid-cols-3" : "grid-cols-2"}`}
+        style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
       >
         <Field
           label="BUS-2"
@@ -154,19 +179,21 @@ export default function BusVoltagePanel({
           navCol={1}
         />
         {isLS && (
-          <Field
-            label="Allot"
-            value={allotment}
-            onChange={(v) => onAllotmentChange?.(v)}
-            handleWheel={handleWheel}
-            handleKeyDown={handleKeyDown}
-            placeholder="-"
-            unit="MW"
-            tone="amber"
-            required
-            navRow={-1}
-            navCol={2}
-          />
+          <div className={isLandscape ? "col-span-2" : ""}>
+            <Field
+              label={isLandscape ? "Allotment" : "Allot"}
+              value={allotment}
+              onChange={(v) => onAllotmentChange?.(v)}
+              handleWheel={handleWheel}
+              handleKeyDown={handleKeyDown}
+              placeholder="-"
+              unit="MW"
+              tone="amber"
+              required
+              navRow={-1}
+              navCol={2}
+            />
+          </div>
         )}
       </div>
     </section>
