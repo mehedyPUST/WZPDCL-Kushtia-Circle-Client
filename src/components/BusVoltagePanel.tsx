@@ -115,6 +115,7 @@ export default function BusVoltagePanel({
   bus2MW = 0,
   ringCount = 0,
   calculated = false,
+  hourSlotLabel = "",
 }: {
   busVoltages: { bus1: string; bus2: string };
   onChange: (bus: string, value: string) => void;
@@ -128,6 +129,7 @@ export default function BusVoltagePanel({
   bus2MW?: number;
   ringCount?: number;
   calculated?: boolean;
+  hourSlotLabel?: string;
 }) {
   const isLS = mode === "loadShed";
   const isLandscape = layout === "landscape";
@@ -139,10 +141,10 @@ export default function BusVoltagePanel({
     const b2Down = Number.isFinite(b2Val) && b2Val === 0;
 
     return (
-      <section className="border-b border-app bg-surface-2/75 px-3 sm:px-4 py-2">
-        <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
-            <div className="w-full sm:w-[10.5rem] min-w-0">
+      <section className="border-b border-app bg-surface-2/85 px-4 lg:px-5 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+            <div className="w-full sm:w-[11.25rem] min-w-0">
               <Field
                 label="BUS-2"
                 value={busVoltages.bus2}
@@ -157,7 +159,7 @@ export default function BusVoltagePanel({
                 navCol={0}
               />
             </div>
-            <div className="w-full sm:w-[10.5rem] min-w-0">
+            <div className="w-full sm:w-[11.25rem] min-w-0">
               <Field
                 label="BUS-1"
                 value={busVoltages.bus1}
@@ -173,7 +175,7 @@ export default function BusVoltagePanel({
               />
             </div>
             {isLS && (
-              <div className="col-span-2 sm:col-span-1 w-full sm:w-[12.25rem] min-w-0">
+              <div className="col-span-2 sm:col-span-1 w-full sm:w-[13rem] min-w-0">
                 <Field
                   label="Allotment"
                   value={allotment}
@@ -191,12 +193,12 @@ export default function BusVoltagePanel({
             )}
           </div>
 
-          <div className="hidden lg:flex items-center divide-x divide-app text-xs font-mono tabular-nums">
-            <div className="pr-3.5 flex flex-col items-end">
+          <div className="hidden md:flex items-center divide-x divide-app text-xs font-mono tabular-nums">
+            <div className="pr-4 flex flex-col items-end">
               <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
-                BUS-2 Feeders
+                BUS-2 Load
               </span>
-              <span className={`font-bold ${b2Down ? "text-danger" : "text-bus-2"}`}>
+              <span className={`text-sm font-bold ${b2Down ? "text-danger" : "text-bus-2"}`}>
                 {b2Down
                   ? "Shutdown"
                   : calculated
@@ -204,11 +206,11 @@ export default function BusVoltagePanel({
                     : "— MW"}
               </span>
             </div>
-            <div className="px-3.5 flex flex-col items-end">
+            <div className="px-4 flex flex-col items-end">
               <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
-                BUS-1 Feeders
+                BUS-1 Load
               </span>
-              <span className={`font-bold ${b1Down ? "text-danger" : "text-bus-1"}`}>
+              <span className={`text-sm font-bold ${b1Down ? "text-danger" : "text-bus-1"}`}>
                 {b1Down
                   ? "Shutdown"
                   : calculated
@@ -216,14 +218,24 @@ export default function BusVoltagePanel({
                     : "— MW"}
               </span>
             </div>
-            <div className="pl-3.5 flex flex-col items-end">
+            <div className="px-4 flex flex-col items-end">
               <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
                 Ring Lines
               </span>
-              <span className={`font-bold ${ringCount > 0 ? "text-warning" : "text-secondary"}`}>
+              <span className={`text-sm font-bold ${ringCount > 0 ? "text-warning" : "text-secondary"}`}>
                 {ringCount > 0 ? `${ringCount} Active` : "None"}
               </span>
             </div>
+            {hourSlotLabel ? (
+              <div className="pl-4 flex flex-col items-end">
+                <span className="text-[10px] font-sans font-semibold text-muted uppercase tracking-wider">
+                  Target Slot
+                </span>
+                <span className="text-sm font-bold text-accent">
+                  {hourSlotLabel}
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

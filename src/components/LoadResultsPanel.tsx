@@ -33,8 +33,8 @@ export default function LoadResultsPanel({
 
   if (isLandscape) {
     return (
-      <section className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5">
-        <div className="bg-surface-2 text-app rounded-lg flex items-center justify-between gap-2 sm:gap-3 border border-app px-3 sm:px-3.5 h-10 min-w-0 sm:min-w-[9.5rem]">
+      <section className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
+        <div className="bg-surface-2 text-app rounded-lg flex items-center justify-between gap-3 border border-app px-3.5 sm:px-4 h-11 min-w-0 sm:min-w-[10.5rem]">
           <span className="text-[11px] font-bold tracking-wide uppercase text-secondary whitespace-nowrap">
             H3+T3
           </span>
@@ -42,14 +42,14 @@ export default function LoadResultsPanel({
             key={`bottail-${bottail}`}
             initial={{ scale: 0.96 }}
             animate={{ scale: 1 }}
-            className="font-black font-mono tabular-nums tracking-tight text-accent text-sm sm:text-base whitespace-nowrap"
+            className="font-black font-mono tabular-nums tracking-tight text-accent text-base sm:text-lg whitespace-nowrap"
           >
             {bottail}{" "}
-            <span className="text-[11px] font-bold opacity-80">MW</span>
+            <span className="text-xs font-bold opacity-80">MW</span>
           </motion.span>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-lg flex items-center justify-between gap-2 sm:gap-3 shadow-sm border border-emerald-500/40 dark:border-emerald-400/35 px-3 sm:px-4 h-10 min-w-0 sm:min-w-[10.5rem]">
+        <div className="bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-lg flex items-center justify-between gap-3 shadow-sm border border-emerald-500/40 dark:border-emerald-400/35 px-4 h-11 min-w-0 sm:min-w-[11.5rem]">
           <span className="text-[11px] font-bold tracking-wide uppercase text-white/90 whitespace-nowrap">
             Total
           </span>
@@ -57,26 +57,26 @@ export default function LoadResultsPanel({
             key={`total-${total}`}
             initial={{ scale: 0.96 }}
             animate={{ scale: 1 }}
-            className="font-black font-mono tabular-nums tracking-tight text-white text-base sm:text-lg whitespace-nowrap"
+            className="font-black font-mono tabular-nums tracking-tight text-white text-lg sm:text-xl whitespace-nowrap"
           >
             {total}{" "}
-            <span className="text-[11px] font-bold text-white/80">MW</span>
+            <span className="text-xs font-bold text-white/85">MW</span>
           </motion.span>
         </div>
 
         <button
           type="button"
           onClick={handleCopyClick}
-          className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } col-span-2 sm:col-span-1 rounded-lg flex items-center justify-center gap-1.5 px-3.5 h-10 text-xs whitespace-nowrap shrink-0`}
+          className={`${btnBase} calc-copy-btn ${ copied ? "calc-copy-btn--copied" : "" } col-span-2 sm:col-span-1 rounded-lg flex items-center justify-center gap-1.5 px-4 h-11 text-xs whitespace-nowrap shrink-0`}
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 shrink-0" />
+              <Check className="w-4 h-4 shrink-0" />
               <span>Copied</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5 shrink-0" />
+              <Copy className="w-4 h-4 shrink-0" />
               <span>Copy Total</span>
             </>
           )}

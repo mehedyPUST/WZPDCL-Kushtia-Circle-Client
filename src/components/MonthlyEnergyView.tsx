@@ -979,7 +979,7 @@ export default function MonthlyEnergyView() {
 
   if (authLoading) {
     return (
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-5 space-y-4">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-5 space-y-4">
         <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
         <div className="h-96 rounded-xl bg-surface border border-app animate-pulse" />
       </div>
@@ -1025,7 +1025,7 @@ export default function MonthlyEnergyView() {
   const savedLabel = formatSavedWhen(auditInfo.at);
 
   return (
-    <div className="w-full min-w-0 max-w-[1440px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5">
+    <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-5">
       {/* Executive Header */}
       <header className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

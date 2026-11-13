@@ -145,7 +145,7 @@ export default function HomePage() {
 
           {/* Hero Content */}
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-none px-4 sm:px-6 lg:px-8">
               <div className="max-w-2xl">
                 <motion.div
                   initial={{ opacity: 0, y: -6 }}
@@ -214,7 +214,7 @@ export default function HomePage() {
 
         {/* Substation Telemetry Banner Strip */}
         <div className="home-telemetry w-full bg-surface-2 border-y border-app px-4 sm:px-6 lg:px-8 py-3">
-          <div className="w-full max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div className="w-full max-w-none flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-2 text-secondary">
               <Activity className="w-4 h-4 text-success" />
               <span className="font-semibold text-app">System Status:</span>
@@ -235,7 +235,7 @@ export default function HomePage() {
       </section>
 
       {/* Modules Grid */}
-      <section className="home-modules-section w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <section className="home-modules-section w-full max-w-none px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <div className="mb-8">
           <p className="section-kicker mb-1.5">
             Operations &amp; Control
@@ -297,7 +297,7 @@ export default function HomePage() {
 
       {/* Feeder Configuration Strip */}
       <section className="border-t border-app bg-surface/70 backdrop-blur-sm">
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="section-kicker">
               Monitored Feeders · Bottail SS (9 Lines)

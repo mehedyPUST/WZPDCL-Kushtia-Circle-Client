@@ -398,7 +398,7 @@ export default function ShiftMessagesView() {
 
   if (authLoading) {
     return (
-      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-5 space-y-4">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-5 space-y-4">
         <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -441,7 +441,7 @@ export default function ShiftMessagesView() {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-[1360px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5">
+    <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-5">
       {/* Page Header */}
       <header className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

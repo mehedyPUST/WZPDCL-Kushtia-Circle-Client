@@ -285,7 +285,7 @@ export default function DutyRosterView() {
 
   if (authLoading || (!isAuthenticated && loading)) {
     return (
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8 animate-pulse space-y-4">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-8 animate-pulse space-y-4">
         <div className="h-24 rounded-2xl bg-surface-2 border border-app" />
         <div className="h-96 rounded-2xl bg-surface-2 border border-app" />
       </div>
@@ -293,7 +293,7 @@ export default function DutyRosterView() {
   }
 
   return (
-    <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-5">
+    <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-5">
       {/* Header */}
       <motion.section
         initial={{ opacity: 0, y: 6 }}

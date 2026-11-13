@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Calculator, Copy, RotateCcw, Save, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
 
@@ -54,7 +55,7 @@ export default function CalculatorActionBar({
 
   const btnStyle = isLandscape
     ? {
-        height: "2.5rem",
+        height: "2.75rem",
       }
     : {
         height: "var(--calc-btn-h)",
@@ -63,13 +64,15 @@ export default function CalculatorActionBar({
         paddingRight: "0.25rem",
       };
 
-  const lsResponsiveCls = isLandscape ? "px-2 sm:px-4 text-[11px] sm:text-xs" : "";
+  const lsResponsiveCls = isLandscape
+    ? "inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 text-[11px] sm:text-xs"
+    : "";
 
   return (
     <section
       className={
         isLandscape
-          ? "flex flex-col items-stretch lg:items-end gap-1.5 shrink-0"
+          ? "flex flex-col items-stretch lg:items-end gap-2 shrink-0"
           : "flex flex-col"
       }
       style={
@@ -87,7 +90,7 @@ export default function CalculatorActionBar({
         <div
           className={
             isLandscape
-              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-1.5 sm:gap-2"
+              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-2"
               : "grid grid-cols-3"
           }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
@@ -98,7 +101,8 @@ export default function CalculatorActionBar({
             className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
             style={btnStyle}
           >
-            Calculate LS
+            {isLandscape && <Zap className="w-3.5 h-3.5 shrink-0" />}
+            <span>Calculate LS</span>
           </button>
           <button
             type="button"
@@ -106,7 +110,8 @@ export default function CalculatorActionBar({
             className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
-            Copy LS
+            {isLandscape && <Copy className="w-3.5 h-3.5 shrink-0" />}
+            <span>Copy LS</span>
           </button>
           <button
             type="button"
@@ -116,14 +121,15 @@ export default function CalculatorActionBar({
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
-            Reset
+            {isLandscape && <RotateCcw className="w-3.5 h-3.5 shrink-0" />}
+            <span>Reset</span>
           </button>
         </div>
       ) : (
         <div
           className={
             isLandscape
-              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-1.5 sm:gap-2"
+              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-2"
               : "grid grid-cols-3"
           }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
@@ -135,7 +141,8 @@ export default function CalculatorActionBar({
             className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
-            Calculate
+            {isLandscape && <Calculator className="w-3.5 h-3.5 shrink-0" />}
+            <span>Calculate</span>
           </button>
           <button
             type="button"
@@ -153,12 +160,15 @@ export default function CalculatorActionBar({
                 : `Snap save to nearest hour ${hourSlotLabel}`
             }
           >
-            {isSaving
-              ? (saveLabel ? "Updating…" : "Saving…")
-              : saveLabel
-                ? `${saveLabel}${hourSlotLabel ? ` · ${hourSlotLabel}` : ""}`
-                : `Save for ${hourSlotLabel || "—"}`}
-            {!saveLabel && hourSlotSpecial ? " ★" : ""}
+            {isLandscape && <Save className="w-3.5 h-3.5 shrink-0" />}
+            <span>
+              {isSaving
+                ? (saveLabel ? "Updating…" : "Saving…")
+                : saveLabel
+                  ? `${saveLabel}${hourSlotLabel ? ` · ${hourSlotLabel}` : ""}`
+                  : `Save for ${hourSlotLabel || "—"}`}
+              {!saveLabel && hourSlotSpecial ? " ★" : ""}
+            </span>
           </button>
           <button
             type="button"
@@ -168,7 +178,8 @@ export default function CalculatorActionBar({
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
-            Reset
+            {isLandscape && <RotateCcw className="w-3.5 h-3.5 shrink-0" />}
+            <span>Reset</span>
           </button>
         </div>
       )}

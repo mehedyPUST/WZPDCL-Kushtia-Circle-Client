@@ -1,6 +1,18 @@
 "use client";
 
-function Metric({ label, value, unit, tone = "neutral" }) {
+function Metric({
+  label,
+  value,
+  unit,
+  tone = "neutral",
+  landscape = false,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  tone?: string;
+  landscape?: boolean;
+}) {
   const tones = {
     neutral: "bg-surface-2 dark:bg-surface-3/80 border-app text-app",
     slate: "bg-purple-500/10 dark:bg-purple-950/50 border-purple-500/30 text-purple-800 dark:text-purple-200",
@@ -11,24 +23,24 @@ function Metric({ label, value, unit, tone = "neutral" }) {
   };
   return (
     <div
-      className={`rounded-lg border flex flex-col items-center justify-center px-1 shadow-xs ${tones[tone]}`}
-      style={{ height: "var(--calc-badge-h)", minHeight: "1.75rem" }}
+      className={`rounded-lg border flex flex-col items-center justify-center px-2 shadow-xs ${tones[tone]} ${landscape ? "h-11 min-w-[6.25rem]" : ""}`}
+      style={landscape ? undefined : { height: "var(--calc-badge-h)", minHeight: "1.75rem" }}
     >
       <span
-        className="font-semibold uppercase tracking-wide opacity-85 leading-none text-[10px]"
-        style={{ fontSize: "var(--calc-badge-label)" }}
+        className={`font-semibold uppercase tracking-wide opacity-85 leading-none ${landscape ? "text-[10px]" : "text-[10px]"}`}
+        style={landscape ? undefined : { fontSize: "var(--calc-badge-label)" }}
       >
         {label}
       </span>
       <span
-        className="font-black font-mono tabular-nums leading-tight"
-        style={{ fontSize: "var(--calc-badge-text)" }}
+        className={`font-black font-mono tabular-nums leading-tight ${landscape ? "text-sm sm:text-base mt-0.5" : ""}`}
+        style={landscape ? undefined : { fontSize: "var(--calc-badge-text)" }}
       >
         {value}
         {unit ? (
           <span
-            className="opacity-75 ml-0.5 font-bold"
-            style={{ fontSize: "var(--calc-badge-label)" }}
+            className={`opacity-75 ml-0.5 font-bold ${landscape ? "text-[11px]" : ""}`}
+            style={landscape ? undefined : { fontSize: "var(--calc-badge-label)" }}
           >
             {unit}
           </span>
@@ -38,7 +50,7 @@ function Metric({ label, value, unit, tone = "neutral" }) {
   );
 }
 
-/** Compact metrics strip in portrait; 2x2 KPI grid in landscape rail */
+/** Compact metrics strip in portrait; 4-column KPI bar in landscape dock */
 export default function LoadShedPanel({
   plan,
   calculated,
@@ -67,21 +79,24 @@ export default function LoadShedPanel({
 
   if (isLandscape) {
     return (
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <Metric label="Running" value={(Math.round((plan.totalMW + Number.EPSILON) * 10) / 10).toFixed(1)} unit="MW" tone="neutral" />
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <Metric landscape label="Running" value={(Math.round((plan.totalMW + Number.EPSILON) * 10) / 10).toFixed(1)} unit="MW" tone="neutral" />
         <Metric
+          landscape
           label="Cur LS"
           value={(Math.round(((plan.totalCurrentLsMW ?? 0) + Number.EPSILON) * 10) / 10).toFixed(1)}
           unit="MW"
           tone="slate"
         />
         <Metric
+          landscape
           label="For others"
           value={(Math.round((available + Number.EPSILON) * 10) / 10).toFixed(1)}
           unit="MW"
           tone="accent"
         />
         <Metric
+          landscape
           label="More LS"
           value={over ? (Math.round((plan.shedTotalMW + Number.EPSILON) * 10) / 10).toFixed(1) : "0.0"}
           unit="MW"

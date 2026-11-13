@@ -28,7 +28,7 @@ export default function Home() {
     return (
       <div className="flex-1 flex flex-col w-full animate-in fade-in duration-150 bg-app">
         <div className="w-full h-[260px] sm:h-[320px] bg-surface-2 animate-pulse border-b border-app" />
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
+        <div className="w-full max-w-none px-4 sm:px-6 py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div

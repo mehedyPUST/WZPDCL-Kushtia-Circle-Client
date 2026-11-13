@@ -240,7 +240,7 @@ export default function UserDashboard() {
 
   if (authLoading || (!isAuthenticated && loading)) {
     return (
-      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
         <div className="h-24 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-app animate-pulse" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -312,7 +312,7 @@ export default function UserDashboard() {
   ];
 
   return (
-    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4">
+    <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-4">
       {/* Executive Header */}
       <header className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

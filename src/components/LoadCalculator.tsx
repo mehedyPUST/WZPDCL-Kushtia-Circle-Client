@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
-import { Menu } from "lucide-react";
+import { Menu, Zap } from "lucide-react";
 
 import StationHeader from "./StationHeader";
 import LiveClock from "./LiveClock";
@@ -742,7 +742,7 @@ export default function LoadCalculator({
           className={
             embedded
               ? "w-full h-full min-h-0 flex justify-center"
-              : `w-full ${isLandscape ? "max-w-6xl" : "max-w-xl"} flex-1 h-full max-h-full flex justify-center min-h-0 transition-[max-width] duration-300 ease-out`
+              : `w-full ${isLandscape ? "max-w-none" : "max-w-xl"} flex-1 h-full max-h-full flex justify-center min-h-0 transition-[max-width] duration-300 ease-out`
           }
         >
           <div
@@ -772,8 +772,8 @@ export default function LoadCalculator({
             {isLandscape ? (
               <>
                 {/* Desktop & Tablet landscape unified command header */}
-                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-2 px-3 lg:px-4 items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
+                <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] flex-shrink-0 bg-elevated text-app border-b border-app py-2.5 px-4 lg:px-5 items-center gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0 justify-self-start">
                     {!embedded && (
                       <button
                         type="button"
@@ -784,21 +784,24 @@ export default function LoadCalculator({
                         <Menu className="w-4 h-4 text-accent" />
                       </button>
                     )}
-                    <div className="flex items-baseline gap-2 min-w-0">
-                      <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight whitespace-nowrap">
+                    <div className="hidden sm:flex items-center justify-center w-9 h-9 rounded-lg border border-app bg-surface-2 text-accent shrink-0">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight whitespace-nowrap truncate">
                         {editRecord ? "Edit Calculation" : "Load Calculator"}
                       </h1>
-                      <span className="text-xs text-muted whitespace-nowrap truncate hidden lg:inline">
-                        · Bottail 33/11 kV
-                      </span>
+                      <p className="text-[11px] font-medium text-muted whitespace-nowrap truncate">
+                        Bottail 33/11 kV Substation · WZPDCL
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center shrink-0">
-                    <LiveClock compact />
+                  <div className="flex items-center justify-center justify-self-center shrink-0">
+                    <LiveClock variant="landscape" />
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 justify-self-end">
                     <OfflineBadge
                       online={online}
                       pendingCount={pendingCount}
@@ -811,13 +814,13 @@ export default function LoadCalculator({
 
                 {/* Mobile landscape compact clock + offline row */}
                 <div
-                  className={`md:hidden px-2.5 py-1 border-b flex items-center justify-between gap-2 shrink-0 ${
+                  className={`md:hidden px-3 py-1.5 border-b flex items-center justify-between gap-2 shrink-0 ${
                     mode === "loadShed"
                       ? "bg-surface-2 border-[var(--app-highlight-border)]"
                       : "bg-surface-2 border-app"
                   }`}
                 >
-                  <LiveClock compact />
+                  <LiveClock variant="landscape" />
                   <OfflineBadge
                     online={online}
                     pendingCount={pendingCount}
@@ -929,10 +932,15 @@ export default function LoadCalculator({
                     bus2MW={busTelemetry.bus2MW}
                     ringCount={busTelemetry.ringCount}
                     calculated={calculated}
+                    hourSlotLabel={
+                      editRecord
+                        ? editRecord.hourSlot || hourSlot?.label
+                        : hourSlot?.label
+                    }
                   />
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col bg-surface">
+                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col bg-app/35">
                   <div className="my-auto w-full">
                     <FeederTable
                       busVoltages={busVoltages}
@@ -954,8 +962,8 @@ export default function LoadCalculator({
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 bg-elevated/50 border-t border-app px-3 sm:px-4 py-2.5">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+                <div className="flex-shrink-0 bg-elevated/75 border-t border-app px-4 lg:px-5 py-3">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       {mode === "normal" ? (
                         <LoadResultsPanel

@@ -152,15 +152,15 @@ export default function FeederTable({
   };
 
   if (isLandscape) {
-    const rowH = isLS ? "2.2rem" : "2.85rem";
-    const rowText = isLS ? "0.8125rem" : "0.9375rem";
+    const rowH = isLS ? "2.45rem" : "3.25rem";
+    const rowText = isLS ? "0.875rem" : "1rem";
     const stickyLabelBase =
-      "sticky left-0 z-20 text-left font-semibold px-3 border-r border-app shadow-[var(--sticky-shadow)] whitespace-nowrap align-middle text-[11px] tracking-wide";
+      "sticky left-0 z-20 text-left font-semibold px-3.5 border-r border-app shadow-[var(--sticky-shadow)] whitespace-nowrap align-middle text-[11px] tracking-wide";
 
     return (
-      <section className="w-full px-3 sm:px-4 py-2.5">
+      <section className="w-full px-4 lg:px-5 py-3">
         <div
-          className={`rounded-xl overflow-hidden border bg-surface ${
+          className={`rounded-xl overflow-hidden border bg-surface shadow-xs ${
             isLS
               ? "border-orange-300 dark:border-amber-500/30"
               : "border-app"
@@ -177,16 +177,16 @@ export default function FeederTable({
               }
             >
               <colgroup>
-                <col style={{ width: "6.5rem" }} />
+                <col style={{ width: "7.25rem" }} />
                 {FEEDERS.map((f) => (
                   <col key={f.id} />
                 ))}
               </colgroup>
 
               <thead>
-                <tr className="border-b border-app bg-surface-2/90">
+                <tr className="border-b border-app bg-surface-2/95">
                   <th
-                    className={`${stickyLabelBase} z-30 py-2.5 bg-zinc-100 text-zinc-800 dark:bg-surface-3 dark:text-app uppercase`}
+                    className={`${stickyLabelBase} z-30 py-3 bg-zinc-100 text-zinc-800 dark:bg-surface-3 dark:text-app uppercase`}
                   >
                     Feeder
                   </th>
@@ -196,17 +196,17 @@ export default function FeederTable({
                     return (
                       <th
                         key={item.id}
-                        className={`py-2 px-1.5 text-center border-r border-app last:border-r-0 align-middle border-t-2 ${
+                        className={`py-2.5 px-1.5 text-center border-r border-app last:border-r-0 align-middle border-t-2 ${
                           item.bus === 1
-                            ? "border-t-sky-500/70"
-                            : "border-t-amber-500/70"
+                            ? "border-t-sky-500/80"
+                            : "border-t-amber-500/80"
                         }`}
                       >
                         <div className="flex flex-col items-center justify-center gap-0.5 min-w-0">
-                          <span className="text-xs font-bold text-app truncate max-w-full">
+                          <span className="text-xs sm:text-[13px] font-bold text-app truncate max-w-full">
                             {item.name}
                           </span>
-                          <span className="text-[10px] font-mono tabular-nums text-muted whitespace-nowrap">
+                          <span className="text-[11px] font-mono tabular-nums text-muted whitespace-nowrap">
                             <span
                               className={`font-semibold ${
                                 item.bus === 1 ? "text-bus-1" : "text-bus-2"

@@ -1077,7 +1077,7 @@ export default function NightLogView() {
 
             {/* Action buttons — immediately under the table last row */}
             <div className="sticky bottom-0 z-30 border-t border-app bg-surface/95 backdrop-blur-sm px-2 sm:px-3 py-2.5">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full max-w-none">
                 <button
                   type="button"
                   onClick={handleGenerateAi}
