@@ -398,13 +398,12 @@ export default function ShiftMessagesView() {
 
   if (authLoading) {
     return (
-      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-5 space-y-4">
-        <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-3 sm:py-4 space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-24 rounded-xl bg-surface border border-app animate-pulse"
+              className="h-14 rounded-xl bg-surface border border-app animate-pulse"
             />
           ))}
         </div>
@@ -441,103 +440,78 @@ export default function ShiftMessagesView() {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-5">
-      {/* Page Header */}
-      <header className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="min-w-0">
-            <nav
-              aria-label="Breadcrumb"
-              className="flex items-center gap-2 text-xs text-muted mb-1.5"
-            >
-              <Link
-                href="/dashboard"
-                className="hover:text-accent transition-colors font-medium whitespace-nowrap"
-              >
-                Dashboard
-              </Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-secondary font-medium">Station Notes</span>
-            </nav>
-            <h1 className="text-xl sm:text-2xl font-bold text-app tracking-tight">
-              Station Handover Notes
-            </h1>
-            <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl leading-relaxed">
-              Operational handover log between shifts at Bottail 33/11 kV Substation. Incoming duty staff acknowledge or forward pending items.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => load(true)}
-              disabled={loading || refreshing}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-secondary hover:text-app hover:bg-surface-3 transition-colors whitespace-nowrap shrink-0 disabled:opacity-50"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 ${loading || refreshing ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* 4-Column Shift Context Strip */}
+    <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-3 sm:py-4 space-y-4">
+      {/* 4-Column Compact Shift Context Strip */}
       <section
         aria-label="Shift handover summary"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3.5"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3"
       >
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Current Shift</p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app tracking-tight">
-            {shiftLabel(currentShift)}
+        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
+          <p className="text-[11px] font-medium text-muted leading-tight">
+            Current Shift
           </p>
-          <p className="mt-1 text-xs text-muted font-mono tabular-nums">
-            {shiftWindow(currentShift)} BST
-          </p>
+          <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+            <p className="text-base sm:text-lg font-bold text-app tracking-tight leading-tight">
+              {shiftLabel(currentShift)}
+            </p>
+            <p className="text-[11px] text-muted font-mono tabular-nums">
+              {shiftWindow(currentShift)} BST
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Incoming Shift</p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-accent tracking-tight">
-            {shiftLabel(nextShift)}
+        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
+          <p className="text-[11px] font-medium text-muted leading-tight">
+            Incoming Shift
           </p>
-          <p className="mt-1 text-xs text-muted font-mono tabular-nums">
-            {shiftWindow(nextShift)} BST
-          </p>
+          <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+            <p className="text-base sm:text-lg font-bold text-accent tracking-tight leading-tight">
+              {shiftLabel(nextShift)}
+            </p>
+            <p className="text-[11px] text-muted font-mono tabular-nums">
+              {shiftWindow(nextShift)} BST
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Operational Duty Day</p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app font-mono tabular-nums tracking-tight">
-            {dutyDay || "—"}
+        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
+          <p className="text-[11px] font-medium text-muted leading-tight">
+            Operational Duty Day
           </p>
-          <p className="mt-1 text-xs text-muted">
-            Asia/Dhaka shift calendar
-          </p>
+          <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+            <p className="text-base sm:text-lg font-bold text-app font-mono tabular-nums tracking-tight leading-tight">
+              {dutyDay || "—"}
+            </p>
+            <p className="text-[11px] text-muted">
+              Asia/Dhaka
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Pending Handovers</p>
-          <p
-            className={`mt-1.5 text-lg sm:text-xl font-bold font-mono tabular-nums tracking-tight ${
-              counts.pendingUrgent > 0
-                ? "text-rose-600 dark:text-rose-400"
+        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
+          <p className="text-[11px] font-medium text-muted leading-tight">
+            Pending Handovers
+          </p>
+          <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
+            <p
+              className={`text-base sm:text-lg font-bold font-mono tabular-nums tracking-tight leading-tight ${
+                counts.pendingUrgent > 0
+                  ? "text-rose-600 dark:text-rose-400"
+                  : pendingCount > 0
+                    ? "text-amber-600 dark:text-amber-300"
+                    : "text-emerald-600 dark:text-emerald-300"
+              }`}
+            >
+              {pendingCount}
+            </p>
+            <p className="text-[11px] text-muted truncate">
+              {counts.pendingUrgent > 0
+                ? `${counts.pendingUrgent} urgent · ${pendingCount} pending`
                 : pendingCount > 0
-                  ? "text-amber-600 dark:text-amber-300"
-                  : "text-emerald-600 dark:text-emerald-300"
-            }`}
-          >
-            {pendingCount}
-          </p>
-          <p className="mt-1 text-xs text-muted">
-            {counts.pendingUrgent > 0
-              ? `${counts.pendingUrgent} high/critical · ${pendingCount} awaiting sign-off`
-              : pendingCount > 0
-                ? `${pendingCount} awaiting sign-off`
-                : "All notes acknowledged"}
-          </p>
+                  ? `${pendingCount} awaiting sign-off`
+                  : "All acknowledged"}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -562,48 +536,63 @@ export default function ShiftMessagesView() {
                 </p>
               </div>
 
-              <div
-                role="tablist"
-                aria-label="Filter handover notes by status"
-                className="inline-flex flex-wrap items-center gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-emerald-200/80 dark:border-teal-500/25"
-              >
-                {(
-                  [
-                    { id: "all", label: "All", count: counts.all },
-                    { id: "pending", label: "Pending", count: counts.pending },
-                    {
-                      id: "acknowledged",
-                      label: "Acked",
-                      count: counts.acknowledged,
-                    },
-                    {
-                      id: "forwarded",
-                      label: "Forwarded",
-                      count: counts.forwarded,
-                    },
-                  ] as const
-                ).map((tab) => {
-                  const active = filter === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setFilter(tab.id)}
-                      className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                        active
-                          ? "bg-emerald-50 text-emerald-800 shadow-sm border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
-                          : "text-muted hover:text-app border border-transparent"
-                      }`}
-                    >
-                      {tab.label}
-                      <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-80">
-                        {tab.count}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="flex flex-wrap items-center gap-2">
+                <div
+                  role="tablist"
+                  aria-label="Filter handover notes by status"
+                  className="inline-flex flex-wrap items-center gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-emerald-200/80 dark:border-teal-500/25"
+                >
+                  {(
+                    [
+                      { id: "all", label: "All", count: counts.all },
+                      { id: "pending", label: "Pending", count: counts.pending },
+                      {
+                        id: "acknowledged",
+                        label: "Acked",
+                        count: counts.acknowledged,
+                      },
+                      {
+                        id: "forwarded",
+                        label: "Forwarded",
+                        count: counts.forwarded,
+                      },
+                    ] as const
+                  ).map((tab) => {
+                    const active = filter === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => setFilter(tab.id)}
+                        className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                          active
+                            ? "bg-emerald-50 text-emerald-800 shadow-sm border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
+                            : "text-muted hover:text-app border border-transparent"
+                        }`}
+                      >
+                        {tab.label}
+                        <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-80">
+                          {tab.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => load(true)}
+                  disabled={loading || refreshing}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-emerald-200/80 dark:border-teal-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-emerald-800 dark:text-teal-200 hover:bg-emerald-50 dark:hover:bg-teal-950/60 transition-colors whitespace-nowrap shrink-0 disabled:opacity-50"
+                  title="Refresh handover notes"
+                >
+                  <RefreshCw
+                    className={`w-3.5 h-3.5 ${loading || refreshing ? "animate-spin" : ""}`}
+                  />
+                  Refresh
+                </button>
               </div>
             </div>
 
