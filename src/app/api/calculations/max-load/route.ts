@@ -1,3 +1,4 @@
+import type { PipelineStage } from "mongoose";
 import { NextResponse } from "next/server";
 import { connectDB, isDbConnected } from "@/lib/db";
 import Calculation from "@/lib/models/Calculation";
@@ -95,7 +96,7 @@ function resolveRange(range, year, month) {
 
 function buildDateMatch(start, end) {
   if (!start && !end) return null;
-  const range = {};
+  const range: Record<string, Date> = {};
   if (start) range.$gte = start;
   if (end) range.$lt = end;
   return {
@@ -271,7 +272,7 @@ export async function GET(request) {
     }
 
     const dateMatch = buildDateMatch(resolved.start, resolved.end);
-    const andParts = [activeFilter];
+    const andParts: Record<string, any>[] = [activeFilter];
     if (dateMatch) andParts.push(dateMatch);
 
     if (ringMode === "without") {
@@ -308,7 +309,7 @@ export async function GET(request) {
       ],
     });
 
-    const pipeline = [
+    const pipeline: PipelineStage[] = [
       { $match: baseMatch },
       { $unwind: "$feeders" },
       {

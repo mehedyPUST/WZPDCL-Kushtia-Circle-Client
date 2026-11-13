@@ -98,7 +98,13 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
   );
 }
 
-const MobileSlotCard = memo(function MobileSlotCard({ row, isCurrentSlot }) {
+const MobileSlotCard = memo(function MobileSlotCard({
+  row,
+  isCurrentSlot,
+}: {
+  row: any;
+  isCurrentSlot?: boolean;
+}) {
   const b = row.bottail || {};
   const h = row.bheramara || {};
   const t = row.total || {};
@@ -175,7 +181,15 @@ const MobileSlotCard = memo(function MobileSlotCard({ row, isCurrentSlot }) {
   );
 });
 
-const DesktopRow = memo(function DesktopRow({ row, isAlt, isCurrentSlot }) {
+const DesktopRow = memo(function DesktopRow({
+  row,
+  isAlt,
+  isCurrentSlot,
+}: {
+  row: any;
+  isAlt?: boolean;
+  isCurrentSlot?: boolean;
+}) {
   const b = row.bottail || {};
   const h = row.bheramara || {};
   const t = row.total || {};

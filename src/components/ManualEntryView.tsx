@@ -78,7 +78,12 @@ export default function ManualEntryView({
   editRecord = null,
   editRecordId = null,
   onSaved,
-}) {
+}: {
+  initialDay?: string;
+  editRecord?: any;
+  editRecordId?: string | null;
+  onSaved?: () => void;
+} = {}) {
   const { isAuthenticated, login } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [day, setDay] = useState(initialDay || todayKey());
@@ -182,7 +187,7 @@ export default function ManualEntryView({
     setEditId(rec._id);
     const slot = recordSlotLabel(rec) || rec.hourSlot;
     setEditSlot(slot);
-    const vals = {
+    const vals: Record<string, any> = {
       bus1:
         rec.busVoltages?.bus1 != null ? String(rec.busVoltages.bus1) : "",
       bus2:
@@ -392,7 +397,7 @@ export default function ManualEntryView({
         amps[f.id] = Math.round(computeAmpsFromMW(n, v) + Number.EPSILON);
       }
     }
-    const result = buildCalculationResult(amps, busVoltages, ringActive);
+    const result: Record<string, any> = buildCalculationResult(amps, busVoltages, ringActive);
     result.feeders = result.feeders.map((f) => ({
       ...f,
       amps: isAmps

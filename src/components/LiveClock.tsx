@@ -2,7 +2,7 @@
 
 import { useLiveClock } from "@/hooks/useLiveClock";
 
-export default function LiveClock({ time }) {
+export default function LiveClock({ time }: { time?: string | null } = {}) {
   const liveTime = useLiveClock();
   const displayTime = time !== undefined ? time : liveTime;
 

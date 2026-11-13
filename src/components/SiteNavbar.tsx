@@ -124,7 +124,7 @@ export default function SiteNavbar() {
     (link) => link.href !== "/manual" || isAuthenticated
   );
 
-  const renderSidebarNav = (onNavigate) => (
+  const renderSidebarNav = (onNavigate?: () => void) => (
     <div className="flex flex-col h-full min-h-0">
       {/* App identity — top of sidebar */}
       <div className="px-4 pt-4 pb-3 border-b border-app shrink-0">

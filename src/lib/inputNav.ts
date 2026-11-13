@@ -3,11 +3,13 @@
  * Inputs should set data-nav="1" and optional data-nav-row / data-nav-col.
  */
 
-export function focusNavTarget(el) {
+export function focusNavTarget(el: HTMLElement | null) {
   if (!el || typeof el.focus !== "function") return;
   el.focus();
   try {
-    if (typeof el.select === "function") el.select();
+    if ("select" in el && typeof (el as HTMLInputElement).select === "function") {
+      (el as HTMLInputElement).select();
+    }
   } catch {
     /* ignore */
   }
@@ -17,7 +19,12 @@ export function focusNavTarget(el) {
  * Move focus among [data-nav="1"] inputs using arrow keys.
  * @returns {boolean} true if navigation consumed the event
  */
-export function navigateInputsByArrow(e) {
+export function navigateInputsByArrow(e: {
+  key: string;
+  target: EventTarget | null;
+  preventDefault: () => void;
+  stopPropagation: () => void;
+}) {
   const key = e.key;
   if (
     key !== "ArrowUp" &&
@@ -28,26 +35,27 @@ export function navigateInputsByArrow(e) {
     return false;
   }
 
-  const current = e.target;
-  if (!current || current.getAttribute("data-nav") !== "1") return false;
+  const current = e.target as HTMLInputElement | null;
+  if (!current || typeof current.getAttribute !== "function") return false;
+  if (current.getAttribute("data-nav") !== "1") return false;
 
-  const root =
+  const root: Document | Element =
     current.closest("[data-nav-root]") ||
     current.closest(".calc-shell") ||
     document;
-  const nodes = Array.from(root.querySelectorAll('input[data-nav="1"]')).filter(
-    (el) => !el.disabled && el.offsetParent !== null
-  );
+  const nodes = Array.from(
+    root.querySelectorAll<HTMLInputElement>('input[data-nav="1"]')
+  ).filter((el) => !el.disabled && el.offsetParent !== null);
   if (!nodes.length) return false;
 
   const idx = nodes.indexOf(current);
   if (idx < 0) return false;
 
-  const rowOf = (el) => {
+  const rowOf = (el: HTMLInputElement) => {
     const r = el.getAttribute("data-nav-row");
     return r != null && r !== "" ? Number(r) : nodes.indexOf(el);
   };
-  const colOf = (el) => {
+  const colOf = (el: HTMLInputElement) => {
     const c = el.getAttribute("data-nav-col");
     return c != null && c !== "" ? Number(c) : 0;
   };
@@ -55,7 +63,7 @@ export function navigateInputsByArrow(e) {
   const curRow = rowOf(current);
   const curCol = colOf(current);
 
-  let next = null;
+  let next: HTMLInputElement | null = null;
 
   if (key === "ArrowDown" || key === "ArrowUp") {
     const dir = key === "ArrowDown" ? 1 : -1;
@@ -98,8 +106,8 @@ export function navigateInputsByArrow(e) {
 /**
  * Combined key handler: arrow navigation + optional extra handler (e.g. wheel guards).
  */
-export function createInputKeyDown(extraHandler) {
-  return (e) => {
+export function createInputKeyDown(extraHandler?: (e: any) => void) {
+  return (e: any) => {
     if (navigateInputsByArrow(e)) return;
     // Still block bare up/down from spinning number values when not navigating
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {

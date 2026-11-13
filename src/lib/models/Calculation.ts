@@ -51,5 +51,8 @@ calculationSchema.index({ deletedAt: 1, isHourly: 1, calculatedAt: -1 });
 calculationSchema.index({ deletedAt: 1, hasActiveRing: 1, calculatedAt: -1 });
 calculationSchema.index({ createdBy: 1, deletedAt: 1, createdAt: -1 });
 
-export default mongoose.models.Calculation ||
-  mongoose.model("Calculation", calculationSchema);
+const Calculation =
+  (mongoose.models.Calculation as mongoose.Model<any>) ||
+  mongoose.model<any>("Calculation", calculationSchema);
+
+export default Calculation;

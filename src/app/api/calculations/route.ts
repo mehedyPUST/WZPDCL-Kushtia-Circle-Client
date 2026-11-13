@@ -45,7 +45,7 @@ function buildEventDateFilter(searchParams) {
   const b = resolveDateBounds(searchParams);
   if (!b) return null;
   const eventAt = { $ifNull: ["$calculatedAt", "$createdAt"] };
-  const parts = [];
+  const parts: any[] = [];
   if (b.start) parts.push({ $gte: [eventAt, b.start] });
   if (b.end) parts.push({ $lt: [eventAt, b.end] });
   if (parts.length === 0) return null;
@@ -146,9 +146,9 @@ export async function GET(request) {
 
     const baseFilter = trash ? trashFilter : activeFilter;
     const dateFilter = buildEventDateFilter(searchParams);
-    let mineFilter = null;
+    let mineFilter: Record<string, any> | null = null;
     if (mineAdmin) {
-      const orClauses = [];
+      const orClauses: Record<string, any>[] = [];
       const uid = String(mineAdmin.id || "");
       if (uid && mongoose.Types.ObjectId.isValid(uid)) {
         orClauses.push({ createdBy: new mongoose.Types.ObjectId(uid) });
@@ -165,13 +165,15 @@ export async function GET(request) {
         mineFilter = orClauses.length === 1 ? orClauses[0] : { $or: orClauses };
       }
     }
-    const filterParts = [baseFilter];
+    const filterParts: Record<string, any>[] = [baseFilter];
     if (dateFilter) filterParts.push(dateFilter);
     if (mineFilter) filterParts.push(mineFilter);
     const filter =
       filterParts.length === 1 ? filterParts[0] : { $and: filterParts };
 
-    const sort = trash ? { deletedAt: -1 } : { createdAt: -1 };
+    const sort: Record<string, mongoose.SortOrder> = trash
+      ? { deletedAt: -1 }
+      : { createdAt: -1 };
 
     const query = Calculation.find(filter).sort(sort);
     if (limit > 0) {

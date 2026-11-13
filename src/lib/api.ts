@@ -55,11 +55,11 @@ function networkError(err) {
 }
 
 // Cookies + Bearer token (required when FE/BE are on different Vercel domains)
-async function fetchWithCredentials(url_, options = {}) {
+async function fetchWithCredentials(url_: string, options: RequestInit = {}) {
   const token = getStoredToken();
-  const headers = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(options.headers || {}),
+    ...((options.headers as Record<string, string>) || {}),
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -196,7 +196,17 @@ export async function fetchCalculationById(id) {
  * @param {string} [opts.from] - range start YYYY-MM-DD
  * @param {string} [opts.to] - range end YYYY-MM-DD
  */
-export async function fetchCalculations(opts = {}) {
+export async function fetchCalculations(
+  opts: {
+    trash?: boolean;
+    mine?: boolean;
+    limit?: number | string;
+    page?: number;
+    date?: string;
+    from?: string;
+    to?: string;
+  } = {}
+) {
   const trash = opts.trash === true;
   const mine = opts.mine === true;
   const limit = opts.limit === undefined || opts.limit === null ? 50 : opts.limit;
@@ -390,7 +400,15 @@ export async function emptyTrash() {
  * }} opts - month is 1–12 (used for monthly / yearly)
  * @returns {Promise<{ range, label, year, month, sampleCount, data: Array, totalPeak }>}
  */
-export async function fetchMaxLoad(opts = {}) {
+export async function fetchMaxLoad(
+  opts: {
+    range?: string;
+    year?: number;
+    month?: number;
+    ringMode?: string;
+    peakBy?: string;
+  } = {}
+) {
   try {
     const qs = new URLSearchParams();
     if (opts.range) qs.set("range", String(opts.range));
@@ -508,7 +526,7 @@ export async function fetchSettings() {
  * @param {Record<number|string, boolean>} ringActive
  */
 export async function saveCalculatorRingActive(ringActive) {
-  const map = {};
+  const map: Record<string, boolean> = {};
   if (ringActive && typeof ringActive === "object") {
     for (const [k, v] of Object.entries(ringActive)) {
       if (v === true) map[String(k)] = true;
@@ -900,7 +918,13 @@ export async function saveCircleEntry(payload) {
   return data;
 }
 
-export async function fetchDistrictDay({ day, signal } = {}) {
+export async function fetchDistrictDay({
+  day,
+  signal,
+}: {
+  day?: string;
+  signal?: AbortSignal;
+} = {}) {
   const q = new URLSearchParams({ day: String(day) });
   const res = await fetchWithCredentials(
     url(`/api/circle-load/district-day?${q}`),

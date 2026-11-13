@@ -23,8 +23,8 @@ function lsWrite(rows) {
   localStorage.setItem(LS_KEY, JSON.stringify(rows));
 }
 
-function openDB() {
-  return new Promise((resolve, reject) => {
+function openDB(): Promise<IDBDatabase> {
+  return new Promise<IDBDatabase>((resolve, reject) => {
     if (typeof indexedDB === "undefined") {
       reject(new Error("IndexedDB not available"));
       return;
@@ -45,8 +45,8 @@ function openDB() {
   });
 }
 
-function txDone(tx) {
-  return new Promise((resolve, reject) => {
+function txDone(tx: IDBTransaction): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
     tx.onabort = () => reject(tx.error || new Error("Transaction aborted"));
@@ -107,7 +107,7 @@ export async function listPendingSaves() {
     const db = await openDB();
     const tx = db.transaction(STORE, "readonly");
     const store = tx.objectStore(STORE);
-    const rows = await new Promise((resolve, reject) => {
+    const rows = await new Promise<any[]>((resolve, reject) => {
       const req = store.getAll();
       req.onsuccess = () => resolve(req.result || []);
       req.onerror = () => reject(req.error);

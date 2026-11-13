@@ -6,7 +6,6 @@ mongoose.set("bufferCommands", false);
 const MONGODB_URI = process.env.MONGODB_URI;
 
 declare global {
-  // eslint-disable-next-line no-var
   var __mongooseCache: {
     conn: typeof mongoose | null;
     promise: Promise<typeof mongoose | null> | null;

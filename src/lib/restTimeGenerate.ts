@@ -246,7 +246,7 @@ function predictBusKv({
     return Math.round(Math.min(maxKv, 33.4) * 100) / 100;
   }
 
-  const loads = Object.values(loadByHour).filter((x) => x > 0);
+  const loads = (Object.values(loadByHour) as number[]).filter((x) => x > 0);
   const loadRef = loads.length ? Math.max(...loads) : totalAmps || 1;
   const loadNow = totalAmps || loadRef;
   const relief = Math.max(0, Math.min(1, 1 - loadNow / (loadRef || 1)));
@@ -277,6 +277,13 @@ export function generateRestTimeData({
   endSlot = DEFAULT_NIGHT_END,
   bus1MaxKv = BUS1_MAX_KV,
   bus2MaxKv = BUS2_MAX_KV,
+}: {
+  dayKey?: string;
+  slots?: Record<string, any>;
+  startSlot?: string;
+  endSlot?: string;
+  bus1MaxKv?: number;
+  bus2MaxKv?: number;
 } = {}) {
   const window = buildNightWindow(startSlot, endSlot);
   const hours = window.hours;

@@ -47,7 +47,7 @@ export function useDraft() {
         if (!draft?.savedAt) return false;
         const saved = new Date(draft.savedAt);
         const now = new Date();
-        const diff = now - saved;
+        const diff = now.getTime() - saved.getTime();
         return diff < 24 * 60 * 60 * 1000; // 24 hours
     }, [draft]);
 

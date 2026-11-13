@@ -189,7 +189,23 @@ function readCachedRingMode() {
   return "with";
 }
 
-function PeakKpiCard({ label, value, unit, sub, badge, accent = "slate", icon: Icon }) {
+function PeakKpiCard({
+  label,
+  value,
+  unit,
+  sub,
+  badge,
+  accent = "slate",
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  sub?: React.ReactNode;
+  badge?: React.ReactNode;
+  accent?: string;
+  icon?: any;
+}) {
   const accentClasses = {
     emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
     purple: "from-orange-50/80 via-white to-orange-50/30 border-orange-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",

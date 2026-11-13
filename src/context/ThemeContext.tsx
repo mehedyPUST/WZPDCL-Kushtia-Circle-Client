@@ -6,7 +6,14 @@ const STORAGE_KEY = "wzpdcl-theme-choice";
 const LEGACY_STORAGE_KEY = "wzpdcl-theme";
 const THEME_EVENT = "wzpdcl-theme-change";
 
-const ThemeContext = createContext({
+interface ThemeContextValue {
+  theme: string;
+  isDark: boolean;
+  setTheme: (nextTheme: string) => void;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue>({
   theme: "dark",
   isDark: true,
   setTheme: () => {},
@@ -86,7 +93,7 @@ function applyDomTheme(next) {
   document.documentElement.style.colorScheme = resolved;
 }
 
-export function ThemeProvider({ children }) {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useSyncExternalStore(subscribeTheme, readClientTheme, getServerTheme);
 
   useEffect(() => {

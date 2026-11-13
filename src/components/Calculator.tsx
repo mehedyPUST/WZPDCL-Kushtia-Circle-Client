@@ -60,7 +60,17 @@ function localDayBounds(refDate = new Date()) {
   return { start, end };
 }
 
-export default function Calculator({ editRecord = null, embedded = false, onClose, onSaved } = {}) {
+export default function Calculator({
+  editRecord = null,
+  embedded = false,
+  onClose,
+  onSaved,
+}: {
+  editRecord?: any;
+  embedded?: boolean;
+  onClose?: () => void;
+  onSaved?: (rec?: any) => void;
+} = {}) {
   const router = useRouter();
   const [mode, setMode] = useState("normal");
   const [busVoltages, setBusVoltages] = useState({ bus1: "", bus2: "" });
@@ -71,9 +81,9 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
   const [currentLs, setCurrentLs] = useState(createInitialCurrentLs);
   // Empty on server + first client paint (avoids hydration mismatch).
   // Restore from localStorage then DB only after mount.
-  const [ringActive, setRingActive] = useState({});
-  const [hourSlot, setHourSlot] = useState(() => getNearestHourSlot());
-  const [slotConflict, setSlotConflict] = useState(null); // { payload, existing, slot, dateLabel }
+  const [ringActive, setRingActive] = useState<Record<string, boolean>>({});
+  const [hourSlot, setHourSlot] = useState<any>(() => getNearestHourSlot());
+  const [slotConflict, setSlotConflict] = useState<any>(null); // { payload, existing, slot, dateLabel }
 
   const { handleWheel, handleKeyDown } = useNumberInputGuards();
 
@@ -81,7 +91,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
   useEffect(() => {
     if (!editRecord) return;
     const nextAmps = createInitialAmps();
-    const rings = {};
+    const rings: Record<string, boolean> = {};
     for (const f of editRecord.feeders || []) {
       if (f?.id == null) continue;
       nextAmps[f.id] =
@@ -140,7 +150,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
     if (editRecord) return;
 
     const toRingMap = (obj) => {
-      const map = {};
+      const map: Record<string, boolean> = {};
       if (!obj || typeof obj !== "object") return map;
       for (const [k, v] of Object.entries(obj)) {
         if (v === true || v === "true" || v === 1) {
@@ -317,7 +327,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
       }
       // Sync write localStorage first so reload cannot lose state
       try {
-        const plain = {};
+        const plain: Record<string, boolean> = {};
         for (const [k, v] of Object.entries(next)) {
           if (v === true) plain[String(k)] = true;
         }
@@ -560,7 +570,7 @@ export default function Calculator({ editRecord = null, embedded = false, onClos
     setIsSaving(true);
     try {
       const base = buildCalculationResult(amps, busVoltages, ringActive);
-      const payload = {
+      const payload: Record<string, any> = {
         ...base,
         hourSlot: editRecord.hourSlot || hourSlot?.label || null,
         isHourly: editRecord.isHourly !== false,

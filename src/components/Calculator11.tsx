@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Header from "./Header";
 import TimeBar from "./TimeBar";
 import VoltageInputs from "./VoltageInputs";
@@ -25,8 +26,8 @@ const tableData = [
 
 export default function Calculator() {
     const [busVoltages, setBusVoltages] = useState({ bus1: "", bus2: "" });
-    const [amps, setAmps] = useState(() => {
-        const initial = {};
+    const [amps, setAmps] = useState<Record<number, string>>(() => {
+        const initial: Record<number, string> = {};
         tableData.forEach(item => initial[item.id] = "0");
         return initial;
     });
@@ -37,7 +38,7 @@ export default function Calculator() {
     useEffect(() => {
         const updateTime = () => {
             const now = new Date();
-            const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+            const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
             const dateStr = now.toLocaleDateString('en-US', options);
             const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             setCurrentTime(`${dateStr} ${timeStr}`);
@@ -65,7 +66,7 @@ export default function Calculator() {
 
     const handleCalculate = () => {
         if (!busVoltages.bus1.trim() || !busVoltages.bus2.trim()) {
-            alert("Please enter voltages for both BUS-1 and BUS-2 before calculating.");
+            toast.error("Please enter voltages for both BUS-1 and BUS-2 before calculating.");
             return;
         }
         setCalculate(true);
@@ -118,9 +119,8 @@ export default function Calculator() {
                 />
 
                 <FeederTable
-                    tableData={tableData}
                     amps={amps}
-                    calculateMW={calculateMW}
+                    getDisplayMW={calculateMW}
                     onAmpChange={handleAmpChange}
                     onAmpBlur={handleAmpBlur}
                     handleWheel={handleWheel}

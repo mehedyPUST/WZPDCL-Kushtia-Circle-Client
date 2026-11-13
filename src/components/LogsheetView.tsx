@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Hash } from "lucide-react";
 import { fetchCalculations } from "@/lib/api";
 import { FEEDERS, BOTTAIL_11KV_IDS } from "@/lib/constants";
@@ -245,7 +245,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
   };
 
   const STICKY_TIME_W = "var(--time-col-w)";
-  const stickyTime = {
+  const stickyTime: CSSProperties = {
     position: "sticky",
     left: 0,
     width: "var(--time-col-w)",
@@ -423,7 +423,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                       style={{
                         ...stickyTime,
                         backgroundColor: stickyBg,
-                        ["--sticky-row-hover"]: stickyHover,
+                        ["--sticky-row-hover" as string]: stickyHover,
                       }}
                     >
                       {row.time}

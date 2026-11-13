@@ -13,7 +13,13 @@ import { getStoredToken } from "@/lib/auth";
 /**
  * Auto-sync pending offline saves when browser is online and user is logged in.
  */
-export function useOfflineSync({ enabled = true, onSynced } = {}) {
+export function useOfflineSync({
+  enabled = true,
+  onSynced,
+}: {
+  enabled?: boolean;
+  onSynced?: (count: number) => void;
+} = {}) {
   const [pendingCount, setPendingCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
   const [online, setOnline] = useState(() =>

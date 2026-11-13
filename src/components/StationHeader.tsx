@@ -21,7 +21,7 @@ const NAV_LINKS = [
 
 import { LogOut, Menu, X } from "lucide-react";
 
-export default function StationHeader({ tagline }) {
+export default function StationHeader({ tagline }: { tagline?: string } = {}) {
   const pathname = usePathname();
   const [showLogin, setShowLogin] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

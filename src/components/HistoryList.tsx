@@ -35,7 +35,7 @@ function splitDateTime(iso) {
   return { date, time };
 }
 
-function daysLeftInTrash() {
+function daysLeftInTrash(_deletedAt?: any) {
   return null;
 }
 
@@ -48,6 +48,15 @@ export default function HistoryList({
   refreshKey,
   onDeleted,
   pageMode = false,
+}: {
+  open?: boolean;
+  onClose?: () => void;
+  onView?: (r: any) => void;
+  onEdit?: (r: any) => void;
+  selectedId?: any;
+  refreshKey?: any;
+  onDeleted?: (id: any) => void;
+  pageMode?: boolean;
 }) {
   const { isAdmin, canWrite } = useAuth();
   const { isAuthenticated } = useAuth();
@@ -76,7 +85,7 @@ export default function HistoryList({
     setLoading(true);
     setError("");
     try {
-      let offline = [];
+      let offline: any[] = [];
       try {
         offline = folder === "inbox" ? await listPendingAsHistory() : [];
       } catch {
@@ -90,7 +99,7 @@ export default function HistoryList({
       let pagePages = 1;
       let pageNum = page;
 
-      const dateOpts = {};
+      const dateOpts: Record<string, any> = {};
       if (filterDate && filterDateTo && filterDateTo !== filterDate) {
         dateOpts.from = filterDate;
         dateOpts.to = filterDateTo;

@@ -63,13 +63,24 @@ function StationTable({
   stations,
   drafts,
   setField,
-  canWrite,
   mode,
   onSubmit,
   savingId,
   editable,
   isAdmin,
   totalLabel = "Circle total",
+}: {
+  title?: string;
+  stations: any[];
+  drafts: Record<string, any>;
+  setField: (stationId: string, key: string, val: string) => void;
+  canWrite?: boolean;
+  mode: string;
+  onSubmit: (stationId: string) => void;
+  savingId: string | null;
+  editable: boolean;
+  isAdmin: boolean;
+  totalLabel?: string;
 }) {
   const isPbs = mode === "pbs";
 

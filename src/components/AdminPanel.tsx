@@ -88,8 +88,15 @@ function PasswordField({
   value,
   onChange,
   placeholder,
-  required,
+  required = false,
   autoComplete = "new-password",
+}: {
+  label: string;
+  value: any;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  autoComplete?: string;
 }) {
   const [show, setShow] = useState(false);
   return (
@@ -137,15 +144,15 @@ export default function AdminPanel() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [settingsDraft, setSettingsDraft] = useState({});
+  const [settingsDraft, setSettingsDraft] = useState<Record<string, any>>({});
   const [savingSettings, setSavingSettings] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
   const [creating, setCreating] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
 
-  const [editUser, setEditUser] = useState(null);
-  const [editDraft, setEditDraft] = useState({});
+  const [editUser, setEditUser] = useState<any>(null);
+  const [editDraft, setEditDraft] = useState<Record<string, any>>({});
   const [savingEdit, setSavingEdit] = useState(false);
 
   const canManage = isAdmin || admin?.role === "admin" || admin?.role === "superadmin";
@@ -278,7 +285,7 @@ export default function AdminPanel() {
     }
     setSavingEdit(true);
     try {
-      const payload = {
+      const payload: Record<string, any> = {
         displayName: editDraft.displayName,
         role: editDraft.role,
         assignedStation: editDraft.assignedStation || "",
@@ -350,7 +357,7 @@ export default function AdminPanel() {
     }
     setSavingSettings(true);
     try {
-      const payload = { ...settingsDraft };
+      const payload: Record<string, any> = { ...settingsDraft };
       if (typeof payload.circleRelaxedSlots === "string") {
         payload.circleRelaxedSlots = payload.circleRelaxedSlots
           .split(/[,\s]+/)

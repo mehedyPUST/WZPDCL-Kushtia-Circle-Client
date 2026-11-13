@@ -126,7 +126,7 @@ export default function NightLogView() {
   const REST_SLOT_LABELS = nightWindow.labels;
   const REQUIRED_SLOTS = nightWindow.requiredSlots;
   const OPTIONAL_REST_SLOTS = nightWindow.optionalSlots;
-  const [grid, setGrid] = useState(() => {
+  const [grid, setGrid] = useState<Record<string, any>>(() => {
     const g = {};
     [...PREV_CONTEXT_SLOTS, ...DEFAULT_REST_SLOT_LABELS].forEach((l) => {
       g[l] = emptySlot();
@@ -153,7 +153,7 @@ export default function NightLogView() {
   const visibleSlots = useMemo(() => {
     if (showPrev) return [...PREV_CONTEXT_SLOTS, ...REST_SLOT_LABELS];
     return REST_SLOT_LABELS;
-  }, [showPrev]);
+  }, [showPrev, REST_SLOT_LABELS]);
 
   const prevLoadedCount = useMemo(() => {
     return PREV_CONTEXT_SLOTS.filter((s) =>
@@ -178,7 +178,7 @@ export default function NightLogView() {
       const todayList = Array.isArray(resToday?.data) ? resToday.data : [];
       const prevList = Array.isArray(resPrev?.data) ? resPrev.data : [];
 
-      const next = {};
+      const next: Record<string, any> = {};
       [...PREV_CONTEXT_SLOTS, ...REST_SLOT_LABELS].forEach((l) => {
         next[l] = emptySlot();
       });
@@ -263,7 +263,7 @@ export default function NightLogView() {
       }
 
       const anyRing = Object.values(next).some(
-        (cell) => cell?.rings && Object.values(cell.rings).some(Boolean)
+        (cell: any) => cell?.rings && Object.values(cell.rings).some(Boolean)
       );
       if (anyRing) setSheetMode("ring");
 
@@ -292,7 +292,7 @@ export default function NightLogView() {
     } finally {
       setLoading(false);
     }
-  }, [day]);
+  }, [day, REST_SLOT_LABELS]);
 
   useEffect(() => {
     loadDay();
@@ -626,7 +626,7 @@ export default function NightLogView() {
       FEEDERS.forEach((f) => {
         ringActive[f.id] = cell.rings?.[f.id] === true;
       });
-      const payload = buildCalculationResult(amps, busVoltages, ringActive);
+      const payload: Record<string, any> = buildCalculationResult(amps, busVoltages, ringActive);
       payload.hourSlot = label;
       payload.isHourly = true;
       payload.calculatedAt = slotToDate(day, label);
@@ -676,7 +676,7 @@ export default function NightLogView() {
         FEEDERS.forEach((f) => {
           ringActive[f.id] = cell.rings?.[f.id] === true;
         });
-        const payload = buildCalculationResult(amps, busVoltages, ringActive);
+        const payload: Record<string, any> = buildCalculationResult(amps, busVoltages, ringActive);
         payload.hourSlot = label;
         payload.isHourly = true;
         payload.calculatedAt = slotToDate(day, label);

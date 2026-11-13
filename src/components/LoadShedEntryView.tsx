@@ -126,7 +126,7 @@ export default function LoadShedEntryView() {
     setLoading(true);
     try {
       const res = await fetchCalculations({ date: key, limit: "all" });
-      const docs = res?.data || res?.calculations || [];
+      const docs = res?.data || [];
       const bySlot = {};
       for (const s of LOGSHEET_SLOTS) bySlot[s.label] = emptySlotState();
 
@@ -174,8 +174,8 @@ export default function LoadShedEntryView() {
 
   const totalsFor = (st) => {
     let totalLs = 0;
-    const feederMw = {};
-    const feederLs = {};
+    const feederMw: Record<number, number> = {};
+    const feederLs: Record<number, number> = {};
     for (const f of FEEDERS) {
       const fromRaw = st.feedersRaw?.find((x) => x.id === f.id);
       feederMw[f.id] = Number(fromRaw?.mw) || 0;

@@ -75,7 +75,7 @@ export async function PATCH(request) {
   try {
     await connectDB();
     const body = await request.json().catch(() => ({}));
-    const $set = {};
+    const $set: Record<string, any> = {};
 
     if (body.maxLoadRingMode != null) {
       const mode = String(body.maxLoadRingMode || "").toLowerCase();

@@ -124,7 +124,16 @@ export function computeAmpsFromMW(mw, voltageKv) {
  *   - currentLsMW        = already applied
  *   - totalLsMW          = currentLsMW + moreLsMW
  */
-export function buildLoadShedPlan(amps, busVoltages, allotmentMW, options = {}) {
+export function buildLoadShedPlan(
+  amps,
+  busVoltages,
+  allotmentMW,
+  options: {
+    excludeIds?: number[];
+    currentLsMW?: Record<string, any>;
+    priorLsPct?: Record<string, any>;
+  } = {}
+) {
   const { excludeIds = [], currentLsMW = {}, priorLsPct = {} } = options;
   const result = buildCalculationResult(amps, busVoltages);
   const allotment = parseFloat(allotmentMW);

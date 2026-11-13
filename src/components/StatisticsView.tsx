@@ -179,7 +179,7 @@ export default function StatisticsView() {
         to = activeRange.to();
       }
 
-      const opts = { limit: "all" };
+      const opts: Record<string, any> = { limit: "all" };
       if (from) opts.from = from;
       if (to) opts.to = to;
 
@@ -479,7 +479,7 @@ export default function StatisticsView() {
         avgMW: avg,
         share: Number(share.toFixed(1)),
         peakShedMW: data.peakLS || 0,
-        color: FEEDER_PALETTE[i % FEEDER_PALETTE.length],
+        color: FEEDER_PALETTE[f.id] || "#64748b",
       };
     }).sort((a, b) => b.avgMW - a.avgMW);
 

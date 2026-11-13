@@ -28,7 +28,7 @@ export async function purgeExpiredTrash() {
 
     const doc = await Settings.findOne({ key: "app" })
       .select("trashRetentionDays")
-      .lean();
+      .lean<Record<string, any> | null>();
     const days = Number(doc?.trashRetentionDays);
     const retentionDays =
       Number.isFinite(days) && days > 0 ? days : TRASH_RETENTION_DAYS;

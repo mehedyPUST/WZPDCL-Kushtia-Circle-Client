@@ -257,7 +257,7 @@ export async function PATCH(request, { params }) {
         ? allotment
         : null;
 
-    const fields = {
+    const fields: Record<string, any> = {
       busVoltages: {
         bus1: Number(busVoltages.bus1),
         bus2: Number(busVoltages.bus2),

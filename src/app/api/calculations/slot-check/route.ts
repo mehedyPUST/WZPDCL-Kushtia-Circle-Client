@@ -81,7 +81,7 @@ export async function GET(request) {
       ],
     })
       .sort({ calculatedAt: -1 })
-      .lean();
+      .lean<Record<string, any> | null>();
 
     return NextResponse.json({
       success: true,
