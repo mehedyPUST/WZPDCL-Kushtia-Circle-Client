@@ -140,9 +140,9 @@ export default function BusVoltagePanel({
 
     return (
       <section className="border-b border-app bg-surface-2/75 px-3 sm:px-4 py-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="w-[10.5rem]">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            <div className="w-full sm:w-[10.5rem] min-w-0">
               <Field
                 label="BUS-2"
                 value={busVoltages.bus2}
@@ -157,7 +157,7 @@ export default function BusVoltagePanel({
                 navCol={0}
               />
             </div>
-            <div className="w-[10.5rem]">
+            <div className="w-full sm:w-[10.5rem] min-w-0">
               <Field
                 label="BUS-1"
                 value={busVoltages.bus1}
@@ -173,7 +173,7 @@ export default function BusVoltagePanel({
               />
             </div>
             {isLS && (
-              <div className="w-[12.25rem]">
+              <div className="col-span-2 sm:col-span-1 w-full sm:w-[12.25rem] min-w-0">
                 <Field
                   label="Allotment"
                   value={allotment}

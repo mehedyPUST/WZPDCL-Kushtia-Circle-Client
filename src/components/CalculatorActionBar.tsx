@@ -55,9 +55,6 @@ export default function CalculatorActionBar({
   const btnStyle = isLandscape
     ? {
         height: "2.5rem",
-        fontSize: "0.75rem",
-        paddingLeft: "1rem",
-        paddingRight: "1rem",
       }
     : {
         height: "var(--calc-btn-h)",
@@ -65,6 +62,8 @@ export default function CalculatorActionBar({
         paddingLeft: "0.25rem",
         paddingRight: "0.25rem",
       };
+
+  const lsResponsiveCls = isLandscape ? "px-2 sm:px-4 text-[11px] sm:text-xs" : "";
 
   return (
     <section
@@ -88,7 +87,7 @@ export default function CalculatorActionBar({
         <div
           className={
             isLandscape
-              ? "flex flex-wrap items-center justify-end gap-2"
+              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-1.5 sm:gap-2"
               : "grid grid-cols-3"
           }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
@@ -96,7 +95,7 @@ export default function CalculatorActionBar({
           <button
             type="button"
             onClick={onCalculateLoadShed}
-            className={`${btnBase} whitespace-nowrap shrink-0 bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 bg-orange-500 hover:bg-orange-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-white border border-orange-600/80 dark:border-amber-500/80 hover:shadow-lg hover:shadow-orange-500/25 dark:hover:shadow-amber-600/30 hover:-translate-y-0.5 focus-visible:ring-orange-400`}
             style={btnStyle}
           >
             Calculate LS
@@ -104,7 +103,7 @@ export default function CalculatorActionBar({
           <button
             type="button"
             onClick={onCopyLoadShed}
-            className={`${btnBase} whitespace-nowrap shrink-0 calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 calc-copy-btn hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Copy LS
@@ -113,7 +112,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
@@ -124,7 +123,7 @@ export default function CalculatorActionBar({
         <div
           className={
             isLandscape
-              ? "flex flex-wrap items-center justify-end gap-2"
+              ? "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-end gap-1.5 sm:gap-2"
               : "grid grid-cols-3"
           }
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
@@ -133,7 +132,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onCalculateOnly}
             disabled={isSaving}
-            className={`${btnBase} whitespace-nowrap shrink-0 btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 btn-primary border border-emerald-600/70 hover:opacity-95 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-emerald-500`}
             style={btnStyle}
           >
             Calculate
@@ -142,7 +141,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={handleHourSaveClick}
             disabled={isSaving || (isAuthenticated && !canWrite)}
-            className={`${btnBase} whitespace-nowrap shrink-0 bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 text-white border border-blue-600/70 dark:border-sky-500/80 hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 bg-blue-500 hover:bg-blue-600 dark:bg-sky-600 dark:hover:bg-sky-500 text-white border border-blue-600/70 dark:border-sky-500/80 hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-sky-600/30 hover:-translate-y-0.5 focus-visible:ring-blue-400`}
             style={btnStyle}
             title={
               isAuthenticated && !canWrite
@@ -165,7 +164,7 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
+            className={`${btnBase} ${lsResponsiveCls} whitespace-nowrap shrink-0 calc-reset-btn focus-visible:ring-rose-400`}
             style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
+import { Menu } from "lucide-react";
 
 import StationHeader from "./StationHeader";
 import LiveClock from "./LiveClock";
@@ -734,22 +735,14 @@ export default function LoadCalculator({
         className={
           embedded
             ? "h-full w-full min-h-0 flex flex-col antialiased overflow-hidden"
-            : "flex-1 flex flex-col items-center p-0 md:p-2 antialiased min-h-0 w-full"
+            : "flex-1 flex flex-col items-center p-0 md:p-1.5 lg:p-2 antialiased min-h-0 w-full overflow-hidden"
         }
       >
         <div
           className={
             embedded
               ? "w-full h-full min-h-0 flex justify-center"
-              : `w-full ${isLandscape ? "max-w-6xl" : "max-w-xl"} flex justify-center min-h-0 transition-[max-width] duration-300 ease-out`
-          }
-          style={
-            embedded
-              ? { height: "100%", maxHeight: "100%" }
-              : {
-                  height: "calc(100dvh - var(--shell-chrome-h, 0px))",
-                  maxHeight: "calc(100dvh - var(--shell-chrome-h, 0px))",
-                }
+              : `w-full ${isLandscape ? "max-w-6xl" : "max-w-xl"} flex-1 h-full max-h-full flex justify-center min-h-0 transition-[max-width] duration-300 ease-out`
           }
         >
           <div
@@ -778,15 +771,27 @@ export default function LoadCalculator({
 
             {isLandscape ? (
               <>
-                {/* Desktop landscape unified command header */}
-                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-2 px-4 items-center justify-between gap-4">
-                  <div className="flex items-baseline gap-2 min-w-0">
-                    <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight whitespace-nowrap">
-                      {editRecord ? "Edit Calculation" : "Load Calculator"}
-                    </h1>
-                    <span className="text-xs text-muted whitespace-nowrap truncate hidden lg:inline">
-                      · Bottail 33/11 kV
-                    </span>
+                {/* Desktop & Tablet landscape unified command header */}
+                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app border-b border-app py-2 px-3 lg:px-4 items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {!embedded && (
+                      <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent("wzpdcl:open-nav", { cancelable: true }))}
+                        className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-app bg-surface-2 hover:bg-surface-3 border border-app transition-colors shrink-0"
+                        aria-label="Open navigation menu"
+                      >
+                        <Menu className="w-4 h-4 text-accent" />
+                      </button>
+                    )}
+                    <div className="flex items-baseline gap-2 min-w-0">
+                      <h1 className="font-bold text-sm lg:text-base tracking-tight text-app leading-tight whitespace-nowrap">
+                        {editRecord ? "Edit Calculation" : "Load Calculator"}
+                      </h1>
+                      <span className="text-xs text-muted whitespace-nowrap truncate hidden lg:inline">
+                        · Bottail 33/11 kV
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-center shrink-0">
@@ -824,6 +829,16 @@ export default function LoadCalculator({
             ) : (
               <>
                 <div className="hidden md:flex flex-shrink-0 bg-elevated text-app text-center border-b border-app py-2.5 px-3 items-center justify-center relative">
+                  {!embedded && (
+                    <button
+                      type="button"
+                      onClick={() => window.dispatchEvent(new CustomEvent("wzpdcl:open-nav", { cancelable: true }))}
+                      className="lg:hidden absolute left-2.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-lg text-app bg-surface-2 hover:bg-surface-3 border border-app transition-colors"
+                      aria-label="Open navigation menu"
+                    >
+                      <Menu className="w-4 h-4 text-accent" />
+                    </button>
+                  )}
                   <h1 className="font-bold text-base tracking-tight text-app leading-tight">
                     {editRecord ? "Edit Calculation" : "Load Calculator"}
                   </h1>

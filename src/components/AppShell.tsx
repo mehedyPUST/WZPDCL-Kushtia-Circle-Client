@@ -89,6 +89,22 @@ export default function AppShell({ children }) {
   }, [pathname]);
 
   useEffect(() => {
+    const onOpenNav = (e: Event) => {
+      e.preventDefault();
+      setMobileOpen(true);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("wzpdcl:open-nav", onOpenNav);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("wzpdcl:open-nav", onOpenNav);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
     if (mobileOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
     return () => {
@@ -302,13 +318,13 @@ export default function AppShell({ children }) {
 
       {/* ── Grid 4: Page Content + Mobile Drawer ── */}
       <main className="app-grid-4 flex flex-col min-h-0 overflow-hidden">
-        {/* Mobile Topbar */}
+        {/* Mobile & Tablet Topbar */}
         {!isCalculator && (
-          <header className="lg:hidden sticky top-0 z-40 flex items-center gap-2.5 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 bg-surface/95 backdrop-blur-md border-b border-app shrink-0">
+          <header className="lg:hidden sticky top-0 z-40 flex items-center gap-2 sm:gap-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] bg-surface/95 backdrop-blur-md border-b border-app shrink-0">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-app bg-surface-3/60 active:bg-surface-3 border border-app shadow-sm transition-transform active:scale-95"
+              className="inline-flex items-center justify-center w-11 h-11 rounded-xl text-app bg-surface-3/60 active:bg-surface-3 border border-app shadow-sm transition-transform active:scale-95 shrink-0"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5 text-accent" />
@@ -317,7 +333,7 @@ export default function AppShell({ children }) {
               <div className="text-[13px] font-semibold text-app tracking-tight leading-tight truncate">
                 WZPDCL · Bottail SS
               </div>
-              <div className="text-[11px] text-accent font-semibold uppercase tracking-[0.12em] font-mono">
+              <div className="text-[11px] text-accent font-semibold uppercase tracking-[0.12em] font-mono truncate">
                 Load Management
               </div>
             </Link>
@@ -325,14 +341,14 @@ export default function AppShell({ children }) {
             {isAuthenticated ? (
               <Link
                 href="/"
-                className="shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-accent bg-[var(--app-accent-dim)] border border-accent hover:opacity-90"
+                className="shrink-0 min-h-[38px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-accent bg-[var(--app-accent-dim)] border border-accent hover:opacity-90"
               >
                 Home
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="btn-primary shrink-0 min-h-[34px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold shadow-sm"
+                className="btn-primary shrink-0 min-h-[38px] inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold shadow-sm"
               >
                 Sign in
               </Link>
@@ -340,9 +356,9 @@ export default function AppShell({ children }) {
           </header>
         )}
 
-        {/* Mobile Slide-Over Drawer */}
+        {/* Mobile & Tablet Slide-Over Drawer (available on all routes incl. Calculator) */}
         <AnimatePresence>
-          {mobileOpen && !isCalculator && (
+          {mobileOpen && (
             <div className="lg:hidden fixed inset-0 z-50 flex">
               <motion.div
                 initial={{ opacity: 0 }}
@@ -358,7 +374,7 @@ export default function AppShell({ children }) {
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 300 }}
-                className="relative z-10 w-[min(19rem,88vw)] h-full max-h-[100dvh] bg-surface border-r border-app flex flex-col shadow-2xl safe-pb"
+                className="relative z-10 w-[min(19.5rem,88vw)] h-full max-h-[100dvh] bg-surface border-r border-app flex flex-col shadow-2xl safe-pb"
               >
                 <div className="flex items-center justify-between gap-2 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 border-b border-app">
                   <div className="min-w-0">
@@ -390,7 +406,7 @@ export default function AppShell({ children }) {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all border ${
+                        className={`flex items-center gap-3 px-3 min-h-[44px] py-2.5 rounded-xl text-[13px] font-medium transition-all border ${
                           active
                             ? "font-semibold shadow-sm bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)] border-[var(--sidebar-active-border)]"
                             : "text-secondary hover:text-app hover:bg-surface-3 border-transparent"
@@ -406,7 +422,28 @@ export default function AppShell({ children }) {
                     );
                   })}
                 </nav>
-                <div className="px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-app bg-elevated/40">
+                <div className="px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-app bg-elevated/40 space-y-2">
+                  {!loading && isAuthenticated && (
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-surface-2 border border-app hover:border-accent/40 transition-colors"
+                    >
+                      <span className="w-7 h-7 rounded-lg bg-accent/15 text-accent flex items-center justify-center text-xs font-bold font-mono shrink-0">
+                        {String(admin?.displayName || admin?.username || "U")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold text-app truncate">
+                          {admin?.displayName || admin?.username || "Operator"}
+                        </div>
+                        <div className="text-[10px] font-mono uppercase tracking-wider text-muted truncate">
+                          {admin?.role || "Signed in"}
+                        </div>
+                      </div>
+                    </Link>
+                  )}
                   {loading ? null : isAuthenticated ? (
                     <button
                       type="button"
@@ -444,7 +481,7 @@ export default function AppShell({ children }) {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.16, ease: "easeOut" }}
-          className="flex-1 min-h-0 overflow-auto flex flex-col"
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col"
         >
           {children}
         </motion.div>

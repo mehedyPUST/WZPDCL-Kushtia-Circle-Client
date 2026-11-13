@@ -48,8 +48,9 @@ export default function HistoryPage() {
     const startX = e.clientX;
     const startW = leftEl.getBoundingClientRect().width;
     const containerW = containerEl.getBoundingClientRect().width;
-    const minW = 280;
-    const maxW = Math.max(420, containerW - 360);
+    const minW = 260;
+    const reserveRight = editingRecord ? 420 : 280;
+    const maxW = Math.max(380, containerW - reserveRight);
 
     setIsResizing(true);
 
@@ -70,7 +71,7 @@ export default function HistoryPage() {
     dragCleanupRef.current = stopResize;
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", stopResize);
-  }, []);
+  }, [editingRecord]);
 
   return (
     <motion.div
@@ -134,15 +135,15 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 w-full max-w-none mx-auto px-2 sm:px-3 lg:px-4 pb-2">
+      <div className="flex-1 min-h-0 w-full max-w-none mx-auto px-2 sm:px-3 lg:px-4 pb-2 flex flex-col">
         {viewMode === "logsheet" ? (
-          <div className="h-[calc(100dvh-var(--shell-chrome-h,0px)-6.5rem)] md:h-[calc(100dvh-var(--shell-chrome-h,0px)-7rem)]">
+          <div className="flex-1 min-h-0 flex flex-col">
             <LogsheetView refreshKey={refreshKey} unitMode={unitMode} />
           </div>
         ) : (
           <div
             ref={calcGridRef}
-            className={`h-[calc(100dvh-var(--shell-chrome-h,0px)-6.5rem)] md:h-[calc(100dvh-var(--shell-chrome-h,0px)-7rem)] flex flex-col md:flex-row gap-3 md:gap-0 overflow-hidden relative ${isResizing ? "select-none cursor-col-resize" : ""}`}
+            className={`flex-1 min-h-0 flex flex-col md:flex-row gap-3 md:gap-0 overflow-hidden relative ${isResizing ? "select-none cursor-col-resize" : ""}`}
           >
             {/* LEFT — list */}
             <div
@@ -203,9 +204,9 @@ export default function HistoryPage() {
               />
             </div>
 
-            {/* MIDDLE — edit */}
+            {/* MIDDLE — edit (visible when editing on md+, or always visible as 3rd pane on xl+) */}
             <div
-              className={`hidden md:flex h-full min-w-0 flex-1 basis-0 flex-col ${editingRecord ? "" : "pointer-events-none" }`}
+              className={`${editingRecord ? "hidden md:flex md:mr-3" : "hidden xl:flex xl:mr-3"} h-full min-w-0 flex-1 basis-0 flex-col ${editingRecord ? "" : "pointer-events-none" }`}
             >
               {editingRecord ? (
                 <div className="h-full min-h-0 flex flex-col rounded-xl border border-app bg-surface overflow-hidden shadow-xl">
@@ -254,7 +255,7 @@ export default function HistoryPage() {
 
             {/* RIGHT — view detail */}
             <div
-              className={`${selectedRecord && !editingRecord ? "flex" : "hidden md:flex" } absolute inset-0 z-20 md:static md:z-auto h-full min-w-0 flex-1 basis-0 md:ml-3`}
+              className={`${selectedRecord && !editingRecord ? "flex" : "hidden md:flex" } absolute inset-0 z-20 md:static md:z-auto h-full min-w-0 flex-1 basis-0`}
             >
               {selectedRecord ? (
                 <>

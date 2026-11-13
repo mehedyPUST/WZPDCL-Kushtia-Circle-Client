@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Hash } from "lucide-react";
+import { Hash, LayoutGrid, Table2 } from "lucide-react";
 import { fetchCalculations } from "@/lib/api";
 import { FEEDERS, BOTTAIL_11KV_IDS } from "@/lib/constants";
 import {
@@ -62,7 +62,15 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
   const [records, setRecords] = useState([]);
   const [selectedDay, setSelectedDay] = useState(todayKey);
   const [roundTotal, setRoundTotal] = useState(false);
+  const [viewLayout, setViewLayout] = useState<"cards" | "sheet">("sheet");
+  const [filledOnly, setFilledOnly] = useState(false);
   const isAmps = unitMode === "amps";
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+      setViewLayout("cards");
+    }
+  }, []);
 
   const load = useCallback(async (day = selectedDay) => {
     setLoading(true);
@@ -303,13 +311,45 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
         <span className="hidden sm:inline text-[11px] font-medium text-amber-700 dark:text-amber-300/90">
           * ring active
         </span>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <div
+            className="inline-flex rounded-lg border border-app bg-surface-2 p-0.5 shrink-0"
+            role="group"
+            aria-label="Logsheet layout"
+          >
+            <button
+              type="button"
+              onClick={() => setViewLayout("cards")}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                viewLayout === "cards"
+                  ? "btn-primary shadow-xs"
+                  : "text-muted hover:text-app"
+              }`}
+              aria-pressed={viewLayout === "cards"}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Cards</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewLayout("sheet")}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                viewLayout === "sheet"
+                  ? "btn-primary shadow-xs"
+                  : "text-muted hover:text-app"
+              }`}
+              aria-pressed={viewLayout === "sheet"}
+            >
+              <Table2 className="w-3.5 h-3.5" />
+              <span>Sheet</span>
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => setRoundTotal((v) => !v)}
             aria-pressed={roundTotal}
             title="Show Total column as rounded whole numbers (no decimal point)"
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${roundTotal ? "bg-emerald-600 border-emerald-500 text-white hover:opacity-95 shadow-sm" : "bg-surface-3 border-app text-app hover:bg-surface-3" }`}
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg border transition-colors ${roundTotal ? "bg-emerald-600 border-emerald-500 text-white hover:opacity-95 shadow-sm" : "bg-surface-3 border-app text-app hover:bg-surface-3" }`}
           >
             <Hash className="w-3.5 h-3.5 shrink-0" />
             <span>Round Total</span>
@@ -318,7 +358,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
             type="button"
             onClick={() => load(selectedDay)}
             disabled={loading}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-surface-3 border border-app text-app hover:bg-surface-3 disabled:opacity-50 transition-colors"
+            className="text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-3 border border-app text-app hover:bg-surface-3 disabled:opacity-50 transition-colors"
           >
             {loading ? "…" : "Refresh"}
           </button>
@@ -335,6 +375,135 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
         {loading && !records.length ? (
           <div className="p-3">
             <SkeletonTable rows={12} columns={10} dark />
+          </div>
+        ) : viewLayout === "cards" ? (
+          <div className="p-2.5 sm:p-3 space-y-2.5">
+            {filledCount > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app bg-elevated px-3 py-2">
+                <div className="flex items-center gap-3 text-xs font-mono tabular-nums">
+                  <div>
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-muted block">
+                      Peak Total
+                    </span>
+                    <span className="font-bold text-accent">
+                      {columnMaxes.total
+                        ? isAmps
+                          ? `${formatAmps(columnMaxes.total.value)} A`
+                          : `${roundTotal ? formatRoundedTotal(columnMaxes.total.value) : formatMW(columnMaxes.total.value)} MW`
+                        : "—"}
+                    </span>
+                    {columnMaxes.total?.slot && (
+                      <span className="text-[10px] text-muted ml-1">@{columnMaxes.total.slot}</span>
+                    )}
+                  </div>
+                  <div className="border-l border-app pl-3">
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-muted block">
+                      Peak H3+T3
+                    </span>
+                    <span className="font-bold text-teal-700 dark:text-teal-300">
+                      {columnMaxes.bottail
+                        ? isAmps
+                          ? `${formatAmps(columnMaxes.bottail.value)} A`
+                          : `${formatMW(columnMaxes.bottail.value)} MW`
+                        : "—"}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFilledOnly((v) => !v)}
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${
+                    filledOnly
+                      ? "btn-primary"
+                      : "bg-surface-2 border-app text-secondary hover:text-app"
+                  }`}
+                >
+                  {filledOnly ? `Filled (${filledCount})` : "All 26 slots"}
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {rows
+                .filter((row) => (!filledOnly ? true : !!row.record))
+                .map((row) => {
+                  const has = !!row.record;
+                  return (
+                    <div
+                      key={`card-${row.time}`}
+                      className={`rounded-xl border p-3 transition-colors ${
+                        row.isSpecial
+                          ? "border-amber-300 dark:border-amber-500/40 bg-amber-50/70 dark:bg-amber-950/20"
+                          : has
+                            ? "border-app bg-surface"
+                            : "border-app/60 bg-surface-2/40 opacity-75"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className={`font-mono font-bold text-sm tabular-nums ${
+                              row.isSpecial
+                                ? "text-amber-700 dark:text-amber-300"
+                                : "text-app"
+                            }`}
+                          >
+                            {row.time}
+                            {row.isSpecial ? " ★" : ""}
+                          </span>
+                          {has && (
+                            <span className="text-[10px] font-mono text-muted">
+                              B2:{formatKv(row.bus2)} · B1:{formatKv(row.bus1)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right font-mono tabular-nums shrink-0">
+                          <span className="text-sm font-extrabold text-accent">
+                            {fmtTotal(row)}
+                            {has ? (isAmps ? " A" : " MW") : ""}
+                          </span>
+                          {row.hasRing && (
+                            <span className="text-amber-500 dark:text-amber-400 font-bold ml-0.5">*</span>
+                          )}
+                          {has && (
+                            <span className="block text-[10px] text-teal-700 dark:text-teal-300 font-semibold">
+                              H3+T3: {fmtBottail(row)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {has ? (
+                        <div className="grid grid-cols-3 gap-1.5 mt-2.5 pt-2 border-t border-app/60">
+                          {FEEDERS.map((f) => {
+                            const hasRing = !!row.ringByFeeder?.[f.id];
+                            return (
+                              <div
+                                key={f.id}
+                                className={`rounded-lg px-2 py-1 border bg-surface-2/70 flex items-center justify-between gap-1 ${
+                                  hasRing
+                                    ? "border-amber-400/70"
+                                    : "border-app/60"
+                                }`}
+                              >
+                                <span className="text-[10px] font-semibold text-muted truncate">
+                                  {f.name}
+                                </span>
+                                <span className="text-[11px] font-mono font-bold tabular-nums text-app shrink-0">
+                                  {fmtFeeder(row, f.id)}
+                                  {hasRing ? "*" : ""}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-muted mt-1">No reading saved for this slot</p>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         ) : (
           <table

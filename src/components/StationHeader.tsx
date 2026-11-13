@@ -138,13 +138,19 @@ export default function StationHeader({ tagline }: { tagline?: string } = {}) {
               </button>
             )}
 
-            {/* Mobile nav hamburger — sits beside logout */}
+            {/* Mobile nav hamburger — opens unified AppShell drawer when mounted */}
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-secondary hover:text-app bg-surface-2 hover:bg-surface-3 border border-app transition-colors"
-              onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl text-secondary hover:text-app bg-surface-2 hover:bg-surface-3 border border-app transition-colors"
+              onClick={() => {
+                const ev = new CustomEvent("wzpdcl:open-nav", { cancelable: true });
+                window.dispatchEvent(ev);
+                if (!ev.defaultPrevented) {
+                  setMobileOpen((v) => !v);
+                }
+              }}
               aria-expanded={mobileOpen}
-              aria-label="Menu"
+              aria-label="Open navigation menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

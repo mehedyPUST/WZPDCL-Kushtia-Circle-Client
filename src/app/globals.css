@@ -157,7 +157,7 @@ html[data-theme="dark"] {
   --app-radius-xl: 1rem;
 
   --site-nav-h: 3.5rem;
-  --app-sidebar-w: 15.5rem;
+  --app-sidebar-w: 13.75rem;
   --shell-chrome-h: 0px;
 
   --sticky-even: #0f1726;
@@ -347,7 +347,7 @@ html[data-theme="light"] {
   --app-radius-xl: 1rem;
 
   --site-nav-h: 3.5rem;
-  --app-sidebar-w: 15.5rem;
+  --app-sidebar-w: 13.75rem;
   --shell-chrome-h: 0px;
 
   --sticky-even: #ffffff;
@@ -444,6 +444,16 @@ html[data-theme="light"] {
     --calc-footer-size: 0.5625rem;
     --calc-section-px: 0.5rem;
     --calc-gap: 0.375rem;
+  }
+}
+
+@media (max-height: 560px) {
+  .calc-shell {
+    overflow-y: auto !important;
+  }
+  .calc-shell .calc-feeder-wrap {
+    flex: none !important;
+    overflow: visible !important;
   }
 }
 
@@ -850,8 +860,11 @@ html[data-theme="light"] .calc-copy-btn--copied:hover {
 }
 
 @media (min-width: 1024px) {
-  :root {
+  :root,
+  html[data-theme="dark"],
+  html[data-theme="light"] {
     --shell-chrome-h: var(--site-nav-h);
+    --app-sidebar-w: 13.75rem;
   }
 
   .app-grid-shell {
@@ -892,6 +905,14 @@ html[data-theme="light"] .calc-copy-btn--copied:hover {
   .app-grid-4 {
     grid-column: 2;
     grid-row: 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root,
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --app-sidebar-w: 15.5rem;
   }
 }
 
@@ -1014,7 +1035,12 @@ html[data-theme="light"] .calc-copy-btn--copied:hover {
 
 /* ── Standardized sticky TIME column + sticky thead ── */
 :root {
-  --time-col-w: 4.75rem;
+  --time-col-w: 3.75rem;
+}
+@media (min-width: 640px) {
+  :root {
+    --time-col-w: 4.75rem;
+  }
 }
 
 .sheet-scroll-x {
@@ -1933,11 +1959,14 @@ html[data-theme="light"] aside {
   max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
-  padding: 1rem 1rem 2rem;
+  padding: 0.75rem 0.625rem 1rem;
   color: var(--app-text);
 }
 @media (min-width: 640px) {
-  .page-frame { padding: 1.25rem 1.5rem 2.5rem; }
+  .page-frame { padding: 1rem 1.25rem 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .page-frame { padding: 1.25rem 1.5rem 2rem; }
 }
 
 /* Dense data tables */

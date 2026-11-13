@@ -24,8 +24,8 @@ function ManualInner() {
           Hourly slots · BUS voltages · Amps / MW · ring flags
         </p>
       </div>
-      <div className="flex-1 min-h-0 w-full max-w-none mx-auto px-2 sm:px-5 lg:px-6 pb-2">
-        <div className="h-[calc(100dvh-var(--shell-chrome-h,0px)-5.5rem)] sm:h-[calc(100dvh-var(--shell-chrome-h,0px)-6.25rem)] md:h-[calc(100dvh-var(--shell-chrome-h,0px)-6.75rem)]">
+      <div className="flex-1 min-h-0 w-full max-w-none mx-auto px-2 sm:px-5 lg:px-6 pb-2 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col">
           <ManualEntryView initialDay={initialDay} editRecordId={editId} />
         </div>
       </div>

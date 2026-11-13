@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { LayoutGrid, Table2, Lock } from "lucide-react";
 import { fetchCircleSheet, saveCircleEntry } from "@/lib/api";
 import { LOGSHEET_SLOTS } from "@/lib/logsheetSlots";
 import { useAuth } from "@/hooks/useAuth";
@@ -341,6 +342,242 @@ function StationTable({
   );
 }
 
+function StationCards({
+  title,
+  stations,
+  drafts,
+  setField,
+  mode,
+  onSubmit,
+  savingId,
+  editable,
+  isAdmin,
+  totalLabel = "Circle total",
+}: {
+  title?: string;
+  stations: any[];
+  drafts: Record<string, any>;
+  setField: (stationId: string, key: string, val: string) => void;
+  mode: string;
+  onSubmit: (stationId: string) => void;
+  savingId: string | null;
+  editable: boolean;
+  isAdmin: boolean;
+  totalLabel?: string;
+}) {
+  const isPbs = mode === "pbs";
+  const consKey = isPbs ? "pbsLoad" : "actualLoad";
+  const lsKey = isPbs ? "pbsLoadshed" : "loadshed";
+  const allotKey = isPbs ? "pbsAllotment" : "pgcbAllotment";
+
+  let totalCons = 0;
+  let totalLs = 0;
+  let totalAllot = 0;
+  stations.forEach((s) => {
+    const d = drafts[s.id] || {};
+    const c = numOr0(d[consKey]);
+    const l = numOr0(d[lsKey]);
+    totalCons += c;
+    totalLs += l;
+    const dem = c + l;
+    if (d[allotKey] === "" || d[allotKey] == null) totalAllot += dem;
+    else totalAllot += numOr0(d[allotKey]);
+  });
+  const totalDemand = totalCons + totalLs;
+
+  return (
+    <div className="p-2.5 sm:p-3 space-y-2.5">
+      {title ? (
+        <div
+          className={`px-3 py-2 rounded-xl border flex items-center justify-between ${
+            isPbs
+              ? "bg-sky-100 dark:bg-sky-950/60 border-sky-300 dark:border-sky-500/25"
+              : "bg-elevated border-app"
+          }`}
+        >
+          <p
+            className={`text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+              isPbs ? "text-sky-800 dark:text-sky-300" : "text-app"
+            }`}
+          >
+            {title}
+          </p>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {stations.map((s) => {
+          const d = drafts[s.id] || {};
+          const isBottail = s.id === "bottail";
+          const can = s.canEdit;
+          const locked = !!s.editLocked;
+
+          const cons = numOr0(d[consKey]);
+          const ls = numOr0(d[lsKey]);
+          const demand = cons + ls;
+
+          return (
+            <div
+              key={`${mode}-card-${s.id}`}
+              className={`rounded-xl border p-3 shadow-xs space-y-2.5 ${
+                isBottail
+                  ? "bg-blue-50/70 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/30"
+                  : "bg-surface border-app"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-app leading-tight truncate">
+                    {s.name.replace(" (Kushtia)", "")}
+                  </div>
+                  <div
+                    className={`mt-0.5 text-[10px] uppercase font-bold tracking-wider ${
+                      s.editLocked
+                        ? "text-amber-600 dark:text-amber-400"
+                        : isBottail
+                          ? "text-blue-700 dark:text-blue-400"
+                          : can
+                            ? "text-accent"
+                            : "text-muted"
+                    }`}
+                  >
+                    {s.editLocked
+                      ? `Locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`
+                      : isBottail
+                        ? mode === "main"
+                          ? "Auto from calculator"
+                          : isAdmin
+                            ? "Admin edit"
+                            : "Auto"
+                        : can
+                          ? "Editable"
+                          : "View only"}
+                  </div>
+                </div>
+
+                <div className="shrink-0 text-right px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30">
+                  <div className="text-[9px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                    Demand
+                  </div>
+                  <div className="text-sm font-mono font-extrabold tabular-nums text-purple-800 dark:text-purple-200">
+                    {fmt(demand)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-accent text-center">
+                    Cons.
+                  </label>
+                  {can ? (
+                    <input
+                      className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
+                      value={d[consKey] ?? ""}
+                      onChange={(e) => setField(s.id, consKey, e.target.value)}
+                      inputMode="decimal"
+                      aria-label={`${s.name} consumption`}
+                    />
+                  ) : (
+                    <div className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-accent">
+                      {fmt(d[consKey])}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300 text-center">
+                    LS
+                  </label>
+                  {can ? (
+                    <input
+                      className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
+                      value={d[lsKey] ?? (mode === "main" ? "0" : "")}
+                      onChange={(e) => setField(s.id, lsKey, e.target.value)}
+                      inputMode="decimal"
+                      aria-label={`${s.name} loadshed`}
+                    />
+                  ) : (
+                    <div className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-rose-700 dark:text-rose-300">
+                      {fmt(d[lsKey] ?? (mode === "main" ? 0 : null))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 text-center">
+                    Allot.
+                  </label>
+                  {can ? (
+                    <input
+                      className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
+                      value={d[allotKey] ?? ""}
+                      onChange={(e) => setField(s.id, allotKey, e.target.value)}
+                      placeholder={fmt(demand)}
+                      inputMode="decimal"
+                      aria-label={`${s.name} allotment`}
+                    />
+                  ) : (
+                    <div className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-amber-800 dark:text-amber-300">
+                      {d[allotKey] == null || d[allotKey] === ""
+                        ? fmt(demand)
+                        : fmt(d[allotKey])}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {can ? (
+                <button
+                  type="button"
+                  disabled={savingId === s.id || !editable}
+                  onClick={() => onSubmit(s.id)}
+                  className="w-full h-11 rounded-xl btn-primary text-xs font-extrabold uppercase tracking-wider shadow-sm transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {savingId === s.id ? "Submitting…" : "Submit"}
+                </button>
+              ) : locked ? (
+                <div className="h-9 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase text-amber-700 dark:text-amber-300">
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Locked</span>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        className={`rounded-xl border-2 border-app-strong p-3 ${
+          isPbs ? "bg-sky-50 dark:bg-sky-950/50" : "bg-elevated"
+        }`}
+      >
+        <div className="text-[11px] font-extrabold uppercase tracking-wider text-app mb-2">
+          {totalLabel}
+        </div>
+        <div className="grid grid-cols-4 gap-2 text-center font-mono tabular-nums">
+          <div className="rounded-lg bg-surface p-1.5 border border-app">
+            <div className="text-[9px] font-sans font-bold uppercase text-muted">Cons</div>
+            <div className="text-xs font-extrabold text-accent">{fmt(totalCons)}</div>
+          </div>
+          <div className="rounded-lg bg-surface p-1.5 border border-app">
+            <div className="text-[9px] font-sans font-bold uppercase text-muted">LS</div>
+            <div className="text-xs font-extrabold text-rose-700 dark:text-rose-300">{fmt(totalLs)}</div>
+          </div>
+          <div className="rounded-lg bg-surface p-1.5 border border-app">
+            <div className="text-[9px] font-sans font-bold uppercase text-muted">Demand</div>
+            <div className="text-xs font-extrabold text-app">{fmt(totalDemand)}</div>
+          </div>
+          <div className="rounded-lg bg-surface p-1.5 border border-app">
+            <div className="text-[9px] font-sans font-bold uppercase text-muted">Allot</div>
+            <div className="text-xs font-extrabold text-amber-800 dark:text-amber-300">{fmt(totalAllot)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SubstationClockStrip() {
   const liveClock = useLiveClock();
   return (
@@ -361,6 +598,13 @@ export default function CircleLoadView() {
   const [savingId, setSavingId] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
   const [needPbs, setNeedPbs] = useState(false);
+  const [viewMode, setViewMode] = useState<"cards" | "table">("table");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+      setViewMode("cards");
+    }
+  }, []);
 
   const slotIndex = useMemo(
     () => LOGSHEET_SLOTS.findIndex((s) => s.label === slot),
@@ -538,7 +782,7 @@ export default function CircleLoadView() {
               Slot
             </span>
             <div
-              className={`flex flex-1 items-center gap-0.5 sm:gap-1 min-w-0 rounded-lg border p-0.5 transition-all ${isActive ? "border-emerald-500/60 bg-emerald-950/40 ring-1 ring-emerald-500/30" : "border-app bg-surface-2" }`}
+              className={`flex flex-1 items-center gap-0.5 sm:gap-1 min-w-0 rounded-lg border p-0.5 transition-all ${isActive ? "border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 ring-1 ring-emerald-500/30" : "border-app bg-surface-2" }`}
             >
               <button
                 type="button"
@@ -577,8 +821,8 @@ export default function CircleLoadView() {
 
         <div className="flex flex-wrap items-center gap-2">
           {isActive && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-600/20 text-accent text-[10px] font-bold uppercase tracking-wide border border-accent">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-accent text-[10px] font-bold uppercase tracking-wide border border-accent">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               Active
             </span>
           )}
@@ -598,7 +842,39 @@ export default function CircleLoadView() {
             </span>
           )}
 
-          <div className="ml-auto flex items-center gap-2 w-full sm:w-auto">
+          <div className="ml-auto flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div
+              className="inline-flex rounded-lg border border-app bg-surface-2 p-0.5 h-8 sm:h-9 shrink-0"
+              role="group"
+              aria-label="Layout mode"
+            >
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`inline-flex items-center gap-1 px-2 rounded-md text-[10px] font-bold uppercase tracking-wide transition-colors ${
+                  viewMode === "cards"
+                    ? "btn-primary shadow-xs"
+                    : "text-muted hover:text-app"
+                }`}
+                aria-pressed={viewMode === "cards"}
+              >
+                <LayoutGrid className="w-3 h-3" />
+                <span>Cards</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`inline-flex items-center gap-1 px-2 rounded-md text-[10px] font-bold uppercase tracking-wide transition-colors ${
+                  viewMode === "table"
+                    ? "btn-primary shadow-xs"
+                    : "text-muted hover:text-app"
+                }`}
+                aria-pressed={viewMode === "table"}
+              >
+                <Table2 className="w-3 h-3" />
+                <span>Table</span>
+              </button>
+            </div>
             <label className="inline-flex flex-1 sm:flex-none items-center justify-center gap-1.5 cursor-pointer select-none text-[10px] font-semibold text-secondary bg-surface-2 border border-app rounded-lg px-2.5 h-8 sm:h-9 uppercase tracking-wide hover:border-app-strong transition-colors">
               <input
                 type="checkbox"
@@ -624,6 +900,37 @@ export default function CircleLoadView() {
         {loading && !data ? (
           <div className="p-4">
             <SkeletonTable rows={8} columns={6} dark />
+          </div>
+        ) : viewMode === "cards" ? (
+          <div className="bg-transparent">
+            <StationCards
+              stations={stations}
+              drafts={drafts}
+              setField={setField}
+              mode="main"
+              onSubmit={handleSave}
+              savingId={savingId}
+              editable={!!data?.editable}
+              isAdmin={isAdmin}
+              totalLabel="Circle total"
+            />
+            {needPbs && (
+              <>
+                <div className="h-2 bg-elevated border-y border-app" />
+                <StationCards
+                  title="PBS"
+                  stations={stations}
+                  drafts={drafts}
+                  setField={setField}
+                  mode="pbs"
+                  onSubmit={handleSave}
+                  savingId={savingId}
+                  editable={!!data?.editable}
+                  isAdmin={isAdmin}
+                  totalLabel="PBS total"
+                />
+              </>
+            )}
           </div>
         ) : (
           <div className="bg-transparent">

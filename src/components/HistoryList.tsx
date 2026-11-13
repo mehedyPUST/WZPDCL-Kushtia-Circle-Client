@@ -424,29 +424,31 @@ export default function HistoryList({
 
         {/* Date filter */}
         <div className="px-3 py-2 bg-elevated/50 border-b border-app shrink-0 space-y-1.5">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <label className="text-[11px] font-medium text-muted shrink-0">Date</label>
-            <input
-              type="date"
-              value={filterDate}
-              onChange={(e) => applyDate(e.target.value, filterDateTo)}
-              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
-              aria-label="Filter from date"
-            />
-            <span className="text-[11px] font-medium text-faint">to</span>
-            <input
-              type="date"
-              value={filterDateTo}
-              onChange={(e) => applyDate(filterDate, e.target.value)}
-              min={filterDate || undefined}
-              className="flex-1 min-w-[8rem] h-8 px-2 rounded-lg border border-app bg-elevated text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
-              aria-label="Filter to date"
-            />
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] flex-1 min-w-[200px] items-center gap-1.5">
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => applyDate(e.target.value, filterDateTo)}
+                className="w-full min-w-0 h-8 px-1.5 sm:px-2 rounded-lg border border-app bg-elevated text-[11px] sm:text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
+                aria-label="Filter from date"
+              />
+              <span className="text-[11px] font-medium text-faint">to</span>
+              <input
+                type="date"
+                value={filterDateTo}
+                onChange={(e) => applyDate(filterDate, e.target.value)}
+                min={filterDate || undefined}
+                className="w-full min-w-0 h-8 px-1.5 sm:px-2 rounded-lg border border-app bg-elevated text-[11px] sm:text-xs font-medium text-app tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500"
+                aria-label="Filter to date"
+              />
+            </div>
             {(filterDate || filterDateTo) ? (
               <button
                 type="button"
                 onClick={clearDateFilter}
-                className="h-8 px-2.5 rounded-lg text-[11px] font-semibold btn-reset-subtle whitespace-nowrap shadow-xs"
+                className="h-8 px-2.5 rounded-lg text-[11px] font-semibold btn-reset-subtle whitespace-nowrap shadow-xs shrink-0"
               >
                 Reset
               </button>
@@ -682,7 +684,7 @@ export default function HistoryList({
                           <button
                             type="button"
                             onClick={() => onView(r)}
-                            className="min-w-[2.6rem] px-2 py-1 rounded-md bg-surface-3 hover:bg-surface-3 border border-app text-app text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                            className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md bg-surface-3 hover:bg-surface-3 border border-app text-app text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                           >
                             View
                           </button>
@@ -696,7 +698,7 @@ export default function HistoryList({
                                     else if (typeof onView === "function") onView(r);
                                     else window.location.href = `/manual?edit=${encodeURIComponent(r._id)}`;
                                   }}
-                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                  className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                 >
                                   Edit
                                 </button>
@@ -711,7 +713,7 @@ export default function HistoryList({
                                       message: `This calculation will move to Trash.`,
                                     });
                                   }}
-                                  className="min-w-[2.6rem] px-2 py-1 rounded-md bg-rose-600/90 hover:bg-rose-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                  className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md bg-rose-600/90 hover:bg-rose-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                 >
                                   Trash
                                 </button>
@@ -737,7 +739,7 @@ export default function HistoryList({
                                         message: "This calculation will appear in History again.",
                                       })
                                     }
-                                    className="min-w-[2.6rem] px-2 py-1 rounded-md btn-primary text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                    className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md btn-primary text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                   >
                                     Restore
                                   </button>
@@ -752,7 +754,7 @@ export default function HistoryList({
                                         message: "This calculation will be permanently deleted.",
                                       });
                                     }}
-                                    className="min-w-[2.6rem] px-2 py-1 rounded-md bg-rose-700 hover:bg-rose-600 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
+                                    className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md bg-rose-700 hover:bg-rose-600 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                   >
                                     Forever
                                   </button>

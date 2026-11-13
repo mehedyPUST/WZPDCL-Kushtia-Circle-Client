@@ -64,7 +64,7 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] flex items-center justify-center bg-slate-50 dark:bg-app p-4">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-app p-4">
         <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-surface border border-slate-200 dark:border-[var(--app-border-strong)] space-y-4 shadow-xl">
           <SkeletonShimmer className="h-10 w-10 mx-auto rounded-full" />
           <SkeletonShimmer className="h-6 w-36 mx-auto rounded-lg" />
@@ -80,7 +80,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] bg-zinc-50 dark:bg-app flex items-center justify-center p-3 sm:p-6 lg:p-8">
+    <div className="relative flex-1 bg-zinc-50 dark:bg-app flex items-center justify-center p-3 sm:p-6 lg:p-8">
       <div className="w-full max-w-[56rem] bg-white dark:bg-surface rounded-3xl shadow-xl border border-zinc-200 dark:border-[var(--app-border-strong)] overflow-hidden flex flex-col md:flex-row transition-all">
         {/* Left Presentation Panel */}
         <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-8 md:p-9 flex flex-col justify-between overflow-hidden">
