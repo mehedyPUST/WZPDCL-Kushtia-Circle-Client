@@ -254,6 +254,7 @@ export default function AdminPanel() {
     setEditUser(u);
     setEditDraft({
       displayName: u.displayName || "",
+      email: u.email || "",
       username: u.username || "",
       role: u.role === "operator" || u.role === "duty-person" ? "duty" : u.role === "superadmin" ? "admin" : u.role || "viewer",
       assignedStation: u.assignedStation || "",
@@ -287,6 +288,7 @@ export default function AdminPanel() {
     try {
       const payload: Record<string, any> = {
         displayName: editDraft.displayName,
+        email: editDraft.email || "",
         role: editDraft.role,
         assignedStation: editDraft.assignedStation || "",
         isActive: editDraft.isActive,
@@ -1122,6 +1124,18 @@ export default function AdminPanel() {
                   onChange={(e) =>
                     setEditDraft({ ...editDraft, displayName: e.target.value })
                   }
+                  className="mt-1 w-full h-10 px-3 rounded-lg border border-app bg-elevated text-sm text-app focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+                />
+              </label>
+              <label className="block text-xs font-medium text-secondary">
+                Email
+                <input
+                  type="email"
+                  value={editDraft.email ?? ""}
+                  onChange={(e) =>
+                    setEditDraft({ ...editDraft, email: e.target.value })
+                  }
+                  placeholder="operator@wzpdcl.gov.bd"
                   className="mt-1 w-full h-10 px-3 rounded-lg border border-app bg-elevated text-sm text-app focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 />
               </label>

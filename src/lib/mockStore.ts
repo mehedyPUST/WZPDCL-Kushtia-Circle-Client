@@ -53,6 +53,7 @@ function createInitialStore() {
         id: "admin-default-1",
         username: "admin",
         displayName: "Bottail SS Admin",
+        email: "",
         role: "admin",
         assignedStation: "",
         isActive: true,

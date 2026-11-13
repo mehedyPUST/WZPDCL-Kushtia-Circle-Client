@@ -1,23 +1,21 @@
 import { NextResponse } from "next/server";
-import { requireAuth, signToken } from "@/lib/serverAuth";
-import { getMockStore, hashPassword, verifyPassword } from "@/lib/mockStore";
+import {
+  cookieOptionsForRequest,
+  requireAuth,
+  signToken,
+} from "@/lib/serverAuth";
+import { computeSessionExpiry } from "@/lib/shiftSession";
+import {
+  ensureMockUserFromAuth,
+  findUserByIdOrUsername,
+  toPublicUser,
+  updateUserAccount,
+  verifyUserPassword,
+} from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
 const MIN_PASSWORD_LENGTH = 8;
-
-function publicUser(user) {
-  return {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName || "",
-    email: user.email || "",
-    role: user.role || "viewer",
-    assignedStation: user.assignedStation || "",
-    isActive: user.isActive !== false,
-    lastLogin: user.lastLogin || null,
-  };
-}
 
 /**
  * POST /api/auth/change-password
@@ -62,13 +60,14 @@ export async function POST(request) {
       );
     }
 
-    const store = getMockStore();
-    const user = store.users.find(
-      (u) =>
-        String(u.id) === String(auth.admin.id) ||
-        String(u.username).toLowerCase() ===
-          String(auth.admin.username || "").toLowerCase()
-    );
+    let user = await findUserByIdOrUsername({
+      id: auth.admin.id,
+      username: auth.admin.username,
+    });
+
+    if (!user) {
+      user = ensureMockUserFromAuth(auth.admin);
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -77,17 +76,26 @@ export async function POST(request) {
       );
     }
 
-    if (!verifyPassword(currentPassword, user.passwordHash)) {
+    if (!verifyUserPassword(currentPassword, user.passwordHash)) {
       return NextResponse.json(
         { success: false, message: "Current password is incorrect" },
         { status: 401 }
       );
     }
 
-    user.passwordHash = hashPassword(newPassword);
+    const updated =
+      (await updateUserAccount(
+        { id: user.id, username: user.username },
+        { password: newPassword }
+      )) || user;
 
-    const clean = publicUser(user);
-    const token = signToken(clean);
+    const { shiftLogoutAt, ttlSeconds } = computeSessionExpiry(
+      updated.role,
+      Date.now(),
+      auth.admin.shiftLogoutAt ?? null
+    );
+    const clean = toPublicUser(updated, { shiftLogoutAt });
+    const token = signToken(clean, ttlSeconds);
 
     const res = NextResponse.json({
       success: true,
@@ -96,16 +104,14 @@ export async function POST(request) {
       data: clean,
     });
 
-    res.cookies.set("admin_token", token, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "none",
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60,
-    });
+    res.cookies.set(
+      "admin_token",
+      token,
+      cookieOptionsForRequest(request, ttlSeconds)
+    );
 
     return res;
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       {
         success: false,

@@ -12,13 +12,16 @@ import {
   ShieldCheck,
   LogOut,
   Check,
+  Clock,
 } from "lucide-react";
+import { formatDhakaCutoffHM } from "@/lib/shiftSession";
 
 interface DashboardAccountPanelProps {
   username: string;
   roleLabel: string;
   assignedStation: string;
   lastLoginLabel: string;
+  shiftLogoutAt?: number | null;
   canWrite: boolean;
   isAdmin: boolean;
   displayNameDraft: string;
@@ -43,6 +46,7 @@ export default function DashboardAccountPanel({
   roleLabel,
   assignedStation,
   lastLoginLabel,
+  shiftLogoutAt = null,
   canWrite,
   isAdmin,
   displayNameDraft,
@@ -63,9 +67,11 @@ export default function DashboardAccountPanel({
 }: DashboardAccountPanelProps) {
   const [showCurrentPw, setShowCurrentPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
 
   const lengthOk = newPassword.length >= 8;
   const matchOk = newPassword.length > 0 && newPassword === confirmPassword;
+  const shiftCutoffHm = formatDhakaCutoffHM(shiftLogoutAt);
 
   return (
     <div className="space-y-4">
@@ -121,13 +127,21 @@ export default function DashboardAccountPanel({
             <dt className="text-xs font-medium text-zinc-500 dark:text-slate-400">
               Capabilities
             </dt>
-            <dd className="mt-1 text-xs font-medium text-zinc-700 dark:text-slate-300">
-              {isAdmin
-                ? "Full control · Users · Duty Roster"
-                : canWrite
-                  ? "Record loads · Loadshed · Night logs"
-                  : "Read-only analytics & history"}
-              {lastLoginLabel !== "—" ? ` · Last login ${lastLoginLabel}` : ""}
+            <dd className="mt-1 text-xs font-medium text-zinc-700 dark:text-slate-300 space-y-1">
+              <div>
+                {isAdmin
+                  ? "Full control · Users · Duty Roster"
+                  : canWrite
+                    ? "Record loads · Loadshed · Night logs"
+                    : "Read-only analytics & history"}
+                {lastLoginLabel !== "—" ? ` · Last login ${lastLoginLabel}` : ""}
+              </div>
+              {shiftCutoffHm ? (
+                <div className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-700 dark:text-amber-300">
+                  <Clock className="w-3 h-3 shrink-0" />
+                  Auto-logout at {shiftCutoffHm} BST (08:30 / 14:30 / 20:30)
+                </div>
+              ) : null}
             </dd>
           </div>
         </dl>
@@ -307,17 +321,31 @@ export default function DashboardAccountPanel({
               >
                 Confirm new password
               </label>
-              <input
-                id="dash-pw-confirm"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => onChangeConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                minLength={8}
-                required
-                placeholder="Re-enter new password"
-                className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 px-3 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
-              />
+              <div className="relative">
+                <input
+                  id="dash-pw-confirm"
+                  type={showConfirmPw ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => onChangeConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  placeholder="Re-enter new password"
+                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPw((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+                  aria-label={showConfirmPw ? "Hide confirm password" : "Show confirm password"}
+                >
+                  {showConfirmPw ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-0.5">

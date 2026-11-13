@@ -1,35 +1,16 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/serverAuth";
-import { getMockStore, hashPassword, generateId } from "@/lib/mockStore";
+import {
+  createUserAccount,
+  listAllUsers,
+  toPublicUser,
+} from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
 function isAdminUser(admin) {
   const r = String(admin?.role || "").toLowerCase();
   return r === "admin" || r === "superadmin";
-}
-
-function normalizeRole(role) {
-  const r = String(role || "").toLowerCase().replace(/_/g, "-");
-  if (r === "viewer") return "viewer";
-  if (r === "circle-load-input" || r === "circleloadinput" || r === "circle-input")
-    return "circle-load-input";
-  if (r === "duty" || r === "duty-person" || r === "operator") return "duty";
-  if (r === "admin" || r === "superadmin") return "admin";
-  return "viewer";
-}
-
-function sanitizeUser(u) {
-  return {
-    id: u.id,
-    username: u.username,
-    displayName: u.displayName || "",
-    role: normalizeRole(u.role || "viewer"),
-    assignedStation: u.assignedStation || "",
-    isActive: u.isActive !== false,
-    createdAt: u.createdAt || null,
-    lastLogin: u.lastLogin || null,
-  };
 }
 
 export async function GET(request) {
@@ -42,10 +23,10 @@ export async function GET(request) {
     );
   }
 
-  const store = getMockStore();
+  const users = await listAllUsers();
   return NextResponse.json({
     success: true,
-    data: store.users.map(sanitizeUser),
+    data: users.map((u) => toPublicUser(u)),
   });
 }
 
@@ -61,7 +42,7 @@ export async function POST(request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const username = String(body.username || "").trim();
+    const username = String(body.username || "").trim().toLowerCase();
     const password = String(body.password || "");
     if (!username || !password) {
       return NextResponse.json(
@@ -70,40 +51,39 @@ export async function POST(request) {
       );
     }
 
-    const store = getMockStore();
-    if (
-      store.users.some(
-        (u) => String(u.username || "").toLowerCase() === username.toLowerCase()
-      )
-    ) {
+    const email = String(body.email || "").trim().toLowerCase();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
-        { success: false, message: "Username already exists" },
-        { status: 409 }
+        { success: false, message: "Invalid email address" },
+        { status: 400 }
       );
     }
 
-    const user = {
-      id: generateId(),
-      username: username.toLowerCase(),
+    const { user, conflict } = await createUserAccount({
+      username,
+      password,
       displayName: String(body.displayName || ""),
-      role: normalizeRole(body.role || "viewer"),
+      email,
+      role: body.role || "viewer",
       assignedStation: String(body.assignedStation || ""),
-      isActive: true,
-      passwordHash: hashPassword(password),
-      createdAt: new Date().toISOString(),
-      lastLogin: null,
-    };
-    store.users.push(user);
+    });
+
+    if (conflict || !user) {
+      return NextResponse.json(
+        { success: false, message: conflict || "Failed to create user" },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         message: "User created",
-        data: sanitizeUser(user),
+        data: toPublicUser(user),
       },
       { status: 201 }
     );
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err.message || "Failed to create user" },
       { status: 500 }

@@ -1,22 +1,18 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/serverAuth";
-import { getMockStore, hashPassword } from "@/lib/mockStore";
+import {
+  deleteUserAccount,
+  findUserByIdOrUsername,
+  isEmailTakenByOther,
+  toPublicUser,
+  updateUserAccount,
+} from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
 function isAdminUser(admin) {
   const r = String(admin?.role || "").toLowerCase();
   return r === "admin" || r === "superadmin";
-}
-
-function normalizeRole(role) {
-  const r = String(role || "").toLowerCase().replace(/_/g, "-");
-  if (r === "viewer") return "viewer";
-  if (r === "circle-load-input" || r === "circleloadinput" || r === "circle-input")
-    return "circle-load-input";
-  if (r === "duty" || r === "duty-person" || r === "operator") return "duty";
-  if (r === "admin" || r === "superadmin") return "admin";
-  return "viewer";
 }
 
 export async function PATCH(request, { params }) {
@@ -31,35 +27,50 @@ export async function PATCH(request, { params }) {
 
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
-  const store = getMockStore();
-  const user = store.users.find((u) => String(u.id) === String(id));
-  if (!user) {
+  const existing = await findUserByIdOrUsername({ id });
+  if (!existing) {
     return NextResponse.json(
       { success: false, message: "User not found" },
       { status: 404 }
     );
   }
 
-  if (body.displayName !== undefined) user.displayName = String(body.displayName);
-  if (body.role !== undefined) user.role = normalizeRole(body.role);
-  if (body.assignedStation !== undefined) {
-    user.assignedStation = String(body.assignedStation);
+  const patch: Record<string, any> = {};
+  if (body.displayName !== undefined) {
+    patch.displayName = String(body.displayName).trim().slice(0, 80);
   }
-  if (body.isActive !== undefined) user.isActive = Boolean(body.isActive);
-  if (body.password) user.passwordHash = hashPassword(String(body.password));
+  if (body.email !== undefined) {
+    const email = String(body.email || "").trim().toLowerCase();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+    if (email && (await isEmailTakenByOther(email, existing.id))) {
+      return NextResponse.json(
+        { success: false, message: "Email already in use" },
+        { status: 409 }
+      );
+    }
+    patch.email = email;
+  }
+  if (body.role !== undefined) patch.role = body.role;
+  if (body.assignedStation !== undefined) {
+    patch.assignedStation = String(body.assignedStation);
+  }
+  if (body.isActive !== undefined) patch.isActive = Boolean(body.isActive);
+  if (body.password) patch.password = String(body.password);
+
+  const updated = await updateUserAccount(
+    { id: existing.id, username: existing.username },
+    patch
+  );
 
   return NextResponse.json({
     success: true,
     message: "User updated",
-    data: {
-      id: user.id,
-      username: user.username,
-      displayName: user.displayName,
-      role: user.role,
-      assignedStation: user.assignedStation,
-      isActive: user.isActive,
-      lastLogin: user.lastLogin,
-    },
+    data: toPublicUser(updated || existing),
   });
 }
 
@@ -74,16 +85,14 @@ export async function DELETE(request, { params }) {
   }
 
   const { id } = await params;
-  const store = getMockStore();
-  const idx = store.users.findIndex((u) => String(u.id) === String(id));
-  if (idx === -1) {
+  const deleted = await deleteUserAccount(id);
+  if (!deleted) {
     return NextResponse.json(
       { success: false, message: "User not found" },
       { status: 404 }
     );
   }
 
-  store.users.splice(idx, 1);
   return NextResponse.json({
     success: true,
     message: "User deleted",

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { getMockStore, hashPassword, generateId } from "@/lib/mockStore";
-import { signToken } from "@/lib/serverAuth";
+import { cookieOptionsForRequest, signToken } from "@/lib/serverAuth";
+import { computeSessionExpiry } from "@/lib/shiftSession";
+import { createUserAccount, toPublicUser } from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const username = String(body.username || "").trim();
+    const username = String(body.username || "").trim().toLowerCase();
     const password = String(body.password || "");
 
     if (!username || !password) {
@@ -17,42 +18,28 @@ export async function POST(request) {
       );
     }
 
-    const store = getMockStore();
-    if (
-      store.users.some(
-        (u) => String(u.username || "").toLowerCase() === username.toLowerCase()
-      )
-    ) {
+    const { user, conflict } = await createUserAccount({
+      username,
+      password,
+      displayName: String(body.displayName || username),
+      email: String(body.email || ""),
+      role: "admin",
+      assignedStation: "",
+      lastLogin: new Date().toISOString(),
+    });
+
+    if (conflict || !user) {
       return NextResponse.json(
-        { success: false, message: "Username already exists" },
+        { success: false, message: conflict || "Registration failed" },
         { status: 409 }
       );
     }
 
-    const user = {
-      id: generateId(),
-      username,
-      displayName: String(body.displayName || username),
-      role: "admin",
-      assignedStation: "",
-      isActive: true,
-      passwordHash: hashPassword(password),
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    };
-    store.users.push(user);
+    const { shiftLogoutAt, ttlSeconds } = computeSessionExpiry(user.role);
+    const clean = toPublicUser(user, { shiftLogoutAt });
+    const token = signToken(clean, ttlSeconds);
 
-    const clean = {
-      id: user.id,
-      username: user.username,
-      displayName: user.displayName,
-      role: user.role,
-      assignedStation: user.assignedStation,
-      isActive: true,
-    };
-    const token = signToken(clean);
-
-    return NextResponse.json(
+    const res = NextResponse.json(
       {
         success: true,
         message: "Admin registered successfully",
@@ -61,7 +48,9 @@ export async function POST(request) {
       },
       { status: 201 }
     );
-  } catch (err) {
+    res.cookies.set("admin_token", token, cookieOptionsForRequest(request, ttlSeconds));
+    return res;
+  } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err.message || "Registration failed" },
       { status: 500 }

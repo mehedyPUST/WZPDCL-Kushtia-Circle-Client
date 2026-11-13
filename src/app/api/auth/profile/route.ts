@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
-import { requireAuth, signToken } from "@/lib/serverAuth";
-import { getMockStore } from "@/lib/mockStore";
+import {
+  cookieOptionsForRequest,
+  requireAuth,
+  signToken,
+} from "@/lib/serverAuth";
+import { computeSessionExpiry } from "@/lib/shiftSession";
+import {
+  ensureMockUserFromAuth,
+  findUserByIdOrUsername,
+  isEmailTakenByOther,
+  toPublicUser,
+  updateUserAccount,
+} from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
-
-function publicUser(user) {
-  return {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName || "",
-    email: user.email || "",
-    role: user.role || "viewer",
-    assignedStation: user.assignedStation || "",
-    isActive: user.isActive !== false,
-    lastLogin: user.lastLogin || null,
-  };
-}
 
 /**
  * PATCH /api/auth/profile
@@ -27,13 +25,15 @@ export async function PATCH(request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const store = getMockStore();
-    const user = store.users.find(
-      (u) =>
-        String(u.id) === String(auth.admin.id) ||
-        String(u.username).toLowerCase() ===
-          String(auth.admin.username || "").toLowerCase()
-    );
+
+    let user = await findUserByIdOrUsername({
+      id: auth.admin.id,
+      username: auth.admin.username,
+    });
+
+    if (!user) {
+      user = ensureMockUserFromAuth(auth.admin);
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -49,9 +49,10 @@ export async function PATCH(request) {
       );
     }
 
+    const patch: { displayName?: string; email?: string } = {};
+
     if (body.displayName !== undefined) {
-      const name = String(body.displayName).trim().slice(0, 80);
-      user.displayName = name;
+      patch.displayName = String(body.displayName).trim().slice(0, 80);
     }
 
     if (body.email !== undefined) {
@@ -62,25 +63,29 @@ export async function PATCH(request) {
           { status: 400 }
         );
       }
-      // uniqueness among other users
-      if (email) {
-        const clash = store.users.find(
-          (u) =>
-            u.id !== user.id &&
-            String(u.email || "").toLowerCase() === email
+      if (email && (await isEmailTakenByOther(email, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "Email already in use" },
+          { status: 409 }
         );
-        if (clash) {
-          return NextResponse.json(
-            { success: false, message: "Email already in use" },
-            { status: 409 }
-          );
-        }
       }
-      user.email = email || "";
+      patch.email = email;
     }
 
-    const clean = publicUser(user);
-    const token = signToken(clean);
+    const updated =
+      (await updateUserAccount(
+        { id: user.id, username: user.username },
+        patch
+      )) || { ...user, ...patch };
+
+    // Preserve active shift cutoff so profile edits never extend past 08:30/14:30/20:30
+    const { shiftLogoutAt, ttlSeconds } = computeSessionExpiry(
+      updated.role,
+      Date.now(),
+      auth.admin.shiftLogoutAt ?? null
+    );
+    const clean = toPublicUser(updated, { shiftLogoutAt });
+    const token = signToken(clean, ttlSeconds);
 
     const res = NextResponse.json({
       success: true,
@@ -89,19 +94,14 @@ export async function PATCH(request) {
       data: clean,
     });
 
-    const proto = request.headers.get("x-forwarded-proto") || "";
-    const isSecure = request.nextUrl?.protocol === "https:" || proto === "https";
-
-    res.cookies.set("admin_token", token, {
-      httpOnly: true,
-      path: "/",
-      sameSite: isSecure ? "none" : "lax",
-      secure: isSecure,
-      maxAge: 7 * 24 * 60 * 60,
-    });
+    res.cookies.set(
+      "admin_token",
+      token,
+      cookieOptionsForRequest(request, ttlSeconds)
+    );
 
     return res;
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err.message || "Failed to update profile" },
       { status: 500 }

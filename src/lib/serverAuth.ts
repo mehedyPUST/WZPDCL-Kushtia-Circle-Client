@@ -1,9 +1,20 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
+import {
+  computeSessionExpiry,
+  formatDhakaCutoffHM,
+  getNextShiftCutoffMs,
+  isShiftAutoLogoutRole,
+  normalizeAuthRole,
+  STANDARD_SESSION_TTL_SECONDS,
+} from "./shiftSession";
 
 /**
  * Verify and sign admin JWTs (compatible with Express JWT_SECRET).
  * Supports Authorization: Bearer <token> and cookie admin_token.
+ *
+ * Enforces 08:30, 14:30, 20:30 Asia/Dhaka shift cutoff expiry for
+ * admin and duty roles. Circle-load-input and viewer roles are exempt.
  */
 
 export function getJwtSecret() {
@@ -32,15 +43,44 @@ function base64UrlDigest(buf) {
     .replace(/\//g, "_");
 }
 
-export function signToken(payload, expiresInSeconds = 7 * 24 * 60 * 60) {
+export class ShiftCutoffError extends Error {
+  cutoffAt: number | null;
+  constructor(message: string, cutoffAt: number | null = null) {
+    super(message);
+    this.name = "ShiftCutoffError";
+    this.cutoffAt = cutoffAt;
+  }
+}
+
+export function signToken(
+  payload,
+  expiresInSeconds = STANDARD_SESSION_TTL_SECONDS
+) {
   const secret = getJwtSecret();
   const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const nowSec = Math.floor(Date.now() / 1000);
+  const nowMs = Date.now();
+  const nowSec = Math.floor(nowMs / 1000);
+
+  const preserveCutoff =
+    typeof payload?.shiftLogoutAt === "number" ? payload.shiftLogoutAt : null;
+  const expiry = isShiftAutoLogoutRole(payload?.role)
+    ? computeSessionExpiry(payload?.role, nowMs, preserveCutoff)
+    : { shiftLogoutAt: null, ttlSeconds: expiresInSeconds };
+
+  const ttl = Number.isFinite(expiresInSeconds) && expiresInSeconds > 0
+    ? Math.min(expiresInSeconds, expiry.ttlSeconds)
+    : expiry.ttlSeconds;
+
+  const expSec = expiry.shiftLogoutAt
+    ? Math.floor(expiry.shiftLogoutAt / 1000)
+    : nowSec + ttl;
+
   const body = base64UrlEncode(
     JSON.stringify({
       ...payload,
+      shiftLogoutAt: expiry.shiftLogoutAt,
       iat: nowSec,
-      exp: nowSec + expiresInSeconds,
+      exp: expSec,
     })
   );
   const data = `${header}.${body}`;
@@ -66,7 +106,7 @@ export function getTokenFromRequest(request) {
   return null;
 }
 
-export function verifyTokenString(token) {
+export function verifyTokenString(token, nowMs: number = Date.now()) {
   const secret = getJwtSecret();
   const parts = String(token || "").split(".");
   if (parts.length !== 3) throw new Error("Malformed token");
@@ -89,14 +129,54 @@ export function verifyTokenString(token) {
   }
 
   const payload = JSON.parse(base64UrlDecode(payloadB64));
-  if (payload.exp && Date.now() >= payload.exp * 1000) {
+
+  // Enforce 08:30 / 14:30 / 20:30 BST shift cutoff for admin & duty roles
+  if (isShiftAutoLogoutRole(payload.role)) {
+    const iatMs =
+      typeof payload.iat === "number" && payload.iat > 0
+        ? payload.iat * 1000
+        : nowMs;
+    const cutoffMs =
+      typeof payload.shiftLogoutAt === "number" && payload.shiftLogoutAt > 0
+        ? payload.shiftLogoutAt
+        : getNextShiftCutoffMs(iatMs);
+
+    if (nowMs >= cutoffMs) {
+      const hm = formatDhakaCutoffHM(cutoffMs);
+      throw new ShiftCutoffError(
+        `Shift cutoff (${hm} BST) reached. Please sign in again.`,
+        cutoffMs
+      );
+    }
+    payload.shiftLogoutAt = cutoffMs;
+  } else {
+    payload.shiftLogoutAt = null;
+  }
+
+  if (payload.exp && nowMs >= payload.exp * 1000) {
     throw new Error("Token expired");
   }
   return payload;
 }
 
+export function isHttpsRequest(request): boolean {
+  const proto = request?.headers?.get?.("x-forwarded-proto") || "";
+  return request?.nextUrl?.protocol === "https:" || proto === "https";
+}
+
+export function cookieOptionsForRequest(request, maxAgeSeconds: number) {
+  const isSecure = isHttpsRequest(request);
+  return {
+    httpOnly: true,
+    path: "/",
+    sameSite: (isSecure ? "none" : "lax") as "none" | "lax",
+    secure: isSecure,
+    maxAge: maxAgeSeconds,
+  };
+}
+
 /**
- * @returns {{ ok: true, admin: object } | { ok: false, response: NextResponse }}
+ * @returns {{ ok: true, admin: object } | { ok: false, expiredByShift?: boolean, response: NextResponse }}
  */
 export function requireAuth(request) {
   const token = getTokenFromRequest(request);
@@ -116,6 +196,7 @@ export function requireAuth(request) {
 
   try {
     const payload = verifyTokenString(token);
+    const normRole = normalizeAuthRole(payload.role);
     return {
       ok: true,
       admin: {
@@ -123,11 +204,32 @@ export function requireAuth(request) {
         username: payload.username,
         displayName: payload.displayName || "",
         email: payload.email || "",
-        role: payload.role,
+        role: normRole,
         assignedStation: payload.assignedStation || "",
+        lastLogin: payload.lastLogin || null,
+        shiftLogoutAt: payload.shiftLogoutAt ?? null,
       },
     };
-  } catch {
+  } catch (err: any) {
+    if (err instanceof ShiftCutoffError || err?.name === "ShiftCutoffError") {
+      return {
+        ok: false,
+        expiredByShift: true,
+        cutoffAt: err.cutoffAt ?? null,
+        response: NextResponse.json(
+          {
+            success: false,
+            code: "SHIFT_CUTOFF",
+            cutoffAt: err.cutoffAt ?? null,
+            message:
+              err.message ||
+              "Shift cutoff reached (08:30 / 14:30 / 20:30 BST). Please log in again.",
+          },
+          { status: 401 }
+        ),
+      };
+    }
+
     return {
       ok: false,
       response: NextResponse.json(

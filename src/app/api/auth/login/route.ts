@@ -1,21 +1,14 @@
 import { NextResponse } from "next/server";
-import { getMockStore, verifyPassword } from "@/lib/mockStore";
-import { signToken } from "@/lib/serverAuth";
+import { cookieOptionsForRequest, signToken } from "@/lib/serverAuth";
+import { computeSessionExpiry } from "@/lib/shiftSession";
+import {
+  findUserByUsername,
+  toPublicUser,
+  updateUserAccount,
+  verifyUserPassword,
+} from "@/lib/userStore";
 
 export const dynamic = "force-dynamic";
-
-function sanitizeUser(u) {
-  return {
-    id: u.id,
-    username: u.username,
-    displayName: u.displayName || "",
-    email: u.email || "",
-    role: u.role || "viewer",
-    assignedStation: u.assignedStation || "",
-    isActive: u.isActive !== false,
-    lastLogin: u.lastLogin || null,
-  };
-}
 
 export async function POST(request) {
   try {
@@ -30,12 +23,9 @@ export async function POST(request) {
       );
     }
 
-    const store = getMockStore();
-    const user = store.users.find(
-      (u) => String(u.username || "").toLowerCase() === username
-    );
+    const user = await findUserByUsername(username);
 
-    if (!user || !verifyPassword(password, user.passwordHash)) {
+    if (!user || !verifyUserPassword(password, user.passwordHash)) {
       return NextResponse.json(
         { success: false, message: "Invalid username or password" },
         { status: 401 }
@@ -49,9 +39,16 @@ export async function POST(request) {
       );
     }
 
-    user.lastLogin = new Date().toISOString();
-    const clean = sanitizeUser(user);
-    const token = signToken(clean);
+    const nowIso = new Date().toISOString();
+    const updated =
+      (await updateUserAccount(
+        { id: user.id, username: user.username },
+        { lastLogin: nowIso }
+      )) || { ...user, lastLogin: nowIso };
+
+    const { shiftLogoutAt, ttlSeconds } = computeSessionExpiry(updated.role);
+    const clean = toPublicUser(updated, { shiftLogoutAt });
+    const token = signToken(clean, ttlSeconds);
 
     const res = NextResponse.json({
       success: true,
@@ -60,19 +57,10 @@ export async function POST(request) {
       data: clean,
     });
 
-    const proto = request.headers.get("x-forwarded-proto") || "";
-    const isSecure = request.nextUrl?.protocol === "https:" || proto === "https";
-
-    res.cookies.set("admin_token", token, {
-      httpOnly: true,
-      path: "/",
-      sameSite: isSecure ? "none" : "lax",
-      secure: isSecure,
-      maxAge: 7 * 24 * 60 * 60,
-    });
+    res.cookies.set("admin_token", token, cookieOptionsForRequest(request, ttlSeconds));
 
     return res;
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err.message || "Sign in failed" },
       { status: 500 }

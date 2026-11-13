@@ -57,6 +57,7 @@ export default function UserDashboard() {
     isAuthenticated,
     loading: authLoading,
     role,
+    shiftLogoutAt,
     canWrite,
     isAdmin,
     logout,
@@ -128,11 +129,15 @@ export default function UserDashboard() {
     loadMine();
   }, [authLoading, isAuthenticated, loadMine, router]);
 
+  const adminId = admin?.id || "";
+  const adminDisplayName = admin?.displayName || "";
+  const adminEmail = admin?.email || "";
+
   useEffect(() => {
-    if (!admin) return;
-    setDisplayNameDraft(admin.displayName || "");
-    setEmailDraft(admin.email || "");
-  }, [admin]);
+    if (!adminId) return;
+    setDisplayNameDraft(adminDisplayName);
+    setEmailDraft(adminEmail);
+  }, [adminId, adminDisplayName, adminEmail]);
 
   const effectiveTodayYmd = shiftInfo.todayYmd || todayYmdDhaka();
 
@@ -167,13 +172,25 @@ export default function UserDashboard() {
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    const nextDisplayName = displayNameDraft.trim();
+    const nextEmail = emailDraft.trim().toLowerCase();
+    if (nextEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     setSavingProfile(true);
     try {
       const res = await updateProfile({
-        displayName: displayNameDraft.trim(),
-        email: emailDraft.trim(),
+        displayName: nextDisplayName,
+        email: nextEmail,
       });
-      if (applyAdminUpdate) applyAdminUpdate(res.data);
+      if (applyAdminUpdate && res?.data) {
+        applyAdminUpdate(res.data);
+      }
+      if (res?.data) {
+        setDisplayNameDraft(res.data.displayName || "");
+        setEmailDraft(res.data.email || "");
+      }
       toast.success("Profile updated");
     } catch (err: any) {
       toast.error(err?.message || "Could not update profile");
@@ -409,6 +426,7 @@ export default function UserDashboard() {
           roleLabel={roleLabel}
           assignedStation={admin?.assignedStation || ""}
           lastLoginLabel={formatDhakaDateTime(admin?.lastLogin)}
+          shiftLogoutAt={shiftLogoutAt}
           canWrite={canWrite}
           isAdmin={isAdmin}
           displayNameDraft={displayNameDraft}

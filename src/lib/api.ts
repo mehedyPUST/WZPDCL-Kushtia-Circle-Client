@@ -64,11 +64,27 @@ async function fetchWithCredentials(url_: string, options: RequestInit = {}) {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  return fetch(url_, {
+  const res = await fetch(url_, {
     ...options,
     credentials: "include",
     headers,
   });
+  if (res.status === 401 && typeof window !== "undefined") {
+    try {
+      const cloned = res.clone();
+      const body = await cloned.json().catch(() => null);
+      if (body?.code === "SHIFT_CUTOFF") {
+        window.dispatchEvent(
+          new CustomEvent("wzpdcl:shift-logout", {
+            detail: { cutoffAt: body.cutoffAt ?? null },
+          })
+        );
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return res;
 }
 
 // ============================================
@@ -696,9 +712,7 @@ export async function getCurrentAdmin() {
     const url_ = url("/api/auth/me");
     console.log(`📤 Getting admin info: ${url_}`);
 
-    const res = await fetch(url_, {
-      credentials: "include",
-    });
+    const res = await fetchWithCredentials(url_, { method: "GET" });
     const data = await parseJson(res);
     if (!res.ok || !data.success) {
       throw new Error(data.message || "Failed to get admin info");
