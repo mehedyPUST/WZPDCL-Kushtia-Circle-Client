@@ -5,6 +5,15 @@ mongoose.set("bufferCommands", false);
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __mongooseCache: {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose | null> | null;
+    warnedOffline: boolean;
+  } | undefined;
+}
+
 let cached = globalThis.__mongooseCache;
 if (!cached) {
   cached = globalThis.__mongooseCache = {
@@ -40,14 +49,14 @@ export async function connectDB() {
         serverSelectionTimeoutMS: 2000,
       })
       .then((m) => {
-        cached.conn = m;
+        cached!.conn = m;
         return m;
       })
       .catch((err) => {
-        cached.promise = null;
-        cached.conn = null;
-        if (!cached.warnedOffline) {
-          cached.warnedOffline = true;
+        cached!.promise = null;
+        cached!.conn = null;
+        if (!cached!.warnedOffline) {
+          cached!.warnedOffline = true;
           console.warn(
             "[AI Studio] MongoDB not connected — using in-memory mock store:",
             err.message

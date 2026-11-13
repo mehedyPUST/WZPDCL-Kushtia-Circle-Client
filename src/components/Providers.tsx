@@ -3,6 +3,7 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { Toaster } from "react-hot-toast";
+import TableCellNavigator from "@/components/TableCellNavigator";
 
 function ThemedToaster() {
   const { isDark } = useTheme();
@@ -124,8 +125,6 @@ function ThemedToaster() {
     />
   );
 }
-
-import TableCellNavigator from "@/components/TableCellNavigator";
 
 export default function Providers({ children }) {
   return (
