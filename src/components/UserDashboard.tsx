@@ -280,7 +280,7 @@ export default function UserDashboard() {
             icon: Zap,
           },
           {
-            href: "/generate-night-log",
+            href: "/night-logs",
             label: "Night Log Generator",
             detail: "Prepare overnight 22–08h slots",
             icon: Moon,
@@ -736,7 +736,7 @@ export default function UserDashboard() {
                                 </Link>
                                 {canWrite && dayParam ? (
                                   <Link
-                                    href={`/manual?day=${dayParam}`}
+                                    href={`/manual-input?day=${dayParam}`}
                                     className="text-xs font-semibold text-zinc-600 dark:text-slate-300 hover:text-zinc-900 dark:hover:text-white hover:underline"
                                   >
                                     Sheet

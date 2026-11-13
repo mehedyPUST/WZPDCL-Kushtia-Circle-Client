@@ -726,7 +726,7 @@ export default function MaxLoadView() {
           </p>
           <div className="mt-5 flex justify-center gap-3">
             <Link
-              href="/manual"
+              href="/manual-input"
               className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors"
             >
               Open Manual Input

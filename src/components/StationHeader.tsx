@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/calculator", label: "Calculator" },
   { href: "/loadshed", label: "Load Shed" },
-  { href: "/manual", label: "Manual Input", authOnly: true },
+  { href: "/manual-input", label: "Manual Input", authOnly: true },
   { href: "/history", label: "History" },
   { href: "/max-load", label: "Max Load" },
   { href: "/statistics", label: "Statistics" },

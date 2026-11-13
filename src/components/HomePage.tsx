@@ -62,7 +62,7 @@ const FEATURES = [
     highlight: "Proportional shed planner",
   },
   {
-    href: "/manual",
+    href: "/manual-input",
     title: "Manual Entry",
     desc: "Fill empty hourly slots by date. Enter Amps or MW; the other is calculated automatically.",
     step: "05",

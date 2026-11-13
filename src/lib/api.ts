@@ -950,3 +950,107 @@ export async function fetchDistrictDay({
   }
   return data;
 }
+
+// ============================================
+// STATION NOTES (next-shift operational notes)
+// ============================================
+
+export async function fetchStationNotes({ status, limit } = {}) {
+  const q = new URLSearchParams();
+  if (status) q.set("status", String(status));
+  if (limit) q.set("limit", String(limit));
+  const qs = q.toString();
+  const res = await fetchWithCredentials(
+    url(`/api/station-notes${qs ? `?${qs}` : ""}`),
+    { method: "GET", cache: "no-store" }
+  );
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to load station notes");
+  }
+  return data;
+}
+
+export async function createStationNote(content, targetShift) {
+  const res = await fetchWithCredentials(url("/api/station-notes"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content, targetShift }),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to post station note");
+  }
+  return data;
+}
+
+export async function acknowledgeStationNote(id) {
+  const res = await fetchWithCredentials(url(`/api/station-notes/${id}/ack`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to acknowledge note");
+  }
+  return data;
+}
+
+export async function forwardStationNote(id, note) {
+  const res = await fetchWithCredentials(
+    url(`/api/station-notes/${id}/forward`),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ note: note || "" }),
+    }
+  );
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to forward note");
+  }
+  return data;
+}
+
+/** @deprecated use fetchStationNotes */
+export const fetchShiftMessages = fetchStationNotes;
+/** @deprecated use createStationNote */
+export const createShiftMessage = createStationNote;
+/** @deprecated use acknowledgeStationNote */
+export const acknowledgeShiftMessage = acknowledgeStationNote;
+/** @deprecated use forwardStationNote */
+export const forwardShiftMessage = forwardStationNote;
+
+// ============================================
+// MONTHLY ENERGY READINGS (admin sheet)
+// ============================================
+
+export async function fetchMonthlyEnergySheet({ year, month }) {
+  const q = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+  });
+  const res = await fetchWithCredentials(url(`/api/admin/monthly-energy?${q}`), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to load monthly energy sheet");
+  }
+  return data;
+}
+
+export async function saveMonthlyEnergySheet(payload) {
+  const res = await fetchWithCredentials(url("/api/admin/monthly-energy"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to save monthly energy sheet");
+  }
+  return data;
+}

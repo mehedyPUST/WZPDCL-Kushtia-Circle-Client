@@ -48,6 +48,8 @@ function createInitialStore() {
       districtDayBoundary: "22:00",
     },
     circleEntries: new Map(),
+    shiftMessages: [],
+    monthlyEnergySheets: [],
     users: [
       {
         id: "admin-default-1",

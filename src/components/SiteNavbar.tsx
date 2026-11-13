@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/calculator", label: "Calculator", icon: "calc" },
   { href: "/loadshed", label: "Load Shed", icon: "shed" },
-  { href: "/manual", label: "Manual", icon: "manual" },
+  { href: "/manual-input", label: "Manual", icon: "manual" },
   { href: "/history", label: "History", icon: "hist" },
   { href: "/max-load", label: "Max Load", icon: "max" },
   { href: "/statistics", label: "Statistics", icon: "stats" },
@@ -121,7 +121,7 @@ export default function SiteNavbar() {
   };
 
   const visibleLinks = NAV_LINKS.filter(
-    (link) => link.href !== "/manual" || isAuthenticated
+    (link) => link.href !== "/manual-input" || isAuthenticated
   );
 
   const renderSidebarNav = (onNavigate?: () => void) => (

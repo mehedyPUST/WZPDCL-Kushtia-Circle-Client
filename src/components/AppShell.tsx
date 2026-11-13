@@ -23,6 +23,8 @@ import {
   Radio,
   LayoutDashboard,
   CalendarDays,
+  MessageSquare,
+  FileSpreadsheet,
 } from "lucide-react";
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,16 +33,18 @@ import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
 import PWAInstallButton from "./PWAInstallButton";
 import OfflineBanner from "./OfflineBanner";
+import ShiftMessageBell from "./ShiftMessageBell";
 import toast from "react-hot-toast";
 import { useLiveClock } from "@/hooks/useLiveClock";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, authOnly: true },
+  { href: "/station-notes", label: "Station Notes", icon: MessageSquare, authOnly: true },
   { href: "/calculator", label: "Calculator", icon: Calculator },
   { href: "/loadshed", label: "Loadshed", icon: Zap },
-  { href: "/manual", label: "Manual Input", icon: ClipboardEdit },
-  { href: "/generate-night-log", label: "Night Logs", icon: Moon },
+  { href: "/manual-input", label: "Manual Input", icon: ClipboardEdit },
+  { href: "/night-logs", label: "Night Logs", icon: Moon },
   { href: "/history", label: "History", icon: History },
   { href: "/circle-load", label: "Circle Load", icon: CircleDot },
   { href: "/kushtia-district-load", label: "Kushtia District Load", icon: MapPin },
@@ -48,6 +52,7 @@ const NAV_LINKS = [
   { href: "/statistics", label: "Statistics", icon: BarChart3 },
   { href: "/admin", label: "Admin", icon: Shield },
   { href: "/admin/duty", label: "Duty Roster", icon: CalendarDays, adminOnly: true },
+  { href: "/admin/monthly-energy", label: "Monthly Energy", icon: FileSpreadsheet, adminOnly: true },
 ];
 
 function TopbarLiveClock() {
@@ -142,9 +147,9 @@ export default function AppShell({ children }) {
       return isAdmin;
     }
     if (
-      href === "/manual" ||
+      href === "/manual-input" ||
       href === "/loadshed" ||
-      href === "/generate-night-log"
+      href === "/night-logs"
     ) {
       return canWrite;
     }
@@ -198,10 +203,11 @@ export default function AppShell({ children }) {
         {/* Station Live Clock */}
         <TopbarLiveClock />
 
-        {/* PWA Install + Theme Toggle + Auth Button */}
+        {/* PWA Install + Theme Toggle + Shift msgs + Auth Button */}
         <div className="hidden sm:flex items-center gap-2 shrink-0">
           <PWAInstallButton variant="topbar" />
           <ThemeToggle />
+          <ShiftMessageBell />
           {loading ? (
             <div className="h-8 w-24 rounded-lg bg-surface-3 animate-pulse" />
           ) : isAuthenticated ? (
@@ -341,6 +347,7 @@ export default function AppShell({ children }) {
               </div>
             </Link>
             <ThemeToggle compact />
+            <ShiftMessageBell />
             {isAuthenticated ? (
               <Link
                 href="/"
