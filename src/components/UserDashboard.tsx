@@ -297,7 +297,7 @@ export default function UserDashboard() {
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4">
       {/* Executive Header */}
-      <header className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+      <header className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 dark:bg-emerald-500/14 dark:border-emerald-400/35 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -434,12 +434,14 @@ export default function UserDashboard() {
             aria-label="Key operator metrics"
             className="grid grid-cols-2 lg:grid-cols-4 gap-4"
           >
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
                   My Total Logs
                 </p>
-                <FileText className="w-4 h-4 text-blue-500 dark:text-sky-400 shrink-0" />
+                <span className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 text-blue-600 dark:bg-sky-500/12 dark:border-sky-400/25 dark:text-sky-400 inline-flex items-center justify-center shrink-0">
+                  <FileText className="w-3.5 h-3.5" />
+                </span>
               </div>
               <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
                 {metrics.totalMine}
@@ -449,12 +451,14 @@ export default function UserDashboard() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
                   Today&apos;s Coverage
                 </p>
-                <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/12 dark:border-emerald-400/25 dark:text-emerald-400 inline-flex items-center justify-center shrink-0">
+                  <Clock className="w-3.5 h-3.5" />
+                </span>
               </div>
               <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
                 {metrics.todaySlotsCount}
@@ -476,12 +480,14 @@ export default function UserDashboard() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
                   Latest Recorded Load
                 </p>
-                <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/12 dark:border-emerald-400/25 dark:text-emerald-400 inline-flex items-center justify-center shrink-0">
+                  <Activity className="w-3.5 h-3.5" />
+                </span>
               </div>
               <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 font-mono tabular-nums tracking-tight">
                 {metrics.latestMw === "—" ? "—" : `${metrics.latestMw} MW`}
@@ -494,12 +500,14 @@ export default function UserDashboard() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
                   Recent Peak Load
                 </p>
-                <BarChart3 className="w-4 h-4 text-orange-500 dark:text-amber-400 shrink-0" />
+                <span className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 text-orange-500 dark:bg-amber-500/12 dark:border-amber-400/25 dark:text-amber-400 inline-flex items-center justify-center shrink-0">
+                  <BarChart3 className="w-3.5 h-3.5" />
+                </span>
               </div>
               <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
                 {metrics.peakMw === "—" ? "—" : `${metrics.peakMw} MW`}
@@ -516,7 +524,7 @@ export default function UserDashboard() {
             {/* Left 8 Columns: Personal Activity Ledger */}
             <section
               aria-label="Personal activity log"
-              className="lg:col-span-8 rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface overflow-hidden"
+              className="lg:col-span-8 rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface overflow-hidden shadow-xs dark:shadow-[var(--app-shadow)]"
             >
               <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-app/70 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -557,9 +565,9 @@ export default function UserDashboard() {
                         className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                           filter === opt.id
                             ? opt.id === "loadshed"
-                              ? "bg-orange-500 text-white shadow-xs"
+                              ? "bg-orange-500 dark:bg-amber-500 text-white dark:text-[#1c1002] shadow-xs"
                               : opt.id === "today"
-                                ? "bg-blue-500 text-white shadow-xs"
+                                ? "bg-blue-500 dark:bg-sky-500 text-white dark:text-[#041827] shadow-xs"
                                 : "bg-white dark:bg-emerald-500 text-zinc-800 dark:text-[#031d16] shadow-xs"
                             : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
                         }`}
@@ -740,7 +748,7 @@ export default function UserDashboard() {
             {/* Right 4 Columns: Recent Load Trend + Operational Workflows */}
             <aside className="lg:col-span-4 space-y-5">
               {/* Mini Recent Trend Strip */}
-              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5">
+              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
                 <div className="flex items-center justify-between gap-2 pb-3 border-b border-zinc-200 dark:border-app/70">
                   <div>
                     <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
@@ -815,7 +823,7 @@ export default function UserDashboard() {
               </div>
 
               {/* Focused Station Workflows */}
-              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5">
+              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
                 <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
                   <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
                     Station Operations
@@ -835,10 +843,12 @@ export default function UserDashboard() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="group flex items-center justify-between gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-surface-2/50 -mx-2 px-2 rounded-lg transition-colors"
+                        className="group flex items-center justify-between gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-surface-2/60 -mx-2 px-2 rounded-lg transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <Icon className="w-4 h-4 text-blue-500 dark:text-emerald-400 shrink-0" />
+                          <span className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-surface-2 border border-zinc-200 dark:border-app inline-flex items-center justify-center shrink-0 group-hover:border-emerald-300 dark:group-hover:border-emerald-500/35 transition-colors">
+                            <Icon className="w-4 h-4 text-blue-500 dark:text-emerald-400" />
+                          </span>
                           <div className="min-w-0">
                             <p className="text-xs font-semibold text-zinc-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors truncate">
                               {item.label}
@@ -848,7 +858,7 @@ export default function UserDashboard() {
                             </p>
                           </div>
                         </div>
-                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                       </Link>
                     );
                   })}

@@ -70,7 +70,7 @@ export default function DashboardAccountPanel({
   return (
     <div className="space-y-4">
       {/* Account & Role Summary Strip */}
-      <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
+      <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-zinc-200 dark:border-app/70">
           <div>
             <h2 className="text-base font-semibold text-zinc-800 dark:text-white tracking-tight font-display">
@@ -137,7 +137,7 @@ export default function DashboardAccountPanel({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <form
           onSubmit={onSaveProfile}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4"
+          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4 shadow-xs dark:shadow-[var(--app-shadow)]"
         >
           <div className="space-y-3">
             <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
@@ -221,7 +221,7 @@ export default function DashboardAccountPanel({
 
         <form
           onSubmit={onChangePassword}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4"
+          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4 shadow-xs dark:shadow-[var(--app-shadow)]"
         >
           <div className="space-y-3">
             <div className="pb-3 border-b border-zinc-200 dark:border-app/70">

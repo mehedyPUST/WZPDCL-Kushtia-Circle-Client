@@ -1,6 +1,27 @@
 @import "tailwindcss";
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+@theme inline {
+  --color-surface: var(--app-surface);
+  --color-surface-2: var(--app-surface-2);
+  --color-surface-3: var(--app-surface-3);
+  --color-elevated: var(--app-elevated);
+  --color-accent-dim: var(--app-accent-dim);
+
+  --background-color-app: var(--app-bg);
+  --background-color-accent: var(--app-accent);
+
+  --text-color-app: var(--app-text);
+  --text-color-secondary: var(--app-text-secondary);
+  --text-color-muted: var(--app-text-muted);
+  --text-color-faint: var(--app-text-faint);
+  --text-color-accent: var(--app-accent-text);
+
+  --border-color-app: var(--app-border);
+  --border-color-app-strong: var(--app-border-strong);
+  --border-color-accent: var(--app-accent-border);
+}
+
 /* ═══════════════════════════════════════════════════════════
    Theme tokens — dark (default) & light
    Components use Tailwind + these CSS variables.
@@ -492,51 +513,7 @@ input[type="number"] {
   color: var(--app-text);
 }
 
-/* ── Semantic utility classes (thin layer over variables) ── */
-.bg-app {
-  background-color: var(--app-bg);
-}
-.bg-surface {
-  background-color: var(--app-surface);
-}
-.bg-surface-2 {
-  background-color: var(--app-surface-2);
-}
-.bg-surface-3 {
-  background-color: var(--app-surface-3);
-}
-.bg-elevated {
-  background-color: var(--app-elevated);
-}
-.bg-accent-dim {
-  background-color: var(--app-accent-dim);
-}
-
-.text-app {
-  color: var(--app-text);
-}
-.text-secondary {
-  color: var(--app-text-secondary);
-}
-.text-muted {
-  color: var(--app-text-muted);
-}
-.text-faint {
-  color: var(--app-text-faint);
-}
-.text-accent {
-  color: var(--app-accent-text);
-}
-
-.border-app {
-  border-color: var(--app-border);
-}
-.border-app-strong {
-  border-color: var(--app-border-strong);
-}
-.border-accent {
-  border-color: var(--app-accent-border);
-}
+/* Semantic tokens above are registered in @theme inline for full variant & opacity support */
 
 .app-card {
   background: var(--app-surface);
@@ -1997,20 +1974,22 @@ html[data-theme="light"] aside {
   text-align: right;
 }
 
-/* Form controls — always high contrast */
-input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-select,
-textarea {
-  background-color: var(--app-bg);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-input:not([type="checkbox"]):not([type="radio"]):focus,
-select:focus,
-textarea:focus {
-  border-color: var(--app-accent);
-  outline: none;
-  box-shadow: 0 0 0 3px var(--app-focus-ring);
+/* Form controls — default base styling (yields to Tailwind utilities) */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    border-color: var(--app-border);
+  }
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--app-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--app-focus-ring);
+  }
 }
 
 /* Cards */
@@ -2053,13 +2032,6 @@ textarea:focus {
   background: linear-gradient(to top, var(--app-bg), transparent) !important;
 }
 
-/* Light: never force dark slate on content */
-html[data-theme="light"] .bg-surface,
-html[data-theme="light"] .bg-elevated,
-html[data-theme="light"] .bg-app {
-  color: var(--app-text);
-}
-
 /* Calculator inputs readable */
 .cell-input input {
   background: var(--app-bg) !important;
@@ -2085,27 +2057,21 @@ thead.sticky,
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Global readability overrides (last-resort safety net)
-   Keeps dense ops UI legible even when a utility class slips through
+   Global readability base defaults
    ═══════════════════════════════════════════════════════════ */
 
-/* Prefer theme text on common surfaces */
-.bg-surface,
-.bg-surface-2,
-.bg-surface-3,
-.bg-elevated,
-.bg-app,
-.pro-card,
-.page-frame {
-  color: var(--app-text);
-}
+@layer base {
+  .pro-card,
+  .page-frame {
+    color: var(--app-text);
+  }
 
-/* Tables: force readable cells */
-table th {
-  color: var(--app-text-secondary);
-}
-table td {
-  color: var(--app-text);
+  table th {
+    color: var(--app-text-secondary);
+  }
+  table td {
+    color: var(--app-text);
+  }
 }
 
 /* Placeholder always muted */
