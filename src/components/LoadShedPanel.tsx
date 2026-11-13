@@ -60,7 +60,7 @@ export default function LoadShedPanel({
     <section
       className={
         isLandscape
-          ? "px-3 py-2.5 border-b border-app bg-surface-2/40"
+          ? "px-3 pb-2"
           : "border-b border-app bg-surface-2/60 dark:bg-surface/70"
       }
       style={
@@ -74,24 +74,8 @@ export default function LoadShedPanel({
             }
       }
     >
-      {isLandscape && (
-        <div className="flex items-center justify-between mb-1.5 px-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted font-mono">
-            LS Plan Summary
-          </span>
-          <span
-            className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${
-              over
-                ? "badge-danger"
-                : "badge-success"
-            }`}
-          >
-            {over ? "Shed Needed" : "Within Allot"}
-          </span>
-        </div>
-      )}
       <div
-        className={`grid ${isLandscape ? "grid-cols-2 gap-2" : "grid-cols-4"}`}
+        className={`grid ${isLandscape ? "grid-cols-4 max-w-2xl mx-auto gap-2" : "grid-cols-4"}`}
         style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
       >
         <Metric label="Running" value={(Math.round((plan.totalMW + Number.EPSILON) * 10) / 10).toFixed(1)} unit="MW" tone="neutral" />

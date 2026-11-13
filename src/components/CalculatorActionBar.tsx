@@ -54,8 +54,8 @@ export default function CalculatorActionBar({
 
   const btnStyle = isLandscape
     ? {
-        height: "2.35rem",
-        fontSize: "0.72rem",
+        height: "2.4rem",
+        fontSize: "0.75rem",
         paddingLeft: "0.5rem",
         paddingRight: "0.5rem",
       }
@@ -68,7 +68,11 @@ export default function CalculatorActionBar({
 
   return (
     <section
-      className={isLandscape ? "flex flex-col px-3 pb-2.5 gap-2" : "flex flex-col"}
+      className={
+        isLandscape
+          ? "flex flex-col max-w-2xl mx-auto w-full px-3 pb-2 gap-2"
+          : "flex flex-col"
+      }
       style={
         isLandscape
           ? undefined
@@ -82,7 +86,7 @@ export default function CalculatorActionBar({
     >
       {isLS ? (
         <div
-          className={`grid ${isLandscape ? "grid-cols-2 gap-2" : "grid-cols-3"}`}
+          className={`grid grid-cols-3 ${isLandscape ? "gap-2.5" : ""}`}
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
         >
           <button
@@ -105,20 +109,16 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400 ${isLandscape ? "col-span-2" : ""}`}
-            style={
-              isLandscape
-                ? { ...btnStyle, height: "2rem" }
-                : btnStyle
-            }
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
+            style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
-            {isLandscape ? "Reset All Fields" : "Reset"}
+            Reset
           </button>
         </div>
       ) : (
         <div
-          className={`grid ${isLandscape ? "grid-cols-2 gap-2" : "grid-cols-3"}`}
+          className={`grid grid-cols-3 ${isLandscape ? "gap-2.5" : ""}`}
           style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
         >
           <button
@@ -157,15 +157,11 @@ export default function CalculatorActionBar({
             type="button"
             onClick={onClear}
             disabled={isSaving || !onClear}
-            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400 ${isLandscape ? "col-span-2" : ""}`}
-            style={
-              isLandscape
-                ? { ...btnStyle, height: "2rem" }
-                : btnStyle
-            }
+            className={`${btnBase} calc-reset-btn focus-visible:ring-rose-400`}
+            style={btnStyle}
             title="Reset all bus voltages and feeder values"
           >
-            {isLandscape ? "Reset All Fields" : "Reset"}
+            Reset
           </button>
         </div>
       )}

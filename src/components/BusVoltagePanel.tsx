@@ -126,7 +126,11 @@ export default function BusVoltagePanel({
 
   return (
     <section
-      className={isLandscape ? "px-3 pt-2.5 pb-2.5 border-b border-app bg-surface/60" : "border-b border-app bg-surface-2"}
+      className={
+        isLandscape
+          ? "border-b border-app bg-surface-2/80 px-3 py-2"
+          : "border-b border-app bg-surface-2"
+      }
       style={
         isLandscape
           ? undefined
@@ -138,18 +142,16 @@ export default function BusVoltagePanel({
             }
       }
     >
-      {isLandscape && (
-        <div className="flex items-center justify-between mb-1.5 px-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted font-mono">
-            Bus Telemetry
-          </span>
-          <span className="text-[10px] font-mono text-faint">
-            0 = Shut down
-          </span>
-        </div>
-      )}
       <div
-        className={`grid ${isLandscape ? "grid-cols-2 gap-2" : isLS ? "grid-cols-3" : "grid-cols-2"}`}
+        className={`grid ${
+          isLandscape
+            ? isLS
+              ? "grid-cols-3 max-w-2xl mx-auto gap-2.5"
+              : "grid-cols-2 max-w-lg mx-auto gap-2.5"
+            : isLS
+              ? "grid-cols-3"
+              : "grid-cols-2"
+        }`}
         style={isLandscape ? undefined : { gap: "var(--calc-gap)" }}
       >
         <Field
@@ -179,21 +181,19 @@ export default function BusVoltagePanel({
           navCol={1}
         />
         {isLS && (
-          <div className={isLandscape ? "col-span-2" : ""}>
-            <Field
-              label={isLandscape ? "Allotment" : "Allot"}
-              value={allotment}
-              onChange={(v) => onAllotmentChange?.(v)}
-              handleWheel={handleWheel}
-              handleKeyDown={handleKeyDown}
-              placeholder="-"
-              unit="MW"
-              tone="amber"
-              required
-              navRow={-1}
-              navCol={2}
-            />
-          </div>
+          <Field
+            label={isLandscape ? "Allotment" : "Allot"}
+            value={allotment}
+            onChange={(v) => onAllotmentChange?.(v)}
+            handleWheel={handleWheel}
+            handleKeyDown={handleKeyDown}
+            placeholder="-"
+            unit="MW"
+            tone="amber"
+            required
+            navRow={-1}
+            navCol={2}
+          />
         )}
       </div>
     </section>

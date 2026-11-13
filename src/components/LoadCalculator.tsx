@@ -883,10 +883,22 @@ export default function LoadCalculator({
             </div>
 
             {isLandscape ? (
-              <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden flex flex-col">
-                <div className="flex-1 min-h-0 min-w-[600px] sm:min-w-0 grid grid-cols-[minmax(0,1fr)_16.5rem] sm:grid-cols-[minmax(0,1fr)_18.5rem] md:grid-cols-[minmax(0,1fr)_20.5rem] lg:grid-cols-[minmax(0,1fr)_22.5rem] xl:grid-cols-[minmax(0,1fr)_24rem]">
-                  {/* LEFT PANE — Feeder Telemetry Table */}
-                  <div className="min-w-0 min-h-0 flex flex-col overflow-hidden bg-surface">
+              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <div className="shrink-0">
+                  <BusVoltagePanel
+                    busVoltages={busVoltages}
+                    onChange={handleBusVoltageChange}
+                    handleWheel={handleWheel}
+                    handleKeyDown={handleKeyDown}
+                    mode={mode}
+                    allotment={allotment}
+                    onAllotmentChange={handleAllotmentChange}
+                    layout="landscape"
+                  />
+                </div>
+
+                <div className="flex-1 min-h-0 overflow-y-auto flex flex-col bg-surface">
+                  <div className="my-auto w-full">
                     <FeederTable
                       busVoltages={busVoltages}
                       amps={amps}
@@ -905,79 +917,50 @@ export default function LoadCalculator({
                       layout="landscape"
                     />
                   </div>
+                </div>
 
-                  {/* RIGHT PANE — Control & Output Rail */}
-                  <aside className="min-w-0 min-h-0 flex flex-col justify-between border-l border-app bg-surface-2/55 overflow-y-auto">
-                    <div className="flex flex-col">
-                      <BusVoltagePanel
-                        busVoltages={busVoltages}
-                        onChange={handleBusVoltageChange}
-                        handleWheel={handleWheel}
-                        handleKeyDown={handleKeyDown}
-                        mode={mode}
-                        allotment={allotment}
-                        onAllotmentChange={handleAllotmentChange}
-                        layout="landscape"
-                      />
-
-                      {mode === "loadShed" && (
-                        calculated && loadShedPlan?.valid ? (
-                          <LoadShedPanel
-                            plan={loadShedPlan}
-                            calculated={calculated}
-                            layout="landscape"
-                          />
-                        ) : (
-                          <div className="m-3 rounded-xl border border-dashed border-app-strong bg-surface/60 px-3 py-3 text-center">
-                            <p className="text-[11px] font-semibold text-secondary">
-                              Loadshed Plan Preview
-                            </p>
-                            <p className="text-[10px] text-muted mt-0.5 leading-relaxed">
-                              Enter bus voltages, allotment MW, and feeder amps, then click{" "}
-                              <span className="font-bold text-warning">Calculate LS</span>.
-                            </p>
-                          </div>
-                        )
-                      )}
-                    </div>
-
-                    <div className="mt-auto flex flex-col border-t border-app bg-surface/90 pt-2.5">
-                      {mode === "normal" && (
-                        <LoadResultsPanel
-                          calculate={calculated}
-                          bottail11kV={totals.bottail11kV}
-                          totalMW={totals.totalMW}
-                          onCopy={handleCopyTotal}
-                          layout="landscape"
-                        />
-                      )}
-                      <CalculatorActionBar
-                        mode={mode}
-                        onClear={handleClearFields}
-                        onCalculateOnly={handleCalculateOnly}
-                        onCalculateAndSaveHour={
-                          editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
-                        }
-                        hourSlotLabel={
-                          editRecord
-                            ? editRecord.hourSlot || hourSlot?.label
-                            : hourSlot?.label
-                        }
-                        hourSlotSpecial={
-                          editRecord
-                            ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
-                            : hourSlot?.isSpecial
-                        }
-                        onHistory={goHistory}
-                        historyLabel={embedded ? "Close" : undefined}
-                        onCalculateLoadShed={handleCalculateLoadShed}
-                        onCopyLoadShed={handleCopyLoadShed}
-                        isSaving={isSaving}
-                        saveLabel={editRecord ? "Update" : undefined}
-                        layout="landscape"
-                      />
-                    </div>
-                  </aside>
+                <div className="flex-shrink-0 bg-surface border-t border-app pt-2">
+                  {mode === "normal" && (
+                    <LoadResultsPanel
+                      calculate={calculated}
+                      bottail11kV={totals.bottail11kV}
+                      totalMW={totals.totalMW}
+                      onCopy={handleCopyTotal}
+                      layout="landscape"
+                    />
+                  )}
+                  {mode === "loadShed" && (
+                    <LoadShedPanel
+                      plan={loadShedPlan}
+                      calculated={calculated}
+                      layout="landscape"
+                    />
+                  )}
+                  <CalculatorActionBar
+                    mode={mode}
+                    onClear={handleClearFields}
+                    onCalculateOnly={handleCalculateOnly}
+                    onCalculateAndSaveHour={
+                      editRecord ? handleUpdateRecord : handleCalculateAndSaveHour
+                    }
+                    hourSlotLabel={
+                      editRecord
+                        ? editRecord.hourSlot || hourSlot?.label
+                        : hourSlot?.label
+                    }
+                    hourSlotSpecial={
+                      editRecord
+                        ? !!(editRecord.hourSlot && String(editRecord.hourSlot).includes("30"))
+                        : hourSlot?.isSpecial
+                    }
+                    onHistory={goHistory}
+                    historyLabel={embedded ? "Close" : undefined}
+                    onCalculateLoadShed={handleCalculateLoadShed}
+                    onCopyLoadShed={handleCopyLoadShed}
+                    isSaving={isSaving}
+                    saveLabel={editRecord ? "Update" : undefined}
+                    layout="landscape"
+                  />
                 </div>
               </div>
             ) : (
