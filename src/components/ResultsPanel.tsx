@@ -30,7 +30,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-surface-2 dark:bg-gradient-to-br dark:from-slate-800/95 dark:via-slate-900 dark:to-slate-950 text-app dark:text-white rounded-xl flex items-center justify-between shadow-xs dark:shadow-lg dark:shadow-slate-950/40 border border-app min-w-0"
+        className="bg-surface-2 dark:bg-gradient-to-br dark:from-surface-2 dark:to-surface text-app rounded-xl flex items-center justify-between shadow-xs border border-app min-w-0"
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
@@ -56,7 +56,7 @@ export default function ResultsPanel({ calculate, bottail11kV, totalMW, onCopy }
       <motion.div
         data-keep-dark="true"
         whileHover={{ scale: 1.01 }}
-        className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-950/20 border border-emerald-500/40 min-w-0"
+        className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 text-white rounded-xl flex items-center justify-between shadow-md shadow-emerald-950/20 border border-emerald-500/40 dark:border-emerald-400/35 min-w-0"
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span

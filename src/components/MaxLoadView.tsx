@@ -49,12 +49,12 @@ const RANGE_OPTIONS = [
 ];
 
 const chartTooltipStyle = {
-  backgroundColor: "#0f172a",
-  border: "1px solid #334155",
+  backgroundColor: "#152033",
+  border: "1px solid rgba(148, 163, 184, 0.24)",
   borderRadius: 10,
   fontSize: 12,
-  color: "#f8fafc",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
+  color: "#f1f5f9",
+  boxShadow: "0 14px 30px -8px rgba(0, 0, 0, 0.65)",
   padding: "10px 14px",
 };
 
@@ -207,12 +207,12 @@ function PeakKpiCard({
   icon?: any;
 }) {
   const accentClasses = {
-    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
-    purple: "from-orange-50/80 via-white to-orange-50/30 border-orange-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
-    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
-    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
-    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
-    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-app",
+    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25",
+    purple: "from-orange-50/80 via-white to-orange-50/30 border-orange-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25",
+    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25",
+    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25",
+    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25",
+    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-[#152033]/70 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-app",
   };
   const valueColors = {
     emerald: "text-emerald-700 dark:text-emerald-200",
@@ -700,8 +700,8 @@ export default function MaxLoadView() {
 
       {/* ── Error Banner ── */}
       {!loading && error && (
-        <div className="rounded-xl border border-rose-900/50 bg-rose-950/30 p-6 text-center mb-6">
-          <p className="text-rose-300 text-sm font-semibold">{error}</p>
+        <div className="rounded-xl border border-rose-300 bg-rose-50 dark:border-rose-900/50 dark:bg-rose-950/30 p-6 text-center mb-6">
+          <p className="text-rose-700 dark:text-rose-300 text-sm font-semibold">{error}</p>
           <button
             type="button"
             onClick={load}
@@ -857,7 +857,7 @@ export default function MaxLoadView() {
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke={isDark ? "#1e293b" : "#e4e4e7"}
+                    stroke={isDark ? "rgba(148, 163, 184, 0.14)" : "#e4e4e7"}
                     vertical={false}
                   />
                   <XAxis
@@ -867,12 +867,12 @@ export default function MaxLoadView() {
                       fontSize: 11,
                       fontWeight: 600,
                     }}
-                    axisLine={{ stroke: isDark ? "#334155" : "#d4d4d8" }}
+                    axisLine={{ stroke: isDark ? "rgba(148, 163, 184, 0.22)" : "#d4d4d8" }}
                     tickLine={false}
                   />
                   <YAxis
                     tick={{ fill: isDark ? "#94a3b8" : "#52525b", fontSize: 10 }}
-                    axisLine={{ stroke: isDark ? "#334155" : "#d4d4d8" }}
+                    axisLine={{ stroke: isDark ? "rgba(148, 163, 184, 0.22)" : "#d4d4d8" }}
                     tickLine={false}
                     width={46}
                     unit=" MW"

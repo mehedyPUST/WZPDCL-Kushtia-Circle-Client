@@ -802,7 +802,7 @@ export default function ManualEntryView({
       </div>
 
       {error && (
-        <div className="px-4 py-2 bg-rose-950/60 text-rose-300 text-sm border-b border-rose-500/30">
+        <div className="px-4 py-2 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-sm border-b border-rose-200 dark:border-rose-500/30">
           {error}
         </div>
       )}

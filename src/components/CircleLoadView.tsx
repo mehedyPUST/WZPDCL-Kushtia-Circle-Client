@@ -310,7 +310,7 @@ function StationTable({
             return (
               <tfoot>
                 <tr
-                  className={`text-[10px] uppercase tracking-wide ${isPbs ? "bg-sky-950/90" : "bg-elevated" }`}
+                  className={`text-[10px] uppercase tracking-wide ${isPbs ? "bg-sky-100 dark:bg-sky-950/85" : "bg-elevated" }`}
                 >
                   <td
                     className="time-col-sticky px-2.5 py-2 border-t-2 border-app-strong border-r border-app font-bold text-app"

@@ -103,12 +103,12 @@ const PRESET_RANGES = [
 const FEEDER_PALETTE = FEEDER_COLORS;
 
 const chartTooltipStyle = {
-  backgroundColor: "#0f172a",
-  border: "1px solid #334155",
+  backgroundColor: "#152033",
+  border: "1px solid rgba(148, 163, 184, 0.24)",
   borderRadius: 10,
   fontSize: 12,
-  color: "#f8fafc",
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6)",
+  color: "#f1f5f9",
+  boxShadow: "0 14px 30px -8px rgba(0, 0, 0, 0.65)",
   padding: "10px 14px",
 };
 
@@ -134,7 +134,7 @@ function hasRingActive(r) {
 
 export default function StatisticsView() {
   const { isDark } = useTheme();
-  const chartGridColor = isDark ? "#334155" : "#e4e4e7";
+  const chartGridColor = isDark ? "rgba(148, 163, 184, 0.14)" : "#e4e4e7";
   const chartTickColor = isDark ? "#94a3b8" : "#52525b";
   const chartCategoryTickColor = isDark ? "#f1f5f9" : "#27272a";
   const activeTooltipStyle = isDark
@@ -747,12 +747,12 @@ export default function StatisticsView() {
 
       {/* ── Error Banner ── */}
       {!loading && error && (
-        <div className="rounded-xl border border-red-900/50 bg-red-950/30 p-6 text-center mb-6">
-          <p className="text-red-300 text-sm font-semibold">{error}</p>
+        <div className="rounded-xl border border-rose-300 bg-rose-50 dark:border-rose-900/50 dark:bg-rose-950/30 p-6 text-center mb-6">
+          <p className="text-rose-700 dark:text-rose-300 text-sm font-semibold">{error}</p>
           <button
             type="button"
             onClick={loadData}
-            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-3 text-white text-xs font-semibold border border-app-strong hover:bg-surface-3"
+            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-3 text-app text-xs font-semibold border border-app-strong hover:bg-surface-2 transition-colors"
           >
             Retry Connection
           </button>
@@ -793,7 +793,7 @@ export default function StatisticsView() {
       {!loading && !error && !analytics.empty && (
         <>
           {/* ── Automated Engineering Intelligence Bar ── */}
-          <div className="rounded-xl bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/20 p-4 mb-6 shadow-xs dark:shadow-lg dark:shadow-black/20">
+          <div className="rounded-xl bg-white dark:bg-gradient-to-r dark:from-[#0f1726] dark:via-[#152033] dark:to-[#0d2420] border border-emerald-200 dark:border-emerald-500/25 p-4 mb-6 shadow-xs dark:shadow-lg dark:shadow-black/25">
             <div className="flex items-center gap-2 mb-3">
               <span className="inline-block h-2 w-2 rounded-sm bg-emerald-600 dark:bg-emerald-400" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
@@ -822,7 +822,7 @@ export default function StatisticsView() {
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-app mt-2 font-mono">
+                <span className="text-[10px] text-muted mt-2 font-mono">
                   {analytics.peakDemandRecord?.day ? formatDayLabel(analytics.peakDemandRecord.day) : "—"}
                 </span>
               </div>
@@ -847,7 +847,7 @@ export default function StatisticsView() {
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-app mt-2 font-mono">
+                <span className="text-[10px] text-muted mt-2 font-mono">
                   {analytics.peakLsRecord?.slot ? `Peak cut slot: ${analytics.peakLsRecord.slot}` : "Compliant continuous supply"}
                 </span>
               </div>
@@ -870,7 +870,7 @@ export default function StatisticsView() {
                     B2 (BRB, Mozompur, Campus/GIS, Kobur, T-3)
                   </p>
                 </div>
-                <span className="text-[10px] text-app mt-2 font-mono">
+                <span className="text-[10px] text-muted mt-2 font-mono">
                   Δ: {formatMW(Math.abs(analytics.bus1SharePct - analytics.bus2SharePct))}% variance
                 </span>
               </div>
@@ -896,7 +896,7 @@ export default function StatisticsView() {
                     )}
                   </p>
                 </div>
-                <span className="text-[10px] text-app mt-2 font-mono">
+                <span className="text-[10px] text-muted mt-2 font-mono">
                   WZPDCL Kushtia Incomer
                 </span>
               </div>
@@ -1134,49 +1134,49 @@ export default function StatisticsView() {
                   return (
                     <div
                       key={shift.key}
-                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-xs ${isEvening ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-purple-500/30" : isDay ? "bg-gradient-to-br from-sky-50/80 via-white to-sky-50/30 border-sky-200 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-900 dark:border-sky-500/30" : "bg-surface border-app" }`}
+                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-xs ${isEvening ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/30" : isDay ? "bg-gradient-to-br from-sky-50/80 via-white to-sky-50/30 border-sky-200 dark:from-sky-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/30" : "bg-surface border-app" }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-400" : isDay ? "text-sky-700 dark:text-sky-400" : "text-slate-700 text-muted" }`}>
+                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-400" : isDay ? "text-sky-700 dark:text-sky-400" : "text-muted" }`}>
                             {shift.name}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-600 text-muted bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-transparent px-2 py-0.5 rounded">
+                          <span className="text-[11px] font-mono text-muted bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-transparent px-2 py-0.5 rounded">
                             {shift.time}
                           </span>
                         </div>
                         <div className="mt-3 grid grid-cols-2 gap-3">
                           <div>
-                            <span className="text-[11px] text-app text-muted block">Peak Supplied</span>
+                            <span className="text-[11px] text-muted block">Peak Supplied</span>
                             <span className="text-xl font-bold font-mono text-app">
-                              {formatMW(shift.peakMW)} <span className="text-xs text-app text-muted">MW</span>
+                              {formatMW(shift.peakMW)} <span className="text-xs text-muted">MW</span>
                             </span>
                           </div>
                           <div>
-                            <span className="text-[11px] text-app text-muted block">Average Load</span>
-                            <span className="text-xl font-bold font-mono text-slate-800 text-secondary">
-                              {formatMW(shift.avgMW)} <span className="text-xs text-app text-muted">MW</span>
+                            <span className="text-[11px] text-muted block">Average Load</span>
+                            <span className="text-xl font-bold font-mono text-secondary">
+                              {formatMW(shift.avgMW)} <span className="text-xs text-muted">MW</span>
                             </span>
                           </div>
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-app grid grid-cols-2 gap-3 text-xs">
                           <div>
-                            <span className="text-app text-muted block text-[11px]">Peak Load Shed</span>
+                            <span className="text-muted block text-[11px]">Peak Load Shed</span>
                             <span className={`font-mono font-bold ${shift.peakShedMW > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}>
                               {formatMW(shift.peakShedMW)} MW
                             </span>
                           </div>
                           <div>
-                            <span className="text-app text-muted block text-[11px]">Average Shed</span>
-                            <span className="font-mono font-semibold text-slate-700 text-secondary">
+                            <span className="text-muted block text-[11px]">Average Shed</span>
+                            <span className="font-mono font-semibold text-secondary">
                               {formatMW(shift.avgLS)} MW
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-4 text-[11px] text-slate-600 dark:text-app">
+                      <div className="mt-4 text-[11px] text-muted">
                         {isEvening && "Highest thermal stress on 33/11kV transformers & switchgear"}
                         {isDay && "Driven by BRB Cable Industries, MRS, and commercial shops"}
                         {!isEvening && !isDay && "Lowest ambient temperature; stable base grid conditions"}
@@ -1626,13 +1626,13 @@ export default function StatisticsView() {
 
 function SubstationKpi({ label, value, unit, sub, accent = "slate" }) {
   const accentClasses = {
-    purple: "from-orange-50/70 via-white to-orange-50/20 border-orange-200 dark:from-purple-950/50 dark:via-transparent dark:to-slate-900 dark:border-purple-500/25",
-    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/50 dark:via-transparent dark:to-slate-900 dark:border-emerald-500/25",
-    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-transparent dark:to-slate-900 dark:border-sky-500/25",
-    rose: "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-transparent dark:to-slate-900 dark:border-rose-500/25",
-    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-transparent dark:to-slate-900 dark:border-amber-500/25",
-    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-transparent dark:to-slate-900 dark:border-teal-500/25",
-    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-slate-800/40 dark:via-transparent dark:to-slate-900 dark:border-white/[0.07]",
+    purple: "from-orange-50/70 via-white to-orange-50/20 border-orange-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25",
+    emerald: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25",
+    sky: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25",
+    rose: "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25",
+    amber: "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25",
+    teal: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25",
+    slate: "from-zinc-50 via-white to-zinc-50 border-zinc-200 dark:from-[#152033]/70 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-app",
   };
 
   const valueClasses = {

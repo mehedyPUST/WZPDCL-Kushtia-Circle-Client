@@ -34,7 +34,7 @@ export function SkeletonStatCard({ count = 3 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="p-4 rounded-xl bg-surface/60 border border-slate-800/80 space-y-3"
+          className="p-4 rounded-xl bg-surface/60 border border-app space-y-3"
         >
           <div className="flex items-center justify-between">
             <SkeletonLine className="h-3 w-24" />
@@ -65,8 +65,8 @@ export function SkeletonLogsheet({ rows = 12 }) {
 
       {/* Skeleton Sheet Grid */}
       <div className="flex-1 min-h-0 p-3 overflow-hidden">
-        <div className="w-full overflow-hidden rounded-xl border border-slate-800 bg-surface">
-          <div className="grid grid-cols-12 gap-1 px-3 py-2.5 bg-app border-b border-slate-800">
+        <div className="w-full overflow-hidden rounded-xl border border-app bg-surface">
+          <div className="grid grid-cols-12 gap-1 px-3 py-2.5 bg-app border-b border-app">
             <SkeletonShimmer className="h-4 w-12 rounded" />
             <SkeletonShimmer className="h-4 w-14 rounded" />
             {Array.from({ length: 9 }).map((_, i) => (
@@ -74,14 +74,14 @@ export function SkeletonLogsheet({ rows = 12 }) {
             ))}
             <SkeletonShimmer className="h-4 w-12 rounded ml-auto" />
           </div>
-          <div className="divide-y divide-slate-800/60">
+          <div className="divide-y divide-[var(--app-border)]">
             {Array.from({ length: rows }).map((_, r) => (
               <div
                 key={r}
                 className={`grid grid-cols-12 gap-2 px-3 py-2 items-center ${ r % 2 === 0 ? "bg-surface/20" : "bg-surface/40" }`}
               >
                 <SkeletonShimmer className="h-3.5 w-10 rounded" />
-                <SkeletonShimmer className="h-3.5 w-12 rounded bg-emerald-950/40" />
+                <SkeletonShimmer className="h-3.5 w-12 rounded bg-[var(--app-accent-dim)]" />
                 {Array.from({ length: 9 }).map((_, c) => (
                   <SkeletonShimmer key={c} className="h-3.5 w-full rounded" />
                 ))}
@@ -137,14 +137,14 @@ export default function SkeletonTable({
 }) {
   return (
     <div
-      className={`w-full overflow-hidden rounded-xl border ${ dark ? "border-slate-800/80 bg-surface/40" : "border-app bg-white" } shadow-sm backdrop-blur-sm`}
+      className={`w-full overflow-hidden rounded-xl border ${ dark ? "border-app bg-surface/50" : "border-app bg-white" } shadow-sm backdrop-blur-sm`}
     >
       <table className="w-full table-fixed border-collapse">
         {showHeader && (
           <thead
             className={
               dark
-                ? "bg-surface-3/60 border-b border-slate-800 text-muted"
+                ? "bg-surface-2/90 border-b border-app text-muted"
                 : "bg-surface-3 border-b border-app text-muted"
             }
           >
@@ -152,14 +152,14 @@ export default function SkeletonTable({
               {Array.from({ length: columns }).map((_, i) => (
                 <th key={i} className="py-2.5 px-3 text-center">
                   <SkeletonShimmer
-                    className={`h-3.5 mx-auto rounded ${ i === 0 ? "w-8" : i === 1 ? "w-28" : "w-16" } ${dark ? "bg-surface-3/60" : "bg-slate-300"}`}
+                    className={`h-3.5 mx-auto rounded ${ i === 0 ? "w-8" : i === 1 ? "w-28" : "w-16" } ${dark ? "bg-surface-3/70" : "bg-slate-300"}`}
                   />
                 </th>
               ))}
             </tr>
           </thead>
         )}
-        <tbody className={dark ? "divide-y divide-slate-800/60" : "divide-y divide-slate-200"}>
+        <tbody className={dark ? "divide-y divide-[var(--app-border)]" : "divide-y divide-slate-200"}>
           {Array.from({ length: rows }).map((_, rowIndex) => (
             <tr
               key={rowIndex}

@@ -138,13 +138,13 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
               <span className="text-[10px] font-medium text-muted">MW</span>
             </span>
           </div>
-          <div className="bg-blue-50 dark:bg-blue-950/45 rounded-xl h-12 flex items-center justify-between px-3 border border-blue-300 dark:border-blue-500/35">
-            <span className="text-xs font-semibold text-blue-800 dark:text-blue-200">
+          <div className="bg-emerald-50 dark:bg-emerald-950/45 rounded-xl h-12 flex items-center justify-between px-3 border border-emerald-300 dark:border-emerald-500/35">
+            <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
               Total
             </span>
-            <span className="text-sm font-bold font-mono tabular-nums text-blue-600 dark:text-blue-400">
+            <span className="text-sm font-bold font-mono tabular-nums text-emerald-700 dark:text-emerald-400">
               {(Math.round((Number(record.totalMW || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
-              <span className="text-[10px] font-medium text-blue-500/80">MW</span>
+              <span className="text-[10px] font-medium text-emerald-600/80 dark:text-emerald-400/80">MW</span>
             </span>
           </div>
         </div>
@@ -155,14 +155,14 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
               <button
                 type="button"
                 onClick={() => onEdit(record)}
-                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md shadow-blue-900/30 active:scale-[0.98] transition-all"
+                className="w-full inline-flex items-center justify-center h-10 rounded-xl btn-primary text-xs font-semibold tracking-wide shadow-md active:scale-[0.98] transition-all"
               >
                 Edit this record
               </button>
             ) : (
               <a
                 href={`/manual?edit=${encodeURIComponent(record._id)}`}
-                className="w-full inline-flex items-center justify-center h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide shadow-md shadow-blue-900/30 active:scale-[0.98] transition-all"
+                className="w-full inline-flex items-center justify-center h-10 rounded-xl btn-primary text-xs font-semibold tracking-wide shadow-md active:scale-[0.98] transition-all"
               >
                 Edit this record
               </a>

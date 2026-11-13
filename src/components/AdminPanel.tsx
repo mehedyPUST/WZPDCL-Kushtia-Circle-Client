@@ -529,7 +529,7 @@ export default function AdminPanel() {
                   >
                     <span>{f.label}</span>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${ roleFilter === f.id ? "bg-white/20 text-white" : "bg-surface-3 text-muted" }`}
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${ roleFilter === f.id ? "bg-white/20 text-white dark:bg-black/20 dark:text-[#031d16]" : "bg-surface-3 text-muted" }`}
                     >
                       {roleCounts[f.id] || 0}
                     </span>
@@ -542,15 +542,15 @@ export default function AdminPanel() {
                   type="button"
                   onClick={loadUsers}
                   disabled={loadingUsers}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface border border-app text-secondary hover:text-app hover:bg-surface-2 dark:border-app dark:bg-surface-3 dark:text-secondary dark:hover:text-app min-h-[2.25rem] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface border border-app text-secondary hover:text-app hover:bg-surface-2 dark:bg-surface-3 min-h-[2.25rem] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin text-emerald-600 text-accent" : ""}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin text-accent" : ""}`} />
                   <span className="hidden sm:inline">Refresh</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCreateUser((v) => !v)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold min-h-[2.25rem] inline-flex items-center gap-1.5 transition-all shadow-sm ${ showCreateUser ? "bg-surface border border-app text-secondary hover:bg-surface-3 border-app bg-surface-3 text-secondary" : "btn-primary shadow-emerald-700/20 active:scale-95" }`}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold min-h-[2.25rem] inline-flex items-center gap-1.5 transition-all shadow-sm ${ showCreateUser ? "bg-surface-3 border border-app text-secondary hover:bg-surface-2" : "btn-primary shadow-emerald-700/20 active:scale-95" }`}
                 >
                   {showCreateUser ? (
                     <>
@@ -689,14 +689,14 @@ export default function AdminPanel() {
                         setShowCreateUser(false);
                         setForm(emptyForm);
                       }}
-                      className="px-4 py-2 rounded-lg border border-app bg-surface-3 hover:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-secondary transition-colors"
+                      className="px-4 py-2 rounded-lg border border-app bg-surface-2 hover:bg-surface-3 text-xs font-semibold text-secondary transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={creating}
-                      className="px-5 py-2 rounded-lg btn-primary text-xs font-semibold tracking-wide hover:opacity-95 disabled:opacity-50 shadow-md shadow-emerald-950/20 dark:shadow-emerald-950 transition-colors whitespace-nowrap"
+                      className="px-5 py-2 rounded-lg btn-primary text-xs font-semibold tracking-wide hover:opacity-95 disabled:opacity-50 shadow-md shadow-emerald-950/20 transition-colors whitespace-nowrap"
                     >
                       {creating ? "Creating…" : "Save User"}
                     </button>
@@ -718,7 +718,7 @@ export default function AdminPanel() {
                     <th className="px-3.5 py-2.5 text-right bg-surface-2 text-secondary">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80">
+                <tbody className="divide-y divide-[var(--app-border)]">
                   {loadingUsers && (
                     <tr>
                       <td colSpan={6} className="p-3">
@@ -743,7 +743,7 @@ export default function AdminPanel() {
                         className={
                           active
                             ? "hover:bg-surface-3/50 transition-colors"
-                            : "bg-rose-950/25 hover:bg-rose-950/40 transition-colors"
+                            : "bg-rose-50/70 hover:bg-rose-100/70 dark:bg-rose-950/25 dark:hover:bg-rose-950/40 transition-colors"
                         }
                       >
                         <td className="px-3.5 py-2.5">
@@ -787,7 +787,7 @@ export default function AdminPanel() {
                             <button
                               type="button"
                               onClick={() => openEdit(u)}
-                              className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app bg-surface-3 text-secondary border-app transition-colors whitespace-nowrap shadow-2xs"
+                              className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app transition-colors whitespace-nowrap shadow-2xs"
                             >
                               Edit
                             </button>
@@ -803,7 +803,7 @@ export default function AdminPanel() {
                               <button
                                 type="button"
                                 onClick={() => setBlocked(u, false)}
-                                className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:opacity-95/20 text-accent dark:border-accent transition-colors whitespace-nowrap shadow-2xs"
+                                className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/15 dark:hover:bg-emerald-500/25 dark:text-emerald-400 dark:border-emerald-400/40 transition-colors whitespace-nowrap shadow-2xs"
                               >
                                 Activate
                               </button>
@@ -855,7 +855,7 @@ export default function AdminPanel() {
                         </p>
                       </div>
                       <span
-                        className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${ active ? "bg-emerald-500/15 text-accent border border-accent" : "bg-rose-500/15 text-rose-400 border border-rose-500/20" }`}
+                        className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${ active ? "bg-emerald-500/15 text-accent border border-emerald-500/35" : "bg-rose-500/15 text-rose-400 border border-rose-500/20" }`}
                       >
                         {active ? "Active" : "Blocked"}
                       </span>
@@ -874,7 +874,7 @@ export default function AdminPanel() {
                       <button
                         type="button"
                         onClick={() => openEdit(u)}
-                        className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app bg-surface-3 text-secondary border-app"
+                        className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-surface-3 hover:bg-surface-2 text-secondary border border-app"
                       >
                         Edit
                       </button>
@@ -890,7 +890,7 @@ export default function AdminPanel() {
                         <button
                           type="button"
                           onClick={() => setBlocked(u, false)}
-                          className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/10 dark:hover:opacity-95/20 text-accent dark:border-accent"
+                          className="flex-1 min-h-[2.5rem] px-2 rounded-lg text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/15 dark:hover:bg-emerald-500/25 dark:text-emerald-400 dark:border-emerald-400/40"
                         >
                           Activate
                         </button>
@@ -911,10 +911,10 @@ export default function AdminPanel() {
 
             <p className="text-[11px] text-muted leading-relaxed max-w-2xl">
               <strong className="text-secondary">Viewer</strong> — site view only (no save).{" "}
-              <strong className="text-amber-300">Circle load input</strong> — same views as viewer; may
+              <strong className="text-amber-700 dark:text-amber-300">Circle load input</strong> — same views as viewer; may
               enter circle load for their assigned station only.{" "}
-              <strong className="text-sky-300">Duty person</strong> — operational pages and save.{" "}
-              <strong className="text-purple-300">Admin</strong> — users, settings, Bottail override on
+              <strong className="text-sky-700 dark:text-sky-300">Duty person</strong> — operational pages and save.{" "}
+              <strong className="text-purple-700 dark:text-purple-300">Admin</strong> — users, settings, Bottail override on
               circle load. Blocked users cannot sign in.
             </p>
           </div>
@@ -1090,7 +1090,7 @@ export default function AdminPanel() {
       {editUser && (
         <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
           <div
-            className="absolute inset-0 bg-elevated/75 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/45 dark:bg-black/65 backdrop-blur-sm"
             onClick={() => setEditUser(null)}
             aria-hidden
           />
@@ -1213,7 +1213,7 @@ export default function AdminPanel() {
               <button
                 type="button"
                 onClick={() => setEditUser(null)}
-                className="h-10 px-4 rounded-lg border border-app bg-surface-3 hover:bg-surface-3 dark:hover:bg-surface-3 text-xs font-semibold text-secondary whitespace-nowrap transition-colors"
+                className="h-10 px-4 rounded-lg border border-app bg-surface-3 hover:bg-surface-2 text-xs font-semibold text-secondary whitespace-nowrap transition-colors"
               >
                 Cancel
               </button>

@@ -10,17 +10,17 @@ function ThemedToaster() {
 
   const baseStyle = isDark
     ? {
-        background: "#0f172a",
-        color: "#f8fafc",
+        background: "#152033",
+        color: "#f1f5f9",
         fontSize: "13px",
         fontWeight: 500,
         letterSpacing: "0.01em",
         lineHeight: 1.45,
         padding: "12px 16px",
         borderRadius: "12px",
-        border: "1px solid rgba(148, 163, 184, 0.22)",
+        border: "1px solid rgba(148, 163, 184, 0.2)",
         boxShadow:
-          "0 10px 40px -12px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.06)",
+          "0 14px 36px -10px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(148, 163, 184, 0.08)",
         maxWidth: "min(420px, calc(100vw - 24px))",
       }
     : {
@@ -55,17 +55,17 @@ function ThemedToaster() {
         success: {
           duration: 2800,
           iconTheme: {
-            primary: isDark ? "#10b981" : "#059669",
-            secondary: "#ecfdf5",
+            primary: isDark ? "#34d399" : "#059669",
+            secondary: isDark ? "#08281e" : "#ecfdf5",
           },
           style: isDark
             ? {
                 ...baseStyle,
-                background: "#052e1c",
+                background: "#08281e",
                 color: "#ecfdf5",
-                border: "1px solid rgba(16, 185, 129, 0.35)",
+                border: "1px solid rgba(52, 211, 153, 0.36)",
                 boxShadow:
-                  "0 12px 40px -14px rgba(5, 46, 28, 0.55), 0 0 0 1px rgba(16, 185, 129, 0.12)",
+                  "0 14px 36px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(16, 185, 129, 0.14)",
               }
             : {
                 ...baseStyle,
@@ -79,16 +79,16 @@ function ThemedToaster() {
           duration: 4200,
           iconTheme: {
             primary: "#f43f5e",
-            secondary: "#fff1f2",
+            secondary: isDark ? "#2c0d18" : "#fff1f2",
           },
           style: isDark
             ? {
                 ...baseStyle,
-                background: "#4c0519",
+                background: "#2c0d18",
                 color: "#ffe4e6",
-                border: "1px solid rgba(244, 63, 94, 0.4)",
+                border: "1px solid rgba(251, 113, 133, 0.38)",
                 boxShadow:
-                  "0 12px 40px -14px rgba(76, 5, 25, 0.55), 0 0 0 1px rgba(244, 63, 94, 0.12)",
+                  "0 14px 36px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(244, 63, 94, 0.16)",
               }
             : {
                 ...baseStyle,
@@ -102,14 +102,14 @@ function ThemedToaster() {
           duration: Infinity,
           iconTheme: {
             primary: isDark ? "#38bdf8" : "#3b82f6",
-            secondary: isDark ? "#0c4a6e" : "#eff6ff",
+            secondary: isDark ? "#0e1f33" : "#eff6ff",
           },
           style: isDark
             ? {
                 ...baseStyle,
-                background: "#0c1a2e",
+                background: "#0e1f33",
                 color: "#e0f2fe",
-                border: "1px solid rgba(56, 189, 248, 0.3)",
+                border: "1px solid rgba(56, 189, 248, 0.34)",
               }
             : {
                 ...baseStyle,

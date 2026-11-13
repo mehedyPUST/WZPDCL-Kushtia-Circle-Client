@@ -55,7 +55,7 @@ function TopbarLiveClock() {
       className="hidden md:flex items-center shrink-0 ml-auto mr-3"
       title="Substation operational time"
     >
-      <div className="inline-flex items-center gap-2 rounded-lg border border-accent bg-elevated/80 px-3 py-1.5 font-mono text-xs sm:text-sm font-bold tracking-wider text-accent tabular-nums shadow-inner">
+      <div className="inline-flex items-center gap-2 rounded-lg border border-[var(--app-accent-border)] bg-surface-2/85 px-3 py-1.5 font-mono text-xs sm:text-sm font-bold tracking-wider text-accent tabular-nums shadow-inner">
         <Radio className="w-3.5 h-3.5 text-accent animate-pulse" />
         <span suppressHydrationWarning>{currentTime ?? "—"}</span>
       </div>
@@ -238,15 +238,18 @@ export default function AppShell({ children }) {
                 href={link.href}
                 className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
                   active
-                    ? "font-semibold text-[var(--app-accent-ink)]"
+                    ? "font-semibold text-[var(--sidebar-active-fg)]"
                     : "text-secondary hover:text-app hover:bg-surface-3/50"
                 }`}
               >
                 {active && (
                   <motion.div
                     layoutId="sidebar-active-tab"
-                    className="absolute inset-0 rounded-xl shadow-md border border-[var(--app-accent-border)]"
-                    style={{ background: "var(--app-accent)" }}
+                    className="absolute inset-0 rounded-xl shadow-sm border"
+                    style={{
+                      background: "var(--sidebar-active-bg)",
+                      borderColor: "var(--sidebar-active-border)",
+                    }}
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -254,13 +257,13 @@ export default function AppShell({ children }) {
                   <Icon
                     className={`w-4 h-4 shrink-0 transition-colors ${
                       active
-                        ? "text-[var(--app-accent-ink)]"
+                        ? "text-[var(--sidebar-active-fg)]"
                         : "text-muted group-hover:text-accent"
                     }`}
                   />
                   <span
                     className={`truncate ${
-                      active ? "text-[var(--app-accent-ink)]" : ""
+                      active ? "text-[var(--sidebar-active-fg)]" : ""
                     }`}
                   >
                     {link.label}
@@ -346,7 +349,7 @@ export default function AppShell({ children }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-[var(--app-overlay)] backdrop-blur-sm"
                 onClick={() => setMobileOpen(false)}
                 aria-hidden
               />
@@ -387,15 +390,15 @@ export default function AppShell({ children }) {
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all ${
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all border ${
                           active
-                            ? "font-semibold shadow-md border border-[var(--app-accent-border)] bg-[var(--app-accent)] text-[var(--app-accent-ink)]"
-                            : "text-secondary hover:text-app hover:bg-surface-3 border border-transparent"
+                            ? "font-semibold shadow-sm bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)] border-[var(--sidebar-active-border)]"
+                            : "text-secondary hover:text-app hover:bg-surface-3 border-transparent"
                         }`}
                       >
                         <Icon
                           className={`w-4 h-4 shrink-0 ${
-                            active ? "text-[var(--app-accent-ink)]" : "text-muted"
+                            active ? "text-[var(--sidebar-active-fg)]" : "text-muted"
                           }`}
                         />
                         <span>{link.label}</span>

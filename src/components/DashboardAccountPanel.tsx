@@ -70,7 +70,7 @@ export default function DashboardAccountPanel({
   return (
     <div className="space-y-4">
       {/* Account & Role Summary Strip */}
-      <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+      <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-zinc-200 dark:border-app/70">
           <div>
             <h2 className="text-base font-semibold text-zinc-800 dark:text-white tracking-tight font-display">
@@ -103,7 +103,7 @@ export default function DashboardAccountPanel({
             <dt className="text-xs font-medium text-zinc-500 dark:text-slate-400">
               Access Role
             </dt>
-            <dd className="mt-1 font-semibold text-emerald-700 dark:text-[#00ED64] inline-flex items-center gap-1.5">
+            <dd className="mt-1 font-semibold text-emerald-700 dark:text-emerald-400 inline-flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 shrink-0" />
               {roleLabel}
             </dd>
@@ -137,7 +137,7 @@ export default function DashboardAccountPanel({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <form
           onSubmit={onSaveProfile}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5 flex flex-col justify-between space-y-4"
+          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4"
         >
           <div className="space-y-3">
             <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
@@ -161,7 +161,7 @@ export default function DashboardAccountPanel({
                 type="text"
                 value={username || ""}
                 disabled
-                className="w-full h-10 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-[#0D3349]/60 px-3 text-sm font-mono text-zinc-500 dark:text-slate-400 cursor-not-allowed"
+                className="w-full h-10 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-surface-2/60 px-3 text-sm font-mono text-zinc-500 dark:text-slate-400 cursor-not-allowed"
               />
             </div>
 
@@ -181,7 +181,7 @@ export default function DashboardAccountPanel({
                   onChange={(e) => onChangeDisplayName(e.target.value)}
                   maxLength={80}
                   placeholder="e.g. Duty Operator — Bottail"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-[#0D3349] pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-colors"
+                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
                 />
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function DashboardAccountPanel({
                   value={emailDraft}
                   onChange={(e) => onChangeEmail(e.target.value)}
                   placeholder="operator@wzpdcl.gov.bd"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-[#0D3349] pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-colors"
+                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function DashboardAccountPanel({
 
         <form
           onSubmit={onChangePassword}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5 flex flex-col justify-between space-y-4"
+          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4"
         >
           <div className="space-y-3">
             <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
@@ -249,7 +249,7 @@ export default function DashboardAccountPanel({
                   autoComplete="current-password"
                   required
                   placeholder="Enter current password"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-[#0D3349] pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-[#00ED64]/25 focus:border-blue-500 dark:focus:border-[#00ED64] transition-colors"
+                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
                 />
                 <button
                   type="button"
@@ -283,7 +283,7 @@ export default function DashboardAccountPanel({
                   minLength={8}
                   required
                   placeholder="Minimum 8 characters"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-[#0D3349] pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-[#00ED64]/25 focus:border-blue-500 dark:focus:border-[#00ED64] transition-colors"
+                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
                 />
                 <button
                   type="button"
@@ -316,7 +316,7 @@ export default function DashboardAccountPanel({
                 minLength={8}
                 required
                 placeholder="Re-enter new password"
-                className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-[#0D3349] px-3 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-[#00ED64]/25 focus:border-blue-500 dark:focus:border-[#00ED64] transition-colors"
+                className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 px-3 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
               />
             </div>
 

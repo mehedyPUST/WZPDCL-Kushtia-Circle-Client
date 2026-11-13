@@ -51,19 +51,19 @@ const SHIFT_IDS: ShiftId[] = ["A", "B", "C"];
 const SHIFT_SOLID_CLASS: Record<ShiftId, string> = {
   A: "bg-blue-500 text-white border-blue-600 dark:border-blue-400/60",
   B: "bg-orange-500 text-white border-orange-600 dark:border-orange-400/60",
-  C: "bg-[#059669] dark:bg-[#00684A] text-white border-[#047857] dark:border-[#00ED64]/45",
+  C: "bg-[#059669] dark:bg-emerald-600 text-white border-[#047857] dark:border-emerald-400/40",
 };
 
 const SHIFT_SOFT_CLASS: Record<ShiftId, string> = {
   A: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30",
   B: "bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/30",
-  C: "bg-emerald-500/10 text-[#047857] dark:text-[#00ED64] border-emerald-500/30 dark:border-[#00ED64]/35",
+  C: "bg-emerald-500/10 text-[#047857] dark:text-emerald-400 border-emerald-500/30 dark:border-emerald-400/35",
 };
 
 const SHIFT_CARD_ACCENT: Record<ShiftId, string> = {
   A: "border-l-4 border-l-blue-500",
   B: "border-l-4 border-l-orange-500",
-  C: "border-l-4 border-l-[#059669] dark:border-l-[#00ED64]",
+  C: "border-l-4 border-l-[#059669] dark:border-l-emerald-400",
 };
 
 function ShiftTag({ shift }: { shift: ShiftId }) {
@@ -118,7 +118,7 @@ function ShiftLettersCell({
               key={s}
               className={`inline-flex items-center justify-center min-w-[1.65rem] h-6 px-1.5 rounded border text-[11px] font-bold uppercase font-mono tracking-wide ${SHIFT_SOLID_CLASS[s]} ${
                 isShared
-                  ? "ring-2 ring-amber-400/80 dark:ring-[#FFC010]/80 border-dashed"
+                  ? "ring-2 ring-amber-400/80 border-dashed"
                   : ""
               }`}
               title={tooltip}
@@ -302,15 +302,15 @@ export default function DutyRosterView() {
       >
         <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
           <div className="flex items-start gap-3.5 min-w-0">
-            <div className="w-11 h-11 rounded-xl bg-[#059669]/10 dark:bg-[#00ED64]/12 border border-[#059669]/25 dark:border-[#00ED64]/30 flex items-center justify-center shrink-0">
-              <CalendarDays className="w-5 h-5 text-[#059669] dark:text-[#00ED64]" />
+            <div className="w-11 h-11 rounded-xl bg-[#059669]/10 dark:bg-emerald-500/12 border border-[#059669]/25 dark:border-emerald-400/30 flex items-center justify-center shrink-0">
+              <CalendarDays className="w-5 h-5 text-[#059669] dark:text-emerald-400" />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-[var(--app-text)] tracking-tight">
                   Monthly Duty Roster
                 </h1>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border border-[#059669]/30 dark:border-[#00ED64]/35 bg-[#059669]/10 dark:bg-[#00ED64]/12 text-[#059669] dark:text-[#00ED64]">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border border-[#059669]/30 dark:border-emerald-400/35 bg-[#059669]/10 dark:bg-emerald-500/12 text-[#059669] dark:text-emerald-400">
                   <Shield className="w-3 h-3" />
                   Admin Audit
                 </span>
@@ -340,7 +340,7 @@ export default function DutyRosterView() {
               type="button"
               onClick={() => load(true)}
               disabled={refreshing}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#059669] dark:bg-[#00684A] text-white border border-[#047857] dark:border-[#00ED64]/45 hover:brightness-105 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#059669] dark:bg-emerald-600 text-white border border-[#047857] dark:border-emerald-400/40 hover:brightness-105 transition-all disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
@@ -420,7 +420,7 @@ export default function DutyRosterView() {
                 onClick={() => setShowFutureDays(false)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
                   !showFutureDays
-                    ? "bg-[#059669] dark:bg-[#00684A] text-white"
+                    ? "bg-[#059669] dark:bg-emerald-600 text-white"
                     : "text-muted hover:text-app"
                 }`}
               >
@@ -431,7 +431,7 @@ export default function DutyRosterView() {
                 onClick={() => setShowFutureDays(true)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
                   showFutureDays
-                    ? "bg-[#059669] dark:bg-[#00684A] text-white"
+                    ? "bg-[#059669] dark:bg-emerald-600 text-white"
                     : "text-muted hover:text-app"
                 }`}
               >
@@ -441,7 +441,7 @@ export default function DutyRosterView() {
           ) : null}
 
           <div className="flex items-center gap-1.5 text-xs text-muted">
-            <Clock className="w-3.5 h-3.5 text-[#059669] dark:text-[#00ED64]" />
+            <Clock className="w-3.5 h-3.5 text-[#059669] dark:text-emerald-400" />
             <span>Asia/Dhaka</span>
             {meta?.recordCount != null ? (
               <span className="font-mono text-secondary">
@@ -481,13 +481,13 @@ export default function DutyRosterView() {
       {data?.coverage ? (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Shift coverage card */}
-          <div className="rounded-xl border border-app bg-surface p-4 shadow-sm border-l-4 border-l-[#059669] dark:border-l-[#00ED64]">
+          <div className="rounded-xl border border-app bg-surface p-4 shadow-sm border-l-4 border-l-[#059669] dark:border-l-emerald-400">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
                 Shift Coverage
               </span>
               {(data.coverage.uncoveredShiftSlots ?? 0) === 0 ? (
-                <CheckCircle2 className="w-4 h-4 text-[#059669] dark:text-[#00ED64]" />
+                <CheckCircle2 className="w-4 h-4 text-[#059669] dark:text-emerald-400" />
               ) : (
                 <AlertTriangle className="w-4 h-4 text-orange-500" />
               )}
@@ -508,7 +508,7 @@ export default function DutyRosterView() {
                   {data.coverage.uncoveredShiftSlots === 1 ? "" : "s"}
                 </span>
               ) : (
-                <span className="text-[#059669] dark:text-[#00ED64] font-semibold">
+                <span className="text-[#059669] dark:text-emerald-400 font-semibold">
                   All elapsed shifts covered
                 </span>
               )}
@@ -535,7 +535,7 @@ export default function DutyRosterView() {
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <ShiftTag shift={s} />
-                  <Trophy className="w-4 h-4 text-[#059669] dark:text-[#00ED64]" />
+                  <Trophy className="w-4 h-4 text-[#059669] dark:text-emerald-400" />
                 </div>
                 <p
                   className="text-lg font-bold text-zinc-800 dark:text-[var(--app-text)] truncate mt-1"
@@ -594,7 +594,7 @@ export default function DutyRosterView() {
                 21–08
               </span>
               <span className="inline-flex items-center gap-1 text-muted">
-                <span className="inline-flex items-center justify-center px-1 h-5 rounded border border-dashed border-amber-500 text-amber-600 dark:text-[#FFC010] font-mono font-bold text-[10px]">
+                <span className="inline-flex items-center justify-center px-1 h-5 rounded border border-dashed border-amber-500 text-amber-600 dark:text-amber-400 font-mono font-bold text-[10px]">
                   ½
                 </span>
                 Shared tie
@@ -660,12 +660,12 @@ export default function DutyRosterView() {
                     const isOddDay = row.day % 2 === 1;
                     const isSelected = activeDay?.ymd === row.ymd;
                     const rowTone = isSelected
-                      ? "bg-[#059669]/10 dark:bg-[#00ED64]/10"
+                      ? "bg-[#059669]/10 dark:bg-emerald-500/12"
                       : isOddDay
                         ? "bg-[var(--duty-row-odd)]"
                         : "bg-[var(--duty-row-even)]";
                     const dateTone = isSelected
-                      ? "bg-emerald-50 dark:bg-[#0D3D35]"
+                      ? "bg-emerald-50 dark:bg-emerald-950/60"
                       : isOddDay
                         ? "bg-[var(--duty-row-odd-sticky)]"
                         : "bg-[var(--duty-row-even-sticky)]";
@@ -680,7 +680,7 @@ export default function DutyRosterView() {
                           scope="row"
                           className={`sticky left-0 z-10 px-3 py-2 text-left border border-[var(--app-border)] whitespace-nowrap transition-colors ${dateTone} ${
                             row.isToday
-                              ? "border-l-[3px] border-l-[#059669] dark:border-l-[#00ED64]"
+                              ? "border-l-[3px] border-l-[#059669] dark:border-l-emerald-400"
                               : ""
                           }`}
                         >
@@ -689,7 +689,7 @@ export default function DutyRosterView() {
                               {row.dateLabel}
                             </span>
                             {row.isToday ? (
-                              <span className="text-[9px] font-bold uppercase tracking-wider text-[#059669] dark:text-[#00ED64]">
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-[#059669] dark:text-emerald-400">
                                 Today
                               </span>
                             ) : null}
@@ -774,7 +774,7 @@ export default function DutyRosterView() {
                 </div>
                 <Link
                   href={`/history?date=${activeDay.ymd}`}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-app text-[#059669] dark:text-[#00ED64] hover:bg-surface-2 transition-colors shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-app text-[#059669] dark:text-emerald-400 hover:bg-surface-2 transition-colors shrink-0"
                 >
                   History
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -805,7 +805,7 @@ export default function DutyRosterView() {
                           </span>
                         </div>
                         {rank?.isTie ? (
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-[#FFC010]">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                             Tied · 0.5 each
                           </span>
                         ) : rank?.person ? (
@@ -861,7 +861,7 @@ export default function DutyRosterView() {
                                         ? "bg-blue-500"
                                         : sh === "B"
                                           ? "bg-orange-500"
-                                          : "bg-[#059669] dark:bg-[#00ED64]"
+                                          : "bg-[#059669] dark:bg-emerald-400"
                                     } ${isWinner ? "opacity-100" : "opacity-45"}`}
                                     style={{ width: `${pct}%` }}
                                   />
@@ -897,7 +897,7 @@ export default function DutyRosterView() {
         <section className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#059669] dark:text-[#00ED64]" />
+              <Users className="w-4 h-4 text-[#059669] dark:text-emerald-400" />
               <h2 className="text-sm font-bold text-zinc-800 dark:text-[var(--app-text)] uppercase tracking-wider">
                 Month Leaderboard · Weighted Duty Shifts
               </h2>
@@ -920,7 +920,7 @@ export default function DutyRosterView() {
                   className="rounded-xl border border-app bg-surface-2/40 px-3.5 py-2.5 space-y-1.5"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-lg bg-[#059669]/10 dark:bg-[#00ED64]/12 border border-[#059669]/25 dark:border-[#00ED64]/30 flex items-center justify-center text-xs font-bold text-[#059669] dark:text-[#00ED64] font-mono shrink-0">
+                    <span className="w-7 h-7 rounded-lg bg-[#059669]/10 dark:bg-emerald-500/12 border border-[#059669]/25 dark:border-emerald-400/30 flex items-center justify-center text-xs font-bold text-[#059669] dark:text-emerald-400 font-mono shrink-0">
                       {i + 1}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -935,7 +935,7 @@ export default function DutyRosterView() {
                   </div>
                   <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-[#059669] dark:bg-[#00ED64]"
+                      className="h-full rounded-full bg-[#059669] dark:bg-emerald-400"
                       style={{ width: `${barPct}%` }}
                     />
                   </div>

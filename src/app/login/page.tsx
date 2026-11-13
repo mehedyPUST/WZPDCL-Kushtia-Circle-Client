@@ -64,8 +64,8 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] flex items-center justify-center bg-slate-50 dark:bg-[#001E2B] p-4">
-        <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-[#092532] border border-slate-200 dark:border-[rgba(0,237,100,0.18)] space-y-4 shadow-xl">
+      <div className="flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] flex items-center justify-center bg-slate-50 dark:bg-app p-4">
+        <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-surface border border-slate-200 dark:border-[var(--app-border-strong)] space-y-4 shadow-xl">
           <SkeletonShimmer className="h-10 w-10 mx-auto rounded-full" />
           <SkeletonShimmer className="h-6 w-36 mx-auto rounded-lg" />
           <SkeletonShimmer className="h-4 w-48 mx-auto rounded-md" />
@@ -80,14 +80,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] bg-zinc-50 dark:bg-[#001E2B] flex items-center justify-center p-3 sm:p-6 lg:p-8">
-      <div className="w-full max-w-[56rem] bg-white dark:bg-[#092532] rounded-3xl shadow-xl border border-zinc-200 dark:border-[rgba(0,237,100,0.2)] overflow-hidden flex flex-col md:flex-row transition-all">
-        {/* Left Presentation Panel — Clean White/Zinc Base in Light Mode / MongoDB Forest Slate in Dark Mode */}
-        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#001E2B] dark:via-[#092532] dark:to-[#00684A] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-8 md:p-9 flex flex-col justify-between overflow-hidden">
+    <div className="relative flex-1 min-h-[calc(100dvh-var(--site-nav-h,3.5rem))] bg-zinc-50 dark:bg-app flex items-center justify-center p-3 sm:p-6 lg:p-8">
+      <div className="w-full max-w-[56rem] bg-white dark:bg-surface rounded-3xl shadow-xl border border-zinc-200 dark:border-[var(--app-border-strong)] overflow-hidden flex flex-col md:flex-row transition-all">
+        {/* Left Presentation Panel */}
+        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-8 md:p-9 flex flex-col justify-between overflow-hidden">
           {/* Subtle Ambient Lighting */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-[#00ED64]/15 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-blue-100/60 dark:bg-[#0496FF]/15 blur-3xl" />
+            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-emerald-500/15 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-blue-100/60 dark:bg-sky-500/12 blur-3xl" />
           </div>
 
           {/* Substation Logo & Title */}
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="min-w-0">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-[#00ED64] font-mono leading-tight">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400 font-mono leading-tight">
                   WZPDCL · Kushtia
                 </span>
                 <span className="block text-xs text-zinc-600 dark:text-white/80 font-semibold leading-tight mt-0.5">
@@ -121,10 +121,10 @@ export default function LoginPage() {
             <h1 className="text-2xl sm:text-[1.65rem] font-bold tracking-tight leading-tight text-zinc-800 dark:text-white font-display">
               Bottail Substation
             </h1>
-            <p className="mt-1 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-200">
+            <p className="mt-1 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-300">
               33/11 kV Power Transmission &amp; Control
             </p>
-            <p className="mt-2.5 text-xs text-zinc-600 dark:text-white/75 leading-relaxed max-w-[19rem]">
+            <p className="mt-2.5 text-xs text-zinc-600 dark:text-slate-300/85 leading-relaxed max-w-[19rem]">
               Authorized operations portal for control-room duty officers,
               hourly power calculations, and circle load coordination.
             </p>
@@ -156,14 +156,14 @@ export default function LoginPage() {
             ].map(({ icon: Icon, text, tone }, i) => {
               const iconBox =
                 tone === "orange"
-                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]"
+                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
                   : tone === "blue"
-                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]";
+                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-2.5 rounded-xl bg-white dark:bg-white/[0.06] border border-zinc-200 dark:border-white/10 shadow-xs text-xs font-semibold text-zinc-800 dark:text-white/95"
+                  className="flex items-center gap-3 p-2.5 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10 shadow-xs text-xs font-semibold text-zinc-800 dark:text-slate-100"
                 >
                   <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${iconBox}`}>
                     <Icon className="w-3.5 h-3.5" />
@@ -175,18 +175,18 @@ export default function LoginPage() {
           </div>
 
           {/* Security & Organization Footer */}
-          <div className="relative pt-4 border-t border-zinc-200 dark:border-white/15 text-[11px] text-zinc-500 dark:text-white/60 font-semibold flex items-center justify-between">
+          <div className="relative pt-4 border-t border-zinc-200 dark:border-white/15 text-[11px] text-zinc-500 dark:text-slate-400 font-semibold flex items-center justify-between">
             <span>Control Room Console</span>
-            <span className="font-mono text-zinc-800 dark:text-white/80">v2.4 Online</span>
+            <span className="font-mono text-zinc-800 dark:text-slate-200">v2.4 Online</span>
           </div>
         </aside>
 
         {/* Right Form Panel */}
-        <div className="flex-1 flex flex-col justify-center min-h-0 bg-white dark:bg-[#092532] p-6 sm:p-9 md:p-10">
+        <div className="flex-1 flex flex-col justify-center min-h-0 bg-white dark:bg-surface p-6 sm:p-9 md:p-10">
           <div className="w-full max-w-md mx-auto">
             {/* Header Kicker & Title */}
             <div className="mb-6">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-[#00ED64] font-mono mb-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400 font-mono mb-2">
                 Operator Portal
               </p>
               <h2 className="text-2xl sm:text-[1.75rem] font-bold text-zinc-800 dark:text-white tracking-tight font-display">
@@ -230,7 +230,7 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={busy}
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-zinc-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-all shadow-xs disabled:opacity-60"
                     placeholder="Enter operator username"
                   />
                 </div>
@@ -254,14 +254,14 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={busy}
-                    className="w-full h-11 pl-10 pr-11 rounded-xl border border-zinc-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                    className="w-full h-11 pl-10 pr-11 rounded-xl border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-all shadow-xs disabled:opacity-60"
                     placeholder="Enter account password"
                   />
                   <button
                     type="button"
                     tabIndex={-1}
                     onClick={() => setShowPass((s) => !s)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-slate-700/60 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-surface-3 transition-colors"
                     aria-label={showPass ? "Hide password" : "Show password"}
                   >
                     {showPass ? (
@@ -276,16 +276,16 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full h-11 mt-2 rounded-xl text-sm font-bold tracking-wide shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-[#00ED64] dark:text-[#001E2B] dark:hover:bg-[#00c753] shadow-emerald-600/20 dark:shadow-[#00ED64]/20"
+                className="w-full h-11 mt-2 rounded-xl text-sm font-bold tracking-wide shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:text-[#031d16] dark:hover:bg-emerald-400 shadow-emerald-600/20 dark:shadow-emerald-500/15"
               >
                 {busy ? (
                   <>
-                    <span className="w-4 h-4 rounded-full border-2 border-white dark:border-[#001E2B] border-t-transparent animate-spin" />
+                    <span className="w-4 h-4 rounded-full border-2 border-white dark:border-[#031d16] border-t-transparent animate-spin" />
                     <span>Signing in…</span>
                   </>
                 ) : (
                   <>
-                    <LogIn className="w-4 h-4 text-white dark:text-[#001E2B]" />
+                    <LogIn className="w-4 h-4 text-white dark:text-[#031d16]" />
                     <span>Sign in to Console</span>
                   </>
                 )}
@@ -293,13 +293,13 @@ export default function LoginPage() {
             </form>
 
             {/* Guest Navigation & Info */}
-            <div className="mt-7 pt-5 border-t border-zinc-200 dark:border-slate-800">
+            <div className="mt-7 pt-5 border-t border-zinc-200 dark:border-app">
               <p className="text-center text-xs font-semibold text-zinc-600 dark:text-slate-400 mb-3">
                 No account credentials?
               </p>
               <Link
                 href="/"
-                className="flex items-center justify-center gap-2 w-full h-10 rounded-xl text-xs sm:text-sm font-bold text-zinc-800 dark:text-slate-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-[#0D3349] dark:hover:bg-[#133E56] border border-zinc-200 dark:border-slate-700 transition-colors shadow-xs"
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-xl text-xs sm:text-sm font-bold text-zinc-800 dark:text-slate-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-surface-2 dark:hover:bg-surface-3 border border-zinc-200 dark:border-app transition-colors shadow-xs"
               >
                 <Home className="w-3.5 h-3.5 text-zinc-600 dark:text-slate-300" />
                 <span>Continue as Guest on Homepage</span>

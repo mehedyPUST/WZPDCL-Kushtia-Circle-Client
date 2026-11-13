@@ -97,13 +97,13 @@ export default function LoginModal({
         if (e.target === e.currentTarget && !disabled) onClose?.();
       }}
     >
-      <div className="w-full max-w-[54rem] max-h-[min(92dvh,39rem)] bg-white dark:bg-[#092532] rounded-3xl shadow-2xl border border-zinc-200 dark:border-[rgba(0,237,100,0.2)] overflow-hidden flex flex-col md:flex-row transition-all relative">
-        {/* Left Presentation Panel — White/Zinc Base in Light Mode / MongoDB Forest Slate in Dark Mode */}
-        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#001E2B] dark:via-[#092532] dark:to-[#00684A] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-7 md:p-8 flex flex-col justify-between overflow-hidden">
+      <div className="w-full max-w-[54rem] max-h-[min(92dvh,39rem)] bg-white dark:bg-surface rounded-3xl shadow-2xl border border-zinc-200 dark:border-[var(--app-border-strong)] overflow-hidden flex flex-col md:flex-row transition-all relative">
+        {/* Left Presentation Panel */}
+        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-7 md:p-8 flex flex-col justify-between overflow-hidden">
           {/* Subtle Ambient Lighting */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-[#00ED64]/15 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-blue-100/60 dark:bg-[#0496FF]/15 blur-3xl" />
+            <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-emerald-500/15 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-blue-100/60 dark:bg-sky-500/12 blur-3xl" />
           </div>
 
           {/* Substation Logo & Title */}
@@ -125,7 +125,7 @@ export default function LoginModal({
                 />
               </div>
               <div className="min-w-0">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-[#00ED64] font-mono leading-tight">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400 font-mono leading-tight">
                   WZPDCL · Kushtia
                 </span>
                 <span className="block text-xs text-zinc-600 dark:text-white/80 font-semibold leading-tight mt-0.5">
@@ -137,10 +137,10 @@ export default function LoginModal({
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight text-zinc-800 dark:text-white font-display">
               Bottail Substation
             </h2>
-            <p className="mt-1 text-xs font-bold text-emerald-600 dark:text-emerald-200">
+            <p className="mt-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">
               33/11 kV SCADA Control Console
             </p>
-            <p className="mt-2 text-xs text-zinc-600 dark:text-white/75 leading-relaxed">
+            <p className="mt-2 text-xs text-zinc-600 dark:text-slate-300/85 leading-relaxed">
               Sign in to record hourly feeder calculations, manage loadshed plans,
               and maintain official shift logs.
             </p>
@@ -155,14 +155,14 @@ export default function LoginModal({
             ].map(({ icon: Icon, text, tone }, i) => {
               const iconBox =
                 tone === "orange"
-                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]"
+                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
                   : tone === "blue"
-                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-[#00ED64]/20 dark:border-[#00ED64]/40 dark:text-[#00ED64]";
+                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-2.5 p-2 rounded-xl bg-white dark:bg-white/[0.06] border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-800 dark:text-white/95 shadow-xs"
+                  className="flex items-center gap-2.5 p-2 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-800 dark:text-slate-100 shadow-xs"
                 >
                   <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${iconBox}`}>
                     <Icon className="w-3 h-3" />
@@ -180,13 +180,13 @@ export default function LoginModal({
         </aside>
 
         {/* Right Form Panel */}
-        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#092532] relative">
+        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-surface relative">
           {/* Close button */}
           <button
             type="button"
             onClick={onClose}
             disabled={disabled}
-            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors flex items-center justify-center disabled:opacity-40 cursor-pointer"
+            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-surface-3 transition-colors flex items-center justify-center disabled:opacity-40 cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -196,7 +196,7 @@ export default function LoginModal({
             <div className="w-full max-w-sm mx-auto">
               {/* Header Kicker & Title */}
               <div className="mb-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-[#00ED64] font-mono mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400 font-mono mb-2">
                   Operator Login
                 </p>
                 <h3
@@ -242,7 +242,7 @@ export default function LoginModal({
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       disabled={disabled}
-                      className="w-full h-10.5 pl-10 pr-3.5 rounded-xl border border-zinc-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                      className="w-full h-10.5 pl-10 pr-3.5 rounded-xl border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-all shadow-xs disabled:opacity-60"
                       placeholder="Enter username"
                     />
                   </div>
@@ -266,14 +266,14 @@ export default function LoginModal({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={disabled}
-                      className="w-full h-10.5 pl-10 pr-11 rounded-xl border border-zinc-300 dark:border-slate-700 bg-white dark:bg-[#0D3349] text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-[#00ED64]/25 focus:border-emerald-600 dark:focus:border-[#00ED64] transition-all shadow-xs disabled:opacity-60"
+                      className="w-full h-10.5 pl-10 pr-11 rounded-xl border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 text-sm font-semibold text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-all shadow-xs disabled:opacity-60"
                       placeholder="Enter password"
                     />
                     <button
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPass((s) => !s)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-slate-700/60 transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-surface-3 transition-colors"
                       aria-label={showPass ? "Hide password" : "Show password"}
                     >
                       {showPass ? (
@@ -288,16 +288,16 @@ export default function LoginModal({
                 <button
                   type="submit"
                   disabled={disabled}
-                  className="w-full h-11 mt-1 rounded-xl text-sm font-bold shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-[#00ED64] dark:text-[#001E2B] dark:hover:bg-[#00c753] shadow-emerald-600/20 dark:shadow-[#00ED64]/20"
+                  className="w-full h-11 mt-1 rounded-xl text-sm font-bold shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:text-[#031d16] dark:hover:bg-emerald-400 shadow-emerald-600/20 dark:shadow-emerald-500/15"
                 >
                   {disabled ? (
                     <>
-                      <span className="w-4 h-4 rounded-full border-2 border-white dark:border-[#001E2B] border-t-transparent animate-spin" />
+                      <span className="w-4 h-4 rounded-full border-2 border-white dark:border-[#031d16] border-t-transparent animate-spin" />
                       <span>Signing in…</span>
                     </>
                   ) : (
                     <>
-                      <LogIn className="w-4 h-4 text-white dark:text-[#001E2B]" />
+                      <LogIn className="w-4 h-4 text-white dark:text-[#031d16]" />
                       <span>Sign in</span>
                     </>
                   )}
