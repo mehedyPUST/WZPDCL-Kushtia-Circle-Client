@@ -102,4 +102,31 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// Allow the client app to trigger immediate activation and cache invalidation
+// when an operator checks for or applies a PWA update.
+self.addEventListener("message", (event) => {
+  const type = event.data?.type;
+  const replyPort = event.ports?.[0];
+
+  if (type === "SKIP_WAITING") {
+    self.skipWaiting();
+    replyPort?.postMessage({ ok: true });
+    return;
+  }
+
+  if (type === "CLEAR_CACHES") {
+    event.waitUntil(
+      (async () => {
+        try {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((key) => caches.delete(key)));
+          replyPort?.postMessage({ ok: true, cleared: keys.length });
+        } catch {
+          replyPort?.postMessage({ ok: false, cleared: 0 });
+        }
+      })()
+    );
+  }
+});
+
 serwist.addEventListeners();

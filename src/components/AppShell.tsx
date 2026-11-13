@@ -32,6 +32,7 @@ import LoginModal from "./LoginModal";
 import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
 import PWAInstallButton from "./PWAInstallButton";
+import { PWAUpdateBanner, PWAUpdateButton } from "./PWAUpdateControl";
 import OfflineBanner from "./OfflineBanner";
 import ShiftMessageBell from "./ShiftMessageBell";
 import toast from "react-hot-toast";
@@ -203,8 +204,9 @@ export default function AppShell({ children }) {
         {/* Station Live Clock */}
         <TopbarLiveClock />
 
-        {/* PWA Install + Theme Toggle + Shift msgs + Auth Button */}
+        {/* PWA Install + Update + Theme Toggle + Shift msgs + Auth Button */}
         <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <PWAUpdateButton variant="topbar" />
           <PWAInstallButton variant="topbar" />
           <ThemeToggle />
           <ShiftMessageBell />
@@ -346,6 +348,7 @@ export default function AppShell({ children }) {
                 Load Management
               </div>
             </Link>
+            <PWAUpdateButton variant="compact" />
             <ThemeToggle compact />
             <ShiftMessageBell />
             {isAuthenticated ? (
@@ -368,6 +371,7 @@ export default function AppShell({ children }) {
 
         {/* Offline status notice on non-calculator pages */}
         <OfflineBanner />
+        <PWAUpdateBanner />
 
         {/* Mobile & Tablet Slide-Over Drawer (available on all routes incl. Calculator) */}
         <AnimatePresence>
@@ -436,6 +440,10 @@ export default function AppShell({ children }) {
                   })}
                 </nav>
                 <div className="px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-app bg-elevated/40 space-y-2">
+                  <PWAUpdateButton
+                    variant="drawer"
+                    onAction={() => setMobileOpen(false)}
+                  />
                   <PWAInstallButton
                     variant="drawer"
                     onAction={() => setMobileOpen(false)}

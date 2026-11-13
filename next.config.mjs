@@ -1,8 +1,16 @@
 import withSerwistInit from "@serwist/next";
 
+const BUILD_ID =
+  process.env.NEXT_PUBLIC_APP_BUILD_ID ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  new Date().toISOString();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  env: {
+    NEXT_PUBLIC_APP_BUILD_ID: BUILD_ID,
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       const prev = config.watchOptions?.ignored;

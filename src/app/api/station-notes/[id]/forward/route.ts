@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/serverAuth";
 import { connectDB, isDbConnected } from "@/lib/db";
@@ -54,13 +55,13 @@ function serializeMessage(doc: any) {
 /** POST — acknowledge + create a new pending message for the following shift */
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = requireAuth(request);
   if (!auth.ok) return auth.response;
 
   try {
-    const resolved = typeof (params as any)?.then === "function" ? await params : params;
+    const resolved = await params;
     const id = String(resolved?.id || "").trim();
     if (!id) {
       return NextResponse.json(
@@ -72,9 +73,9 @@ export async function POST(
     const body = await request.json().catch(() => ({}));
     const forwardNote = String(body?.note || body?.forwardNote || "").trim().slice(0, 500);
 
-    const admin = auth.admin || {};
-    const username = admin.username || admin.displayName || "unknown";
-    const displayName = admin.displayName || admin.username || username;
+    const admin = auth.admin;
+    const username = admin?.username || admin?.displayName || "unknown";
+    const displayName = admin?.displayName || admin?.username || username;
     const now = new Date();
     const info = currentShiftInfo(now);
     const targetShift = nextShiftId(info.shift);
@@ -96,7 +97,7 @@ export async function POST(
 
       // mark original as forwarded
       msg.status = "forwarded";
-      msg.acknowledgedBy = admin.id || admin._id || null;
+      msg.acknowledgedBy = admin?.id || admin?._id || null;
       msg.acknowledgedByUsername = username;
       msg.acknowledgedByDisplayName = displayName;
       msg.acknowledgedAt = now.toISOString();
@@ -111,7 +112,7 @@ export async function POST(
       const newMsg = {
         id: generateId(),
         content: prefix + originalContent,
-        createdBy: admin.id || admin._id || null,
+        createdBy: admin?.id || admin?._id || null,
         createdByUsername: username,
         createdByDisplayName: displayName,
         dutyDay: info.dutyDay,
@@ -136,6 +137,13 @@ export async function POST(
       });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Message not found" },
+        { status: 404 }
+      );
+    }
+
     const doc = await ShiftMessage.findById(id);
     if (!doc) {
       return NextResponse.json(
@@ -145,7 +153,7 @@ export async function POST(
     }
 
     doc.status = "forwarded";
-    doc.acknowledgedBy = admin.id || admin._id || null;
+    doc.acknowledgedBy = admin?.id || admin?._id || null;
     doc.acknowledgedByUsername = username;
     doc.acknowledgedByDisplayName = displayName;
     doc.acknowledgedAt = now;
@@ -159,7 +167,7 @@ export async function POST(
 
     const newDoc = await ShiftMessage.create({
       content: prefix + originalContent,
-      createdBy: admin.id || admin._id || null,
+      createdBy: admin?.id || admin?._id || null,
       createdByUsername: username,
       createdByDisplayName: displayName,
       dutyDay: info.dutyDay,

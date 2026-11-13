@@ -117,11 +117,11 @@ function metersForCategory(
 function meterBg(color?: string) {
   if (color === "yellow") return "bg-yellow-200 dark:bg-yellow-500/30";
   if (color === "cyan") return "bg-cyan-200 dark:bg-cyan-500/30";
-  return "bg-surface-1";
+  return "bg-surface";
 }
 
 function sharedBg() {
-  return "bg-surface-1 dark:bg-surface-2/40";
+  return "bg-surface dark:bg-surface-2/40";
 }
 
 function numOrEmpty(v: number | null | undefined) {
@@ -543,6 +543,22 @@ export default function MonthlyEnergyView() {
     });
   };
 
+  const allVisibleEditing =
+    visibleBlocks.length > 0 &&
+    visibleBlocks.every((b) => editingIds.has(b.feederId));
+
+  const toggleEditAllVisible = () => {
+    setEditingIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleEditing) {
+        visibleBlocks.forEach((b) => next.delete(b.feederId));
+      } else {
+        visibleBlocks.forEach((b) => next.add(b.feederId));
+      }
+      return next;
+    });
+  };
+
   const setMeter = (
     feederId: number,
     meterIdx: number,
@@ -831,7 +847,7 @@ export default function MonthlyEnergyView() {
 
   if (!isAuthenticated || !isAdmin) {
     return (
-      <div className="max-w-lg mx-auto mt-16 px-4 text-center">
+      <div className="w-full max-w-lg mx-auto mt-16 px-4 text-center">
         <h1 className="text-lg font-semibold text-app">Monthly Energy Reading</h1>
         <p className="text-sm text-muted mt-2">
           This sheet is available to administrators only.
@@ -854,7 +870,7 @@ export default function MonthlyEnergyView() {
   const activeTab = SHEET_TABS.find((t) => t.id === sheetKind)!;
 
   return (
-    <div className="max-w-[1440px] mx-auto px-3 sm:px-5 py-5 space-y-5">
+    <div className="w-full min-w-0 max-w-[1440px] mx-auto px-3 sm:px-5 py-5 space-y-5">
       <div className="rounded-2xl border border-app bg-elevated/80 backdrop-blur-sm px-4 sm:px-5 py-4 shadow-sm">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="min-w-0">
@@ -905,7 +921,7 @@ export default function MonthlyEnergyView() {
             type="button"
             disabled={saving || !dirty}
             onClick={handleSave}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold bg-accent text-white hover:opacity-95 disabled:opacity-45"
+            className="btn-primary inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold disabled:opacity-45"
           >
             {saving ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -930,14 +946,14 @@ export default function MonthlyEnergyView() {
                 onClick={() => setSheetKind(tab.id)}
                 className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition ${
                   active
-                    ? "bg-accent text-white shadow-sm"
+                    ? "btn-primary shadow-sm"
                     : "text-secondary hover:text-app hover:bg-surface-3/80"
                 }`}
               >
                 {tab.label}
                 <span
                   className={`ml-1.5 tabular-nums ${
-                    active ? "text-white/80" : "text-muted"
+                    active ? "opacity-80" : "text-muted"
                   }`}
                 >
                   ({count})
@@ -948,10 +964,33 @@ export default function MonthlyEnergyView() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+          {visibleBlocks.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleEditAllVisible}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold border transition ${
+                allVisibleEditing
+                  ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                  : "border-app bg-elevated text-secondary hover:text-app hover:bg-surface-3"
+              }`}
+            >
+              {allVisibleEditing ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  Done editing
+                </>
+              ) : (
+                <>
+                  <Pencil className="w-3.5 h-3.5" />
+                  Edit all rows
+                </>
+              )}
+            </button>
+          )}
           <button
             type="button"
             onClick={openAddModal}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-semibold bg-accent text-white shadow-sm hover:opacity-95 active:scale-[0.98] transition"
+            className="btn-primary inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-semibold shadow-sm hover:opacity-95 active:scale-[0.98] transition"
           >
             <Plus className="w-3.5 h-3.5" />
             Add feeder
@@ -960,13 +999,13 @@ export default function MonthlyEnergyView() {
       </div>
 
       <div className="rounded-2xl border border-app bg-elevated shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-auto max-h-[68vh]">
           <table className="w-full border-collapse text-[12px] min-w-[1080px]">
             <thead className="sticky top-0 z-20">
               <tr className="bg-surface-2 text-app shadow-sm">
                 <th
                   rowSpan={2}
-                  className="border border-app px-2 py-2 font-semibold sticky left-0 z-10 bg-surface-2 min-w-[7rem]"
+                  className="border border-app px-2 py-2 font-semibold sticky left-0 z-30 bg-surface-2 min-w-[7.5rem]"
                 >
                   Feeder Name
                 </th>
@@ -1080,7 +1119,7 @@ export default function MonthlyEnergyView() {
                       {mi === 0 && (
                         <td
                           rowSpan={meterCount}
-                          className="border border-app px-2 py-1.5 align-middle sticky left-0 z-[1] bg-surface-2 font-bold text-app text-[13px] group/feeder"
+                          className="border border-app px-2 py-1.5 align-middle sticky left-0 z-10 bg-surface-2 font-bold text-app text-[13px] group/feeder"
                         >
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="truncate flex-1" title={block.feederName}>
@@ -1089,8 +1128,8 @@ export default function MonthlyEnergyView() {
                             <button
                               type="button"
                               onClick={() => openEditFeederModal(block)}
-                              className="shrink-0 inline-flex p-1 rounded-md text-muted opacity-0 group-hover/feeder:opacity-100 focus:opacity-100 hover:text-accent hover:bg-accent/10 transition-opacity"
-                              title="Edit feeder"
+                              className="shrink-0 inline-flex p-1 rounded-md text-muted opacity-65 group-hover/feeder:opacity-100 focus:opacity-100 hover:text-accent hover:bg-accent/10 transition-opacity"
+                              title="Edit feeder name / meters"
                               aria-label={`Edit ${block.feederName}`}
                             >
                               <Pencil className="w-3.5 h-3.5" />
@@ -1477,7 +1516,7 @@ export default function MonthlyEnergyView() {
             setDirty(true);
           }}
           rows={2}
-          className="w-full rounded-lg border border-app bg-surface-1 px-3 py-2 text-[13px] text-app focus:outline-none focus:ring-1 focus:ring-accent/40 resize-y"
+          className="w-full rounded-lg border border-app bg-surface px-3 py-2 text-[13px] text-app focus:outline-none focus:ring-1 focus:ring-accent/40 resize-y"
           placeholder="Optional remarks for this month…"
         />
       </div>
@@ -1534,7 +1573,7 @@ export default function MonthlyEnergyView() {
                     if (e.key === "Enter") submitFeederModal();
                   }}
                   placeholder="e.g. New 33 kV feeder"
-                  className="w-full rounded-lg border border-app bg-surface-1 px-3 py-2 text-[13px] text-app focus:outline-none focus:ring-1 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-app bg-surface px-3 py-2 text-[13px] text-app focus:outline-none focus:ring-1 focus:ring-accent/40"
                   autoFocus
                 />
               </div>
@@ -1662,7 +1701,7 @@ export default function MonthlyEnergyView() {
                 type="button"
                 disabled={modalSaving}
                 onClick={submitFeederModal}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-accent hover:opacity-95 disabled:opacity-60"
+                className="btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
               >
                 {modalSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {addForm.mode === "edit" ? "Save changes" : "Add feeder"}

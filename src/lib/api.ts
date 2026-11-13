@@ -955,7 +955,10 @@ export async function fetchDistrictDay({
 // STATION NOTES (next-shift operational notes)
 // ============================================
 
-export async function fetchStationNotes({ status, limit } = {}) {
+export async function fetchStationNotes({
+  status,
+  limit,
+}: { status?: string; limit?: number } = {}) {
   const q = new URLSearchParams();
   if (status) q.set("status", String(status));
   if (limit) q.set("limit", String(limit));
@@ -971,7 +974,7 @@ export async function fetchStationNotes({ status, limit } = {}) {
   return data;
 }
 
-export async function createStationNote(content, targetShift) {
+export async function createStationNote(content: string, targetShift?: string) {
   const res = await fetchWithCredentials(url("/api/station-notes"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -984,7 +987,7 @@ export async function createStationNote(content, targetShift) {
   return data;
 }
 
-export async function acknowledgeStationNote(id) {
+export async function acknowledgeStationNote(id: string) {
   const res = await fetchWithCredentials(url(`/api/station-notes/${id}/ack`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -997,7 +1000,7 @@ export async function acknowledgeStationNote(id) {
   return data;
 }
 
-export async function forwardStationNote(id, note) {
+export async function forwardStationNote(id: string, note?: string) {
   const res = await fetchWithCredentials(
     url(`/api/station-notes/${id}/forward`),
     {

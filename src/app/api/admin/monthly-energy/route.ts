@@ -397,9 +397,9 @@ export async function PUT(request: Request) {
     }
 
     const rows = mapRows(body?.rows);
-    const admin = auth.admin || {};
-    const username = admin.username || "";
-    const displayName = admin.displayName || admin.username || "";
+    const admin = auth.admin;
+    const username = admin?.username || "";
+    const displayName = admin?.displayName || admin?.username || "";
     const notes = String(body?.notes || "").trim();
 
     if (!isDbConnected()) await connectDB();

@@ -259,7 +259,7 @@ export default function ShiftMessageBell() {
                 rows={3}
                 maxLength={2000}
                 placeholder={`Note for ${shiftLabel(nextShift)}…`}
-                className="w-full rounded-lg border border-app bg-surface-1 px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
+                className="w-full rounded-lg border border-app bg-surface px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
                 autoFocus
               />
               <div className="flex items-center justify-between gap-2">
@@ -270,7 +270,7 @@ export default function ShiftMessageBell() {
                   type="button"
                   disabled={sending || !draft.trim()}
                   onClick={handleSend}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-accent text-white hover:opacity-90 disabled:opacity-50 transition"
+                  className="btn-primary inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold disabled:opacity-50 transition"
                 >
                   {sending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -398,7 +398,7 @@ export default function ShiftMessageBell() {
                             onChange={(e) => setForwardNote(e.target.value)}
                             maxLength={500}
                             placeholder="Optional note for next shift…"
-                            className="w-full rounded-md border border-app bg-surface-1 px-2 py-1.5 text-[11px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
+                            className="w-full rounded-md border border-app bg-surface px-2 py-1.5 text-[11px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
                           />
                           <div className="flex justify-end gap-1.5">
                             <button

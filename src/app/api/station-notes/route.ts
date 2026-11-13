@@ -96,15 +96,21 @@ export async function GET(request: Request) {
     else if (status === "acknowledged") filter.status = { $in: ["acknowledged", "forwarded"] };
 
     const docs = await ShiftMessage.find(filter)
-      .sort({ status: 1, createdAt: -1 })
-      .limit(limit)
+      .sort({ createdAt: -1 })
+      .limit(Math.max(limit * 2, 60))
       .lean();
+
+    docs.sort((a: any, b: any) => {
+      if (a.status === "pending" && b.status !== "pending") return -1;
+      if (a.status !== "pending" && b.status === "pending") return 1;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     const pendingCount = await ShiftMessage.countDocuments({ status: "pending" });
 
     return NextResponse.json({
       success: true,
-      messages: docs.map(serializeMessage),
+      messages: docs.slice(0, limit).map(serializeMessage),
       currentShift: info.shift,
       dutyDay: info.dutyDay,
       nextShift: nextShiftId(info.shift),
@@ -152,13 +158,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const admin = auth.admin || {};
-    const username = admin.username || admin.displayName || "unknown";
-    const displayName = admin.displayName || admin.username || username;
+    const admin = auth.admin;
+    const username = admin?.username || admin?.displayName || "unknown";
+    const displayName = admin?.displayName || admin?.username || username;
 
     const payload = {
       content,
-      createdBy: admin.id || admin._id || null,
+      createdBy: admin?.id || admin?._id || null,
       createdByUsername: username,
       createdByDisplayName: displayName,
       dutyDay: info.dutyDay,

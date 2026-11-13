@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/serverAuth";
 import { connectDB, isDbConnected } from "@/lib/db";
@@ -33,13 +34,13 @@ function serializeMessage(doc: any) {
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = requireAuth(request);
   if (!auth.ok) return auth.response;
 
   try {
-    const resolved = typeof (params as any)?.then === "function" ? await params : params;
+    const resolved = await params;
     const id = String(resolved?.id || "").trim();
     if (!id) {
       return NextResponse.json(
@@ -48,9 +49,9 @@ export async function POST(
       );
     }
 
-    const admin = auth.admin || {};
-    const username = admin.username || admin.displayName || "unknown";
-    const displayName = admin.displayName || admin.username || username;
+    const admin = auth.admin;
+    const username = admin?.username || admin?.displayName || "unknown";
+    const displayName = admin?.displayName || admin?.username || username;
     const now = new Date();
 
     if (!isDbConnected()) {
@@ -75,7 +76,7 @@ export async function POST(
         });
       }
       msg.status = "acknowledged";
-      msg.acknowledgedBy = admin.id || admin._id || null;
+      msg.acknowledgedBy = admin?.id || admin?._id || null;
       msg.acknowledgedByUsername = username;
       msg.acknowledgedByDisplayName = displayName;
       msg.acknowledgedAt = now.toISOString();
@@ -84,6 +85,13 @@ export async function POST(
         success: true,
         message: serializeMessage(msg),
       });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Message not found" },
+        { status: 404 }
+      );
     }
 
     const doc = await ShiftMessage.findById(id);
@@ -103,7 +111,7 @@ export async function POST(
     }
 
     doc.status = "acknowledged";
-    doc.acknowledgedBy = admin.id || admin._id || null;
+    doc.acknowledgedBy = admin?.id || admin?._id || null;
     doc.acknowledgedByUsername = username;
     doc.acknowledgedByDisplayName = displayName;
     doc.acknowledgedAt = now;

@@ -12,9 +12,17 @@ export async function GET() {
     db = "mock";
   }
 
-  return NextResponse.json({
-    success: true,
-    message: "Load Calculator API is running",
-    db,
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      message: "Load Calculator API is running",
+      db,
+      buildId: process.env.NEXT_PUBLIC_APP_BUILD_ID || "dev",
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      },
+    }
+  );
 }

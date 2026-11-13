@@ -121,7 +121,10 @@ export default function ShiftMessagesView() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     load();
   }, [authLoading, isAuthenticated, load]);
 
@@ -188,7 +191,7 @@ export default function ShiftMessagesView() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-lg mx-auto mt-16 px-4 text-center">
+      <div className="w-full max-w-lg mx-auto mt-16 px-4 text-center">
         <MessageSquare className="w-10 h-10 text-muted mx-auto mb-3" />
         <h1 className="text-lg font-semibold text-app">Station Notes</h1>
         <p className="text-sm text-muted mt-2">
@@ -205,7 +208,7 @@ export default function ShiftMessagesView() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-5">
+    <div className="w-full min-w-0 max-w-3xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
@@ -291,10 +294,16 @@ export default function ShiftMessagesView() {
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && draft.trim() && !sending) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               rows={4}
               maxLength={2000}
               placeholder="e.g. Feeder-7 still on restricted load. Allotment reduced after 18:00. Inform circle if MW exceeds 12.5…"
-              className="w-full rounded-lg border border-app bg-surface-1 px-3 py-2.5 text-[13px] text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 resize-y min-h-[6rem]"
+              className="w-full rounded-lg border border-app bg-surface px-3 py-2.5 text-[13px] text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 resize-y min-h-[6rem]"
             />
             <div className="flex items-center justify-between gap-3">
               <span className="text-[11px] text-muted tabular-nums">
@@ -304,7 +313,7 @@ export default function ShiftMessagesView() {
                 type="button"
                 disabled={sending || !draft.trim()}
                 onClick={handleSend}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold bg-accent text-white hover:opacity-95 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition"
+                className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition"
               >
                 {sending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -322,7 +331,7 @@ export default function ShiftMessagesView() {
       <section className="rounded-xl border border-app bg-elevated shadow-sm overflow-hidden">
         <div className="px-4 py-2.5 border-b border-app bg-surface-2/50 flex items-center gap-2 flex-wrap">
           <h2 className="text-[13px] font-semibold text-app mr-auto">Messages</h2>
-          <div className="inline-flex rounded-lg border border-app p-0.5 bg-surface-1">
+          <div className="inline-flex rounded-lg border border-app p-0.5 bg-surface-2">
             <button
               type="button"
               onClick={() => setFilter("all")}
@@ -444,7 +453,7 @@ export default function ShiftMessagesView() {
                         onChange={(e) => setForwardNote(e.target.value)}
                         maxLength={500}
                         placeholder="e.g. Still unresolved — please check with circle"
-                        className="w-full rounded-md border border-app bg-surface-1 px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
+                        className="w-full rounded-md border border-app bg-surface px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
                       />
                       <div className="flex justify-end gap-2">
                         <button

@@ -175,10 +175,27 @@ export function cookieOptionsForRequest(request, maxAgeSeconds: number) {
   };
 }
 
-/**
- * @returns {{ ok: true, admin: object } | { ok: false, expiredByShift?: boolean, response: NextResponse }}
- */
-export function requireAuth(request) {
+export interface AuthAdmin {
+  id: string;
+  _id?: string;
+  username: string;
+  displayName: string;
+  email: string;
+  role: string;
+  assignedStation: string;
+  lastLogin: string | null;
+  shiftLogoutAt: number | null;
+}
+
+export interface RequireAuthResult {
+  ok: boolean;
+  admin?: AuthAdmin;
+  expiredByShift?: boolean;
+  cutoffAt?: number | null;
+  response?: NextResponse;
+}
+
+export function requireAuth(request): RequireAuthResult {
   const token = getTokenFromRequest(request);
 
   if (!token) {
