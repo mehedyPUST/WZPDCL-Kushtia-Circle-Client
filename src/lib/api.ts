@@ -974,11 +974,15 @@ export async function fetchStationNotes({
   return data;
 }
 
-export async function createStationNote(content: string, targetShift?: string) {
+export async function createStationNote(
+  content: string,
+  targetShift?: string,
+  priority?: "normal" | "high" | "critical"
+) {
   const res = await fetchWithCredentials(url("/api/station-notes"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content, targetShift }),
+    body: JSON.stringify({ content, targetShift, priority }),
   });
   const data = await parseJson(res);
   if (!res.ok || !data.success) {

@@ -46,6 +46,11 @@ const shiftMessageSchema = new mongoose.Schema(
       enum: ["pending", "acknowledged", "forwarded"],
       default: "pending",
     },
+    priority: {
+      type: String,
+      enum: ["normal", "high", "critical"],
+      default: "normal",
+    },
     acknowledgedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",

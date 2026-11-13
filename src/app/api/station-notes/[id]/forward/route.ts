@@ -8,6 +8,7 @@ import {
   appendReadReceipt,
   currentShiftInfo,
   nextShiftId,
+  normalizePriority,
   serializeStationNote,
 } from "@/lib/stationNoteUtils";
 
@@ -86,6 +87,7 @@ export async function POST(
         fromShift: info.shift,
         targetShift,
         status: "pending",
+        priority: normalizePriority(msg.priority),
         acknowledgedBy: null,
         acknowledgedByUsername: "",
         acknowledgedByDisplayName: "",
@@ -151,6 +153,7 @@ export async function POST(
       fromShift: info.shift,
       targetShift,
       status: "pending",
+      priority: normalizePriority(doc.priority),
       forwardedFrom: doc._id,
       forwardNote,
       readReceipts: [],

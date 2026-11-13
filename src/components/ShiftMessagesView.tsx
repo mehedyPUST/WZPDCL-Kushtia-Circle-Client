@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  AlertOctagon,
+  AlertTriangle,
   ArrowRight,
   Check,
   CheckCheck,
   CheckCircle2,
   Clock3,
+  Flag,
   Forward,
   Loader2,
   MessageSquare,
@@ -35,6 +38,8 @@ type ReadReceipt = {
   readAt?: string | null;
 };
 
+type NotePriority = "normal" | "high" | "critical";
+
 type ShiftMessage = {
   id: string;
   content: string;
@@ -44,6 +49,7 @@ type ShiftMessage = {
   fromShift?: string;
   targetShift?: string;
   status: string;
+  priority?: NotePriority;
   acknowledgedBy?: string | null;
   acknowledgedByUsername?: string;
   acknowledgedByDisplayName?: string;
@@ -54,6 +60,17 @@ type ShiftMessage = {
 };
 
 type FilterTab = "all" | "pending" | "acknowledged" | "forwarded";
+type PriorityFilter = "all" | "urgent";
+
+const PRIORITY_OPTIONS: {
+  id: NotePriority;
+  label: string;
+  hint: string;
+}[] = [
+  { id: "normal", label: "Normal", hint: "Routine shift handover note" },
+  { id: "high", label: "High", hint: "Important feeder or operational instruction" },
+  { id: "critical", label: "Critical", hint: "Urgent fault, protection trip, or grid directive" },
+];
 
 const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
 
@@ -103,6 +120,27 @@ function shiftWindow(s?: string) {
   return meta?.window || "Operational window";
 }
 
+function PriorityLabel({ priority }: { priority?: string }) {
+  const p = (priority || "normal").toLowerCase();
+  if (p === "critical") {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 dark:text-rose-300 shrink-0 whitespace-nowrap">
+        <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+        Critical
+      </span>
+    );
+  }
+  if (p === "high") {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 dark:text-amber-300 shrink-0 whitespace-nowrap">
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+        High Priority
+      </span>
+    );
+  }
+  return null;
+}
+
 function StatusLabel({ status }: { status: string }) {
   if (status === "pending") {
     return (
@@ -144,6 +182,7 @@ export default function ShiftMessagesView() {
   const [currentShift, setCurrentShift] = useState("");
   const [nextShift, setNextShift] = useState("");
   const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftId | "">("");
+  const [priority, setPriority] = useState<NotePriority>("normal");
   const [dutyDay, setDutyDay] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -152,6 +191,7 @@ export default function ShiftMessagesView() {
   const [forwardId, setForwardId] = useState<string | null>(null);
   const [forwardNote, setForwardNote] = useState("");
   const [filter, setFilter] = useState<FilterTab>("all");
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [query, setQuery] = useState("");
 
   const canPost = isAuthenticated && (canWrite || isAdmin);
@@ -225,16 +265,26 @@ export default function ShiftMessagesView() {
     let pending = 0;
     let acknowledged = 0;
     let forwarded = 0;
+    let urgent = 0;
+    let pendingUrgent = 0;
     for (const m of messages) {
       if (m.status === "pending") pending += 1;
       else if (m.status === "forwarded") forwarded += 1;
       else acknowledged += 1;
+
+      const isUrgent = m.priority === "high" || m.priority === "critical";
+      if (isUrgent) {
+        urgent += 1;
+        if (m.status === "pending") pendingUrgent += 1;
+      }
     }
     return {
       all: messages.length,
       pending: Math.max(pending, pendingCount),
       acknowledged,
       forwarded,
+      urgent,
+      pendingUrgent,
     };
   }, [messages, pendingCount]);
 
@@ -242,10 +292,18 @@ export default function ShiftMessagesView() {
     const q = query.trim().toLowerCase();
     return messages.filter((m) => {
       if (filter !== "all" && m.status !== filter) return false;
+      if (
+        priorityFilter === "urgent" &&
+        m.priority !== "high" &&
+        m.priority !== "critical"
+      ) {
+        return false;
+      }
       if (!q) return true;
       const haystack = [
         m.content,
         m.forwardNote,
+        m.priority,
         m.createdByDisplayName,
         m.createdByUsername,
         m.acknowledgedByDisplayName,
@@ -258,7 +316,7 @@ export default function ShiftMessagesView() {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [messages, filter, query]);
+  }, [messages, filter, priorityFilter, query]);
 
   const handleSend = async () => {
     const text = draft.trim();
@@ -268,9 +326,10 @@ export default function ShiftMessagesView() {
     }
     try {
       setSending(true);
-      await createStationNote(text, effectiveTargetShift);
+      await createStationNote(text, effectiveTargetShift, priority);
       setDraft("");
       setSelectedTargetShift("");
+      setPriority("normal");
       toast.success(`Handover note sent to ${shiftLabel(effectiveTargetShift)}`);
       await load(true);
     } catch (err: unknown) {
@@ -463,17 +522,21 @@ export default function ShiftMessagesView() {
           <p className="text-xs font-medium text-muted">Pending Handovers</p>
           <p
             className={`mt-1.5 text-lg sm:text-xl font-bold font-mono tabular-nums tracking-tight ${
-              pendingCount > 0
-                ? "text-amber-600 dark:text-amber-300"
-                : "text-emerald-600 dark:text-emerald-300"
+              counts.pendingUrgent > 0
+                ? "text-rose-600 dark:text-rose-400"
+                : pendingCount > 0
+                  ? "text-amber-600 dark:text-amber-300"
+                  : "text-emerald-600 dark:text-emerald-300"
             }`}
           >
             {pendingCount}
           </p>
           <p className="mt-1 text-xs text-muted">
-            {pendingCount > 0
-              ? `${pendingCount} awaiting sign-off`
-              : "All notes acknowledged"}
+            {counts.pendingUrgent > 0
+              ? `${counts.pendingUrgent} high/critical · ${pendingCount} awaiting sign-off`
+              : pendingCount > 0
+                ? `${pendingCount} awaiting sign-off`
+                : "All notes acknowledged"}
           </p>
         </div>
       </section>
@@ -498,6 +561,53 @@ export default function ShiftMessagesView() {
             </div>
 
             <div className="p-4 sm:p-5 space-y-4">
+              {/* Priority segmented selector */}
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-medium text-secondary">
+                    Priority Flag
+                  </label>
+                  <span className="text-xs text-muted">
+                    {PRIORITY_OPTIONS.find((p) => p.id === priority)?.hint}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-surface-2 border border-app">
+                  {PRIORITY_OPTIONS.map((opt) => {
+                    const active = priority === opt.id;
+                    let activeStyle =
+                      "bg-surface text-app shadow-sm border border-app";
+                    if (active && opt.id === "high") {
+                      activeStyle =
+                        "bg-amber-100 text-amber-950 border border-amber-500/60 shadow-sm dark:bg-amber-500/20 dark:text-amber-200 dark:border-amber-400/60";
+                    } else if (active && opt.id === "critical") {
+                      activeStyle =
+                        "bg-rose-600 text-white border border-rose-700 shadow-sm dark:bg-rose-600 dark:text-white dark:border-rose-500";
+                    }
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setPriority(opt.id)}
+                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                          active
+                            ? activeStyle
+                            : "text-secondary hover:text-app hover:bg-surface-3/60 border border-transparent"
+                        }`}
+                      >
+                        {opt.id === "critical" ? (
+                          <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+                        ) : opt.id === "high" ? (
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                        ) : (
+                          <Flag className="w-3.5 h-3.5 shrink-0" />
+                        )}
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Target shift segmented selector */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -587,11 +697,14 @@ export default function ShiftMessagesView() {
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-1">
-                {draft.trim() && (
+                {(draft.trim() || priority !== "normal") && (
                   <button
                     type="button"
                     disabled={sending}
-                    onClick={() => setDraft("")}
+                    onClick={() => {
+                      setDraft("");
+                      setPriority("normal");
+                    }}
                     className="px-3.5 py-2 rounded-lg text-xs font-semibold text-secondary hover:text-app hover:bg-surface-2 border border-app transition-colors whitespace-nowrap"
                   >
                     Clear
@@ -679,26 +792,48 @@ export default function ShiftMessagesView() {
               </div>
             </div>
 
-            {/* Search bar */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by note content, operator name, shift, or duty day..."
-                className="w-full rounded-lg border border-app bg-surface-2/60 pl-9 pr-9 py-2 text-xs sm:text-sm text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded text-muted hover:text-app"
-                  aria-label="Clear search"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+            {/* Search bar + Priority quick filter */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by note content, priority, operator name, shift, or duty day..."
+                  className="w-full rounded-lg border border-app bg-surface-2/60 pl-9 pr-9 py-2 text-xs sm:text-sm text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded text-muted hover:text-app"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setPriorityFilter((cur) => (cur === "all" ? "urgent" : "all"))
+                }
+                aria-pressed={priorityFilter === "urgent"}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap shrink-0 ${
+                  priorityFilter === "urgent"
+                    ? "border-rose-500/50 bg-rose-50 text-rose-800 dark:bg-rose-500/15 dark:text-rose-200"
+                    : "border-app bg-surface-2 text-secondary hover:text-app hover:bg-surface-3"
+                }`}
+                title="Show only High and Critical priority notes"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span>High / Critical</span>
+                <span className="font-mono tabular-nums text-[11px] opacity-80">
+                  {counts.urgent}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -747,12 +882,13 @@ export default function ShiftMessagesView() {
                     : "Use the compose panel to leave the first operational note for the incoming shift."}
                 </p>
               </div>
-              {(query.trim() || filter !== "all") && (
+              {(query.trim() || filter !== "all" || priorityFilter !== "all") && (
                 <button
                   type="button"
                   onClick={() => {
                     setQuery("");
                     setFilter("all");
+                    setPriorityFilter("all");
                   }}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-app hover:bg-surface-3 transition-colors"
                 >
@@ -764,20 +900,27 @@ export default function ShiftMessagesView() {
             <ul className="divide-y divide-app">
               {visible.map((m) => {
                 const pending = m.status === "pending";
+                const notePriority = (m.priority || "normal").toLowerCase();
+                const isCritical = notePriority === "critical";
+                const isHigh = notePriority === "high";
                 const isActing = actingId === m.id;
                 const authorName =
                   m.createdByDisplayName || m.createdByUsername || "Operator";
                 const userHasRead = hasCurrentUserRead(m);
                 const receipts = m.readReceipts || [];
 
+                const rowColorClass = isCritical
+                  ? "bg-rose-50/90 hover:bg-rose-100/75 dark:bg-rose-500/[0.11] dark:hover:bg-rose-500/[0.16] ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
+                  : isHigh
+                    ? "bg-amber-50/85 hover:bg-amber-100/70 dark:bg-amber-500/[0.09] dark:hover:bg-amber-500/[0.14] ring-1 ring-inset ring-amber-300 dark:ring-amber-500/30"
+                    : pending
+                      ? "bg-surface-2/50 hover:bg-surface-2"
+                      : "hover:bg-surface-2/40";
+
                 return (
                   <li
                     key={m.id}
-                    className={`p-4 sm:p-5 transition-colors ${
-                      pending
-                        ? "bg-amber-500/[0.04] hover:bg-amber-500/[0.06]"
-                        : "hover:bg-surface-2/40"
-                    }`}
+                    className={`p-4 sm:p-5 transition-colors ${rowColorClass}`}
                   >
                     {/* Top Author + Routing Row (unboxed metadata with separators) */}
                     <div className="flex flex-wrap items-start justify-between gap-2.5">
@@ -812,7 +955,15 @@ export default function ShiftMessagesView() {
                         </div>
                       </div>
 
-                      <StatusLabel status={m.status} />
+                      <div className="flex items-center gap-3 shrink-0">
+                        <PriorityLabel priority={m.priority} />
+                        {(isCritical || isHigh) && (
+                          <span aria-hidden="true" className="text-muted text-xs">
+                            ·
+                          </span>
+                        )}
+                        <StatusLabel status={m.status} />
+                      </div>
                     </div>
 
                     {/* Note Body */}
@@ -888,7 +1039,7 @@ export default function ShiftMessagesView() {
                           type="button"
                           disabled={isActing}
                           onClick={() => handleAck(m.id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-600/35 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-600/35 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-500/15 dark:hover:bg-emerald-500/25 disabled:opacity-50 transition-colors whitespace-nowrap"
                         >
                           {isActing && actingAction === "ack" ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -929,7 +1080,7 @@ export default function ShiftMessagesView() {
                             setForwardId((cur) => (cur === m.id ? null : m.id));
                             setForwardNote("");
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-sky-600/35 text-sky-700 dark:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 disabled:opacity-50 transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-sky-600/35 text-sky-800 bg-sky-50 hover:bg-sky-100 dark:text-sky-300 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 disabled:opacity-50 transition-colors whitespace-nowrap"
                         >
                           <Forward className="w-3.5 h-3.5" />
                           Forward to next shift

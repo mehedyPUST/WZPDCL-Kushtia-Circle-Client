@@ -6,8 +6,15 @@ import { getMockStore, generateId } from "@/lib/mockStore";
 import {
   currentShiftInfo,
   nextShiftId,
+  normalizePriority,
   serializeStationNote,
 } from "@/lib/stationNoteUtils";
+
+const PRIORITY_WEIGHT: Record<string, number> = {
+  critical: 2,
+  high: 1,
+  normal: 0,
+};
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +45,12 @@ export async function GET(request: Request) {
       list.sort((a, b) => {
         if (a.status === "pending" && b.status !== "pending") return -1;
         if (a.status !== "pending" && b.status === "pending") return 1;
+        if (a.status === "pending" && b.status === "pending") {
+          const pw =
+            (PRIORITY_WEIGHT[normalizePriority(b.priority)] ?? 0) -
+            (PRIORITY_WEIGHT[normalizePriority(a.priority)] ?? 0);
+          if (pw !== 0) return pw;
+        }
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
       return NextResponse.json({
@@ -62,6 +75,12 @@ export async function GET(request: Request) {
     docs.sort((a: any, b: any) => {
       if (a.status === "pending" && b.status !== "pending") return -1;
       if (a.status !== "pending" && b.status === "pending") return 1;
+      if (a.status === "pending" && b.status === "pending") {
+        const pw =
+          (PRIORITY_WEIGHT[normalizePriority(b.priority)] ?? 0) -
+          (PRIORITY_WEIGHT[normalizePriority(a.priority)] ?? 0);
+        if (pw !== 0) return pw;
+      }
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
@@ -120,6 +139,7 @@ export async function POST(request: Request) {
     const admin = auth.admin;
     const username = admin?.username || admin?.displayName || "unknown";
     const displayName = admin?.displayName || admin?.username || username;
+    const priority = normalizePriority(body?.priority);
 
     const payload = {
       content,
@@ -130,6 +150,7 @@ export async function POST(request: Request) {
       fromShift: info.shift,
       targetShift,
       status: "pending",
+      priority,
       acknowledgedBy: null,
       acknowledgedByUsername: "",
       acknowledgedByDisplayName: "",

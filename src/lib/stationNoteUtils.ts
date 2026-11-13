@@ -3,6 +3,15 @@ import type { AuthAdmin } from "@/lib/serverAuth";
 
 export const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
 
+export type StationNotePriority = "normal" | "high" | "critical";
+
+export function normalizePriority(value: unknown): StationNotePriority {
+  const v = String(value || "").trim().toLowerCase();
+  if (v === "critical" || v === "urgent") return "critical";
+  if (v === "high") return "high";
+  return "normal";
+}
+
 export function nextShiftId(current: ShiftId): ShiftId {
   const idx = SHIFT_ORDER.indexOf(current);
   return SHIFT_ORDER[(idx + 1) % SHIFT_ORDER.length];
@@ -103,6 +112,7 @@ export function serializeStationNote(doc: any) {
     fromShift: doc.fromShift || "",
     targetShift: doc.targetShift || "",
     status: doc.status || "pending",
+    priority: normalizePriority(doc.priority),
     acknowledgedBy: doc.acknowledgedBy?.toString?.() || doc.acknowledgedBy || null,
     acknowledgedByUsername: doc.acknowledgedByUsername || "",
     acknowledgedByDisplayName:
