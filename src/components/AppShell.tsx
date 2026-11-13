@@ -29,6 +29,8 @@ import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
 import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
+import PWAInstallButton from "./PWAInstallButton";
+import OfflineBanner from "./OfflineBanner";
 import toast from "react-hot-toast";
 import { useLiveClock } from "@/hooks/useLiveClock";
 
@@ -196,8 +198,9 @@ export default function AppShell({ children }) {
         {/* Station Live Clock */}
         <TopbarLiveClock />
 
-        {/* Theme Toggle + Auth Button */}
+        {/* PWA Install + Theme Toggle + Auth Button */}
         <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <PWAInstallButton variant="topbar" />
           <ThemeToggle />
           {loading ? (
             <div className="h-8 w-24 rounded-lg bg-surface-3 animate-pulse" />
@@ -356,6 +359,9 @@ export default function AppShell({ children }) {
           </header>
         )}
 
+        {/* Offline status notice on non-calculator pages */}
+        <OfflineBanner />
+
         {/* Mobile & Tablet Slide-Over Drawer (available on all routes incl. Calculator) */}
         <AnimatePresence>
           {mobileOpen && (
@@ -423,6 +429,10 @@ export default function AppShell({ children }) {
                   })}
                 </nav>
                 <div className="px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-app bg-elevated/40 space-y-2">
+                  <PWAInstallButton
+                    variant="drawer"
+                    onAction={() => setMobileOpen(false)}
+                  />
                   {!loading && isAuthenticated && (
                     <Link
                       href="/dashboard"

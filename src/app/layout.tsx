@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
@@ -15,12 +15,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#080d16" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "WZPDCL Load Calculator | Bottail-Kushtia",
   description:
     "33/11 kV power substation load calculator for WZPDCL Bottail-Kushtia. Calculate feeder MW, history, max load, and statistics.",
   applicationName: "WZPDCL Load Calculator",
   authors: [{ name: "SBA-Bottail, WZPDCL" }],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "WZPDCL Load",
+  },
   openGraph: {
     title: "WZPDCL Load Calculator",
     description:
@@ -29,10 +43,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/logo.png", type: "image/png", sizes: "200x200" },
+      { url: "/pwa-192x192.png", type: "image/png", sizes: "192x192" },
+      { url: "/pwa-512x512.png", type: "image/png", sizes: "512x512" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/logo.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 

@@ -13,6 +13,7 @@
     "test": "tsx --test src/lib/*.test.ts"
   },
   "dependencies": {
+    "@serwist/next": "^9.5.13",
     "lucide-react": "^0.511.0",
     "mongoose": "^8.14.0",
     "motion": "^12.9.0",
@@ -20,7 +21,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "serwist": "^9.5.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
