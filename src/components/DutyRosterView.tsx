@@ -107,8 +107,11 @@ function ShiftLettersCell({
           const isShared = cell.sharedShifts?.includes(s);
           const countInShift = day.breakdown?.[s]?.[person] ?? cell.entries;
           const rankInfo = day[s];
+          const winnersText = Array.isArray(rankInfo?.winners)
+            ? rankInfo.winners.join(" & ")
+            : "";
           const tooltip = isShared
-            ? `Shared ${SHIFT_META[s].label} (${SHIFT_META[s].window}) · Tied at ${countInShift} entr${countInShift === 1 ? "y" : "ies"} (${rankInfo.winners.join(" & ")})`
+            ? `Shared ${SHIFT_META[s].label} (${SHIFT_META[s].window}) · Tied at ${countInShift} entr${countInShift === 1 ? "y" : "ies"}${winnersText ? ` (${winnersText})` : ""}`
             : `Duty ${SHIFT_META[s].label} (${SHIFT_META[s].window}) · ${countInShift} entr${countInShift === 1 ? "y" : "ies"}`;
           return (
             <span
@@ -167,6 +170,7 @@ export default function DutyRosterView() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showFutureDays, setShowFutureDays] = useState(false);
   const [selectedYmd, setSelectedYmd] = useState<string | null>(null);
 
@@ -174,6 +178,7 @@ export default function DutyRosterView() {
     async (silent = false) => {
       if (!silent) setLoading(true);
       else setRefreshing(true);
+      setLoadError(null);
       try {
         const res = await fetchDutyRoster({ year, month });
         setData(res.data || null);
@@ -182,6 +187,7 @@ export default function DutyRosterView() {
         console.error(err);
         const msg =
           err instanceof Error ? err.message : "Failed to load duty roster";
+        setLoadError(msg);
         toast.error(msg);
         setData(null);
       } finally {
@@ -454,8 +460,25 @@ export default function DutyRosterView() {
         </div>
       </div>
 
+      {/* Load error state */}
+      {loadError ? (
+        <div className="rounded-2xl border border-orange-500/40 bg-orange-500/10 p-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-orange-700 dark:text-orange-300">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>{loadError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => load()}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500 text-white hover:brightness-105 transition-all"
+          >
+            Retry
+          </button>
+        </div>
+      ) : null}
+
       {/* Coverage & Shift Leaders strip */}
-      {data ? (
+      {data?.coverage ? (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Shift coverage card */}
           <div className="rounded-xl border border-app bg-surface p-4 shadow-sm border-l-4 border-l-[#059669] dark:border-l-[#00ED64]">
@@ -463,7 +486,7 @@ export default function DutyRosterView() {
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
                 Shift Coverage
               </span>
-              {data.coverage.uncoveredShiftSlots === 0 ? (
+              {(data.coverage.uncoveredShiftSlots ?? 0) === 0 ? (
                 <CheckCircle2 className="w-4 h-4 text-[#059669] dark:text-[#00ED64]" />
               ) : (
                 <AlertTriangle className="w-4 h-4 text-orange-500" />
@@ -471,14 +494,15 @@ export default function DutyRosterView() {
             </div>
             <div className="flex items-baseline gap-2">
               <p className="text-2xl font-bold text-zinc-800 dark:text-[var(--app-text)] tabular-nums">
-                {data.coverage.coveragePct}%
+                {data.coverage.coveragePct ?? 0}%
               </p>
               <span className="text-xs font-mono text-muted tabular-nums">
-                {data.coverage.filledShiftSlots}/{data.coverage.totalShiftSlots} slots
+                {data.coverage.filledShiftSlots ?? 0}/
+                {data.coverage.totalShiftSlots ?? 0} slots
               </span>
             </div>
             <p className="text-xs mt-1 text-muted">
-              {data.coverage.uncoveredShiftSlots > 0 ? (
+              {(data.coverage.uncoveredShiftSlots ?? 0) > 0 ? (
                 <span className="text-orange-600 dark:text-orange-400 font-semibold">
                   {data.coverage.uncoveredShiftSlots} uncovered gap
                   {data.coverage.uncoveredShiftSlots === 1 ? "" : "s"}
@@ -488,7 +512,7 @@ export default function DutyRosterView() {
                   All elapsed shifts covered
                 </span>
               )}
-              {data.coverage.tiedShiftSlots > 0 ? (
+              {(data.coverage.tiedShiftSlots ?? 0) > 0 ? (
                 <span className="text-faint">
                   {" "}
                   · {data.coverage.tiedShiftSlots} tied
@@ -684,8 +708,8 @@ export default function DutyRosterView() {
                         >
                           <div className="inline-flex items-center justify-center gap-1">
                             {SHIFT_IDS.map((sh) => {
-                              const covered = row.coveredShifts.includes(sh);
-                              const missingPast = row.missingShifts?.includes(sh);
+                              const covered = Boolean(row.coveredShifts?.includes(sh));
+                              const missingPast = Boolean(row.missingShifts?.includes(sh));
                               return (
                                 <span
                                   key={sh}
@@ -744,8 +768,8 @@ export default function DutyRosterView() {
                     </span>
                   </div>
                   <p className="text-xs text-muted mt-0.5 tabular-nums">
-                    {activeDay.coveredShifts.length}/3 shifts covered ·{" "}
-                    {activeDay.totalEntries} total entries
+                    {activeDay.coveredShifts?.length ?? 0}/3 shifts covered ·{" "}
+                    {activeDay.totalEntries ?? 0} total entries
                   </p>
                 </div>
                 <Link
