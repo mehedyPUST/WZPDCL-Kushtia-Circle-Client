@@ -2268,10 +2268,10 @@ html[data-theme="light"] .time-header-sticky[data-cell-selected="true"] {
 
 /* ── Monthly duty roster table ── */
 html[data-theme="dark"] {
-  --duty-row-odd: #101c3a;
-  --duty-row-even: #0c152d;
-  --duty-row-odd-sticky: #142348;
-  --duty-row-even-sticky: #101c3a;
+  --duty-row-odd: #092532;
+  --duty-row-even: #0D3349;
+  --duty-row-odd-sticky: #0D3349;
+  --duty-row-even-sticky: #133E56;
 }
 
 html[data-theme="light"] {

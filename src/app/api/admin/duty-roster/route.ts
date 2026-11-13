@@ -5,6 +5,7 @@ import Calculation from "@/lib/models/Calculation";
 import { getMockStore } from "@/lib/mockStore";
 import {
   buildMonthlyDutyRoster,
+  dhakaNowParts,
   monthQueryBounds,
 } from "@/lib/dutyShifts";
 
@@ -38,17 +39,14 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const now = new Date();
+    const { ymd: todayYmd, hour: todayHour } = dhakaNowParts(now);
     let year = parseInt(searchParams.get("year") || "", 10);
     let month = parseInt(searchParams.get("month") || "", 10);
     if (!Number.isFinite(year) || year < 2000 || year > 2100) {
-      year = Number(
-        now.toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" }).slice(0, 4)
-      );
+      year = Number(todayYmd.slice(0, 4));
     }
     if (!Number.isFinite(month) || month < 1 || month > 12) {
-      month = Number(
-        now.toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" }).slice(5, 7)
-      );
+      month = Number(todayYmd.slice(5, 7));
     }
 
     const { from, to } = monthQueryBounds(year, month);
@@ -92,7 +90,10 @@ export async function GET(request) {
         .limit(20000);
     }
 
-    const roster = buildMonthlyDutyRoster(records, year, month);
+    const roster = buildMonthlyDutyRoster(records, year, month, {
+      todayYmd,
+      todayHour,
+    });
 
     return NextResponse.json({
       success: true,
@@ -100,7 +101,9 @@ export async function GET(request) {
       meta: {
         from,
         to,
+        todayYmd,
         recordCount: records.length,
+        unattributed: roster.unattributed,
       },
     });
   } catch (err) {
