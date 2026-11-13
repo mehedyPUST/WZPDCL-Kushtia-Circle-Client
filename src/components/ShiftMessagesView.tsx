@@ -409,8 +409,8 @@ export default function ShiftMessagesView() {
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div className="lg:col-span-5 h-72 rounded-xl bg-surface border border-app animate-pulse" />
-          <div className="lg:col-span-7 h-96 rounded-xl bg-surface border border-app animate-pulse" />
+          <div className="lg:col-span-7 h-96 rounded-xl bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse" />
+          <div className="lg:col-span-5 h-72 rounded-xl bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 animate-pulse" />
         </div>
       </div>
     );
@@ -543,203 +543,18 @@ export default function ShiftMessagesView() {
 
       {/* Main Split Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Compose Handover Panel */}
-        {canPost && (
-          <section
-            aria-label="Compose station note"
-            className="lg:col-span-5 lg:sticky lg:top-4 rounded-xl border border-app bg-surface overflow-hidden shadow-sm"
-          >
-            <div className="px-4 sm:px-5 py-3.5 border-b border-app flex items-center justify-between gap-2">
-              <div>
-                <h2 className="text-sm font-semibold text-app">
-                  New Handover Note
-                </h2>
-                <p className="text-xs text-muted mt-0.5">
-                  Delivered to incoming shift log &amp; notification bell
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-5 space-y-4">
-              {/* Priority segmented selector */}
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <label className="text-xs font-medium text-secondary">
-                    Priority Flag
-                  </label>
-                  <span className="text-xs text-muted">
-                    {PRIORITY_OPTIONS.find((p) => p.id === priority)?.hint}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-surface-2 border border-app">
-                  {PRIORITY_OPTIONS.map((opt) => {
-                    const active = priority === opt.id;
-                    let activeStyle =
-                      "bg-surface text-app shadow-sm border border-app";
-                    if (active && opt.id === "high") {
-                      activeStyle =
-                        "bg-amber-100 text-amber-950 border border-amber-500/60 shadow-sm dark:bg-amber-500/20 dark:text-amber-200 dark:border-amber-400/60";
-                    } else if (active && opt.id === "critical") {
-                      activeStyle =
-                        "bg-rose-600 text-white border border-rose-700 shadow-sm dark:bg-rose-600 dark:text-white dark:border-rose-500";
-                    }
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => setPriority(opt.id)}
-                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                          active
-                            ? activeStyle
-                            : "text-secondary hover:text-app hover:bg-surface-3/60 border border-transparent"
-                        }`}
-                      >
-                        {opt.id === "critical" ? (
-                          <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
-                        ) : opt.id === "high" ? (
-                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                        ) : (
-                          <Flag className="w-3.5 h-3.5 shrink-0" />
-                        )}
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Target shift segmented selector */}
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <label className="text-xs font-medium text-secondary">
-                    Target Shift
-                  </label>
-                  <span className="text-xs text-muted font-mono tabular-nums">
-                    {shiftWindow(effectiveTargetShift)}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-surface-2 border border-app">
-                  {SHIFT_ORDER.map((sid) => {
-                    const active = effectiveTargetShift === sid;
-                    const isNext = nextShift === sid;
-                    return (
-                      <button
-                        key={sid}
-                        type="button"
-                        onClick={() => setSelectedTargetShift(sid)}
-                        className={`px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                          active
-                            ? "btn-primary shadow-sm"
-                            : "text-secondary hover:text-app hover:bg-surface-3/60"
-                        }`}
-                      >
-                        {shiftLabel(sid)}
-                        {isNext && !active ? " · Next" : ""}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Quick operational templates */}
-              <div>
-                <span className="block text-xs font-medium text-secondary mb-1.5">
-                  Quick Templates
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_TEMPLATES.map((tpl) => (
-                    <button
-                      key={tpl.label}
-                      type="button"
-                      onClick={() => applyTemplate(tpl.text)}
-                      className="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-app bg-surface-2 text-secondary hover:text-app hover:border-accent/40 transition-colors whitespace-nowrap"
-                    >
-                      + {tpl.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Message textarea */}
-              <div>
-                <label
-                  htmlFor="station-note-draft"
-                  className="block text-xs font-medium text-secondary mb-1.5"
-                >
-                  Operational Message
-                </label>
-                <textarea
-                  id="station-note-draft"
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (
-                      (e.metaKey || e.ctrlKey) &&
-                      e.key === "Enter" &&
-                      draft.trim() &&
-                      !sending
-                    ) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  rows={5}
-                  maxLength={2000}
-                  placeholder="Describe feeder restrictions, relay flags, circle allotment adjustments, or equipment checks for the incoming operator..."
-                  className="w-full rounded-lg border border-app bg-surface-2/60 px-3.5 py-2.5 text-sm text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 resize-y min-h-[8rem] leading-relaxed"
-                />
-                <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted">
-                  <span className="font-mono tabular-nums">
-                    {draft.length} / 2000
-                  </span>
-                  <span>Ctrl / ⌘ + Enter to send</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-1">
-                {(draft.trim() || priority !== "normal") && (
-                  <button
-                    type="button"
-                    disabled={sending}
-                    onClick={() => {
-                      setDraft("");
-                      setPriority("normal");
-                    }}
-                    className="px-3.5 py-2 rounded-lg text-xs font-semibold text-secondary hover:text-app hover:bg-surface-2 border border-app transition-colors whitespace-nowrap"
-                  >
-                    Clear
-                  </button>
-                )}
-                <button
-                  type="button"
-                  disabled={sending || !draft.trim()}
-                  onClick={handleSend}
-                  className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
-                >
-                  {sending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                  Send to {shiftLabel(effectiveTargetShift)}
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Handover Log Feed */}
+        {/* Handover Log Feed (Left — H3 + T3 Teal Palette) */}
         <section
           aria-label="Station handover log"
           className={`${
             canPost ? "lg:col-span-7" : "lg:col-span-12"
-          } rounded-xl border border-app bg-surface overflow-hidden shadow-sm`}
+          } rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm`}
         >
           {/* Log Header + Filter Controls */}
-          <div className="px-4 sm:px-5 py-3.5 border-b border-app space-y-3">
+          <div className="px-4 sm:px-5 py-3.5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-semibold text-app">
+                <h2 className="text-sm font-semibold text-emerald-700 dark:text-teal-200">
                   Handover Log
                 </h2>
                 <p className="text-xs text-muted mt-0.5 tabular-nums">
@@ -750,7 +565,7 @@ export default function ShiftMessagesView() {
               <div
                 role="tablist"
                 aria-label="Filter handover notes by status"
-                className="inline-flex flex-wrap items-center gap-1 p-1 rounded-lg bg-surface-2 border border-app"
+                className="inline-flex flex-wrap items-center gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-emerald-200/80 dark:border-teal-500/25"
               >
                 {(
                   [
@@ -778,8 +593,8 @@ export default function ShiftMessagesView() {
                       onClick={() => setFilter(tab.id)}
                       className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
                         active
-                          ? "bg-surface text-app shadow-sm border border-app"
-                          : "text-muted hover:text-app"
+                          ? "bg-emerald-50 text-emerald-800 shadow-sm border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
+                          : "text-muted hover:text-app border border-transparent"
                       }`}
                     >
                       {tab.label}
@@ -801,7 +616,7 @@ export default function ShiftMessagesView() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by note content, priority, operator name, shift, or duty day..."
-                  className="w-full rounded-lg border border-app bg-surface-2/60 pl-9 pr-9 py-2 text-xs sm:text-sm text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-emerald-200/80 dark:border-teal-500/25 bg-white/85 dark:bg-[#0f1726]/75 pl-9 pr-9 py-2 text-xs sm:text-sm text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-emerald-500/35 dark:focus:ring-teal-400/35"
                 />
                 {query && (
                   <button
@@ -824,7 +639,7 @@ export default function ShiftMessagesView() {
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap shrink-0 ${
                   priorityFilter === "urgent"
                     ? "border-rose-500/50 bg-rose-50 text-rose-800 dark:bg-rose-500/15 dark:text-rose-200"
-                    : "border-app bg-surface-2 text-secondary hover:text-app hover:bg-surface-3"
+                    : "border-emerald-200/80 dark:border-teal-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-secondary hover:text-app hover:bg-emerald-50/70 dark:hover:bg-teal-950/50"
                 }`}
                 title="Show only High and Critical priority notes"
               >
@@ -838,7 +653,7 @@ export default function ShiftMessagesView() {
           </div>
 
           {loadError && (
-            <div className="px-4 sm:px-5 py-3 border-b border-app bg-rose-500/10 flex items-center justify-between gap-3 text-xs text-rose-700 dark:text-rose-200">
+            <div className="px-4 sm:px-5 py-3 border-b border-emerald-200/80 dark:border-teal-500/20 bg-rose-500/10 flex items-center justify-between gap-3 text-xs text-rose-700 dark:text-rose-200">
               <span>{loadError}</span>
               <button
                 type="button"
@@ -851,7 +666,7 @@ export default function ShiftMessagesView() {
           )}
 
           {loading && messages.length === 0 ? (
-            <div className="divide-y divide-app">
+            <div className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="p-4 sm:p-5 space-y-2.5 animate-pulse">
                   <div className="flex items-center justify-between gap-4">
@@ -865,7 +680,7 @@ export default function ShiftMessagesView() {
             </div>
           ) : visible.length === 0 ? (
             <div className="py-16 px-6 text-center space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-surface-2 border border-app flex items-center justify-center mx-auto text-muted">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50/90 dark:bg-teal-950/60 border border-emerald-200 dark:border-teal-500/30 flex items-center justify-center mx-auto text-emerald-700 dark:text-teal-300">
                 <MessageSquare className="w-5 h-5" />
               </div>
               <div>
@@ -890,14 +705,14 @@ export default function ShiftMessagesView() {
                     setFilter("all");
                     setPriorityFilter("all");
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-app hover:bg-surface-3 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-emerald-200 dark:border-teal-500/30 bg-white/80 dark:bg-[#0f1726]/80 text-app hover:bg-emerald-50 dark:hover:bg-teal-950/60 transition-colors"
                 >
                   Reset filters
                 </button>
               )}
             </div>
           ) : (
-            <ul className="divide-y divide-app">
+            <ul className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
               {visible.map((m) => {
                 const pending = m.status === "pending";
                 const notePriority = (m.priority || "normal").toLowerCase();
@@ -914,8 +729,8 @@ export default function ShiftMessagesView() {
                   : isHigh
                     ? "bg-amber-50/85 hover:bg-amber-100/70 dark:bg-amber-500/[0.09] dark:hover:bg-amber-500/[0.14] ring-1 ring-inset ring-amber-300 dark:ring-amber-500/30"
                     : pending
-                      ? "bg-surface-2/50 hover:bg-surface-2"
-                      : "hover:bg-surface-2/40";
+                      ? "bg-emerald-50/35 hover:bg-emerald-50/65 dark:bg-teal-950/20 dark:hover:bg-teal-950/35"
+                      : "hover:bg-emerald-50/40 dark:hover:bg-teal-950/25";
 
                 return (
                   <li
@@ -1145,6 +960,191 @@ export default function ShiftMessagesView() {
             </ul>
           )}
         </section>
+
+        {/* Compose Handover Panel (Right — Load Factor Amber Palette) */}
+        {canPost && (
+          <section
+            aria-label="Compose station note"
+            className="lg:col-span-5 lg:sticky lg:top-4 rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 overflow-hidden shadow-sm"
+          >
+            <div className="px-4 sm:px-5 py-3.5 border-b border-orange-200/80 dark:border-amber-500/20 bg-orange-50/75 dark:bg-amber-950/35 flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold text-orange-600 dark:text-amber-200">
+                  New Handover Note
+                </h2>
+                <p className="text-xs text-muted mt-0.5">
+                  Delivered to incoming shift log &amp; notification bell
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
+              {/* Priority segmented selector */}
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-medium text-secondary">
+                    Priority Flag
+                  </label>
+                  <span className="text-xs text-muted">
+                    {PRIORITY_OPTIONS.find((p) => p.id === priority)?.hint}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-orange-200/80 dark:border-amber-500/25">
+                  {PRIORITY_OPTIONS.map((opt) => {
+                    const active = priority === opt.id;
+                    let activeStyle =
+                      "bg-orange-50 text-orange-900 shadow-sm border border-orange-200 dark:bg-amber-500/20 dark:text-amber-100 dark:border-amber-400/40";
+                    if (active && opt.id === "high") {
+                      activeStyle =
+                        "bg-amber-100 text-amber-950 border border-amber-500/60 shadow-sm dark:bg-amber-500/25 dark:text-amber-200 dark:border-amber-400/60";
+                    } else if (active && opt.id === "critical") {
+                      activeStyle =
+                        "bg-rose-600 text-white border border-rose-700 shadow-sm dark:bg-rose-600 dark:text-white dark:border-rose-500";
+                    }
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setPriority(opt.id)}
+                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                          active
+                            ? activeStyle
+                            : "text-secondary hover:text-app hover:bg-orange-50/70 dark:hover:bg-amber-950/40 border border-transparent"
+                        }`}
+                      >
+                        {opt.id === "critical" ? (
+                          <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+                        ) : opt.id === "high" ? (
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                        ) : (
+                          <Flag className="w-3.5 h-3.5 shrink-0" />
+                        )}
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Target shift segmented selector */}
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-medium text-secondary">
+                    Target Shift
+                  </label>
+                  <span className="text-xs text-muted font-mono tabular-nums">
+                    {shiftWindow(effectiveTargetShift)}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-orange-200/80 dark:border-amber-500/25">
+                  {SHIFT_ORDER.map((sid) => {
+                    const active = effectiveTargetShift === sid;
+                    const isNext = nextShift === sid;
+                    return (
+                      <button
+                        key={sid}
+                        type="button"
+                        onClick={() => setSelectedTargetShift(sid)}
+                        className={`px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                          active
+                            ? "btn-primary shadow-sm"
+                            : "text-secondary hover:text-app hover:bg-orange-50/70 dark:hover:bg-amber-950/40"
+                        }`}
+                      >
+                        {shiftLabel(sid)}
+                        {isNext && !active ? " · Next" : ""}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quick operational templates */}
+              <div>
+                <span className="block text-xs font-medium text-secondary mb-1.5">
+                  Quick Templates
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_TEMPLATES.map((tpl) => (
+                    <button
+                      key={tpl.label}
+                      type="button"
+                      onClick={() => applyTemplate(tpl.text)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-orange-200/80 dark:border-amber-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-secondary hover:text-app hover:border-orange-400/60 dark:hover:border-amber-400/50 transition-colors whitespace-nowrap"
+                    >
+                      + {tpl.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message textarea */}
+              <div>
+                <label
+                  htmlFor="station-note-draft"
+                  className="block text-xs font-medium text-secondary mb-1.5"
+                >
+                  Operational Message
+                </label>
+                <textarea
+                  id="station-note-draft"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.metaKey || e.ctrlKey) &&
+                      e.key === "Enter" &&
+                      draft.trim() &&
+                      !sending
+                    ) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  rows={5}
+                  maxLength={2000}
+                  placeholder="Describe feeder restrictions, relay flags, circle allotment adjustments, or equipment checks for the incoming operator..."
+                  className="w-full rounded-lg border border-orange-200/80 dark:border-amber-500/25 bg-white/85 dark:bg-[#0f1726]/75 px-3.5 py-2.5 text-sm text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-orange-500/35 dark:focus:ring-amber-400/35 focus:border-orange-400 dark:focus:border-amber-400/60 resize-y min-h-[8rem] leading-relaxed"
+                />
+                <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted">
+                  <span className="font-mono tabular-nums">
+                    {draft.length} / 2000
+                  </span>
+                  <span>Ctrl / ⌘ + Enter to send</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                {(draft.trim() || priority !== "normal") && (
+                  <button
+                    type="button"
+                    disabled={sending}
+                    onClick={() => {
+                      setDraft("");
+                      setPriority("normal");
+                    }}
+                    className="px-3.5 py-2 rounded-lg text-xs font-semibold text-secondary hover:text-app hover:bg-orange-50/70 dark:hover:bg-amber-950/40 border border-orange-200/80 dark:border-amber-500/25 transition-colors whitespace-nowrap"
+                  >
+                    Clear
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={sending || !draft.trim()}
+                  onClick={handleSend}
+                  className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
+                >
+                  {sending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  Send to {shiftLabel(effectiveTargetShift)}
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
