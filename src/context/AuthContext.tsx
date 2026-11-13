@@ -18,12 +18,13 @@ import {
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // CRITICAL: start with null/false/false on BOTH server and first client paint.
-  // Reading localStorage during useState() causes hydration mismatch because
-  // the server cannot access localStorage.
+  // CRITICAL: start with null/false/true on BOTH server and first client paint.
+  // Reading localStorage during useState() causes hydration mismatch, while
+  // starting loading=false causes child useEffects on /dashboard to redirect
+  // to /login before refresh() completes.
   const [admin, setAdmin] = useState(null);
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     try {

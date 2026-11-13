@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { connectDB, isDbConnected } from "@/lib/db";
 import Calculation from "@/lib/models/Calculation";
@@ -75,11 +76,11 @@ export async function GET(request) {
     const mine =
       searchParams.get("mine") === "1" || searchParams.get("mine") === "true";
 
-    let mineUserId = null;
+    let mineAdmin = null;
     if (mine) {
       const auth = requireAuth(request);
       if (!auth.ok) return auth.response;
-      mineUserId = auth.admin?.id || null;
+      mineAdmin = auth.admin || null;
     }
 
     if (!isDbConnected()) {
@@ -88,8 +89,25 @@ export async function GET(request) {
       const activeDocs = store.calculations.filter((d) => !d.deletedAt);
       const trashedDocs = store.calculations.filter((d) => !!d.deletedAt);
       let matched = (trash ? trashedDocs : activeDocs).filter((d) => {
-        if (mineUserId && String(d.createdBy || "") !== String(mineUserId)) {
-          return false;
+        if (mineAdmin) {
+          const uid = String(mineAdmin.id || "");
+          const docUid = String(d.createdBy || "");
+          const docUname = String(d.createdByUsername || "")
+            .trim()
+            .toLowerCase();
+          const uname = String(mineAdmin.username || "")
+            .trim()
+            .toLowerCase();
+          const dname = String(mineAdmin.displayName || "")
+            .trim()
+            .toLowerCase();
+          const matchesId = !!uid && !!docUid && uid === docUid;
+          const matchesName =
+            !!docUname &&
+            ((!!uname && docUname === uname) || (!!dname && docUname === dname));
+          if (!matchesId && !matchesName) {
+            return false;
+          }
         }
         if (!bounds) return true;
         const ev = new Date(d.calculatedAt || d.createdAt).getTime();
@@ -128,10 +146,25 @@ export async function GET(request) {
 
     const baseFilter = trash ? trashFilter : activeFilter;
     const dateFilter = buildEventDateFilter(searchParams);
-    const mineFilter =
-      mineUserId != null
-        ? { createdBy: mineUserId }
-        : null;
+    let mineFilter = null;
+    if (mineAdmin) {
+      const orClauses = [];
+      const uid = String(mineAdmin.id || "");
+      if (uid && mongoose.Types.ObjectId.isValid(uid)) {
+        orClauses.push({ createdBy: new mongoose.Types.ObjectId(uid) });
+      }
+      const candidateNames = [mineAdmin.username, mineAdmin.displayName]
+        .map((s) => String(s || "").trim())
+        .filter(Boolean);
+      if (candidateNames.length > 0) {
+        orClauses.push({ createdByUsername: { $in: candidateNames } });
+      }
+      if (orClauses.length === 0) {
+        mineFilter = { _id: null };
+      } else {
+        mineFilter = orClauses.length === 1 ? orClauses[0] : { $or: orClauses };
+      }
+    }
     const filterParts = [baseFilter];
     if (dateFilter) filterParts.push(dateFilter);
     if (mineFilter) filterParts.push(mineFilter);
@@ -282,7 +315,10 @@ export async function POST(request) {
       isHourly,
       hasActiveRing,
       deletedAt: null,
-      createdBy: auth.admin?.id || null,
+      createdBy:
+        auth.admin?.id && mongoose.Types.ObjectId.isValid(String(auth.admin.id))
+          ? auth.admin.id
+          : null,
       createdByUsername:
         auth.admin?.displayName || auth.admin?.username || null,
     };

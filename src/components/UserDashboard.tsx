@@ -3,157 +3,52 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
 import {
-  User,
   Activity,
-  Calculator,
-  History,
-  Zap,
-  ClipboardEdit,
-  TrendingUp,
-  BarChart3,
-  Shield,
-  Clock,
   ArrowRight,
-  RefreshCw,
-  LayoutDashboard,
-  MapPin,
-  CircleDot,
-  Moon,
-  LogOut,
+  BarChart3,
+  Calculator,
+  Clock,
   FileText,
-  CheckCircle2,
-  Settings2,
-  KeyRound,
-  Mail,
-  Save,
-  Eye,
-  EyeOff,
+  History,
+  Moon,
+  RefreshCw,
+  Search,
+  Shield,
+  Trash2,
+  TrendingUp,
+  Zap,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  changePassword,
   fetchCalculations,
   trashCalculation,
   updateProfile,
-  changePassword,
 } from "@/lib/api";
-import toast from "react-hot-toast";
+import {
+  computeDashboardMetrics,
+  filterDashboardRows,
+  formatDhakaDateTime,
+  getCurrentShiftInfo,
+  recordLoadShedMW,
+  todayYmdDhaka,
+  type DashboardCalcRow,
+  type DashboardFilter,
+} from "@/lib/dashboardStats";
+import { toDayKey } from "@/lib/logsheetSlots";
 import ConfirmModal from "./ConfirmModal";
+import DashboardAccountPanel from "./DashboardAccountPanel";
 
-const ROLE_META = {
-  admin: {
-    label: "Administrator",
-    color: "text-accent",
-    bg: "bg-accent/10 border-accent/40",
-  },
-  duty: {
-    label: "Duty Operator",
-    color: "text-sky-700 dark:text-sky-400",
-    bg: "bg-sky-500/10 border-sky-500/25",
-  },
-  "circle-load-input": {
-    label: "Circle Load Input",
-    color: "text-amber-700 dark:text-amber-400",
-    bg: "bg-amber-500/10 border-amber-500/25",
-  },
-  viewer: {
-    label: "Viewer",
-    color: "text-muted",
-    bg: "bg-surface-3/60 border-app",
-  },
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrator",
+  duty: "Duty Operator",
+  "circle-load-input": "Circle Load Input",
+  viewer: "Viewer",
 };
 
-const QUICK_ACTIONS = [
-  {
-    href: "/calculator",
-    title: "Load Calculator",
-    desc: "Record feeder MW & voltages",
-    icon: Calculator,
-    write: false,
-  },
-  {
-    href: "/loadshed",
-    title: "Load Shed",
-    desc: "Enter LS by feeder & slot",
-    icon: Zap,
-    write: true,
-  },
-  {
-    href: "/manual",
-    title: "Manual Entry",
-    desc: "Fill empty hourly slots",
-    icon: ClipboardEdit,
-    write: true,
-  },
-  {
-    href: "/history",
-    title: "Full History",
-    desc: "Search, edit, restore logs",
-    icon: History,
-    write: false,
-  },
-  {
-    href: "/max-load",
-    title: "Max Load",
-    desc: "Monthly peak analysis",
-    icon: TrendingUp,
-    write: false,
-  },
-  {
-    href: "/statistics",
-    title: "Statistics",
-    desc: "Station averages & peaks",
-    icon: BarChart3,
-    write: false,
-  },
-  {
-    href: "/kushtia-district-load",
-    title: "District Load",
-    desc: "24h Kushtia demand matrix",
-    icon: MapPin,
-    write: false,
-  },
-  {
-    href: "/circle-load",
-    title: "Circle Load",
-    desc: "Multi-SS circle overview",
-    icon: CircleDot,
-    write: false,
-  },
-  {
-    href: "/generate-night-log",
-    title: "Night Logs",
-    desc: "Generate overnight sheets",
-    icon: Moon,
-    write: true,
-  },
-];
-
-function formatDhaka(iso) {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleString("en-GB", {
-      timeZone: "Asia/Dhaka",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } catch {
-    return "—";
-  }
-}
-
-function todayYmdDhaka() {
-  try {
-    return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" });
-  } catch {
-    return new Date().toISOString().slice(0, 10);
-  }
-}
+type WorkspaceTab = "overview" | "account";
 
 export default function UserDashboard() {
   const router = useRouter();
@@ -168,14 +63,28 @@ export default function UserDashboard() {
     applyAdminUpdate,
   } = useAuth();
 
-  const [rows, setRows] = useState([]);
+  const [tab, setTab] = useState<WorkspaceTab>("overview");
+  const [rows, setRows] = useState<DashboardCalcRow[]>([]);
   const [totalMine, setTotalMine] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [trashId, setTrashId] = useState(null);
+  const [loadError, setLoadError] = useState("");
+  const [filter, setFilter] = useState<DashboardFilter>("all");
+  const [query, setQuery] = useState("");
+  const [trashId, setTrashId] = useState<string | null>(null);
   const [trashing, setTrashing] = useState(false);
 
-  // Profile / account form state
+  // Client-hydrated Dhaka shift info to avoid SSR/client mismatch
+  const [shiftInfo, setShiftInfo] = useState(() => ({
+    id: "A",
+    label: "A Shift",
+    window: "09:00 – 14:00",
+    timeLabel: "",
+    dateLabel: "",
+    todayYmd: "",
+  }));
+
+  // Profile & password state
   const [displayNameDraft, setDisplayNameDraft] = useState("");
   const [emailDraft, setEmailDraft] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
@@ -183,19 +92,27 @@ export default function UserDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
-  const [showCurrentPw, setShowCurrentPw] = useState(false);
-  const [showNewPw, setShowNewPw] = useState(false);
+
+  useEffect(() => {
+    setShiftInfo(getCurrentShiftInfo(new Date()));
+    const id = setInterval(() => {
+      setShiftInfo(getCurrentShiftInfo(new Date()));
+    }, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   const loadMine = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
+    setLoadError("");
     try {
       const res = await fetchCalculations({ mine: true, limit: 25, page: 1 });
       setRows(res.data || []);
       setTotalMine(res.total ?? (res.data || []).length);
-    } catch (err) {
-      console.error(err);
-      if (!silent) toast.error(err.message || "Failed to load your activity");
+    } catch (err: any) {
+      const msg = err?.message || "Failed to load your activity";
+      setLoadError(msg);
+      if (!silent) toast.error(msg);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -217,36 +134,26 @@ export default function UserDashboard() {
     setEmailDraft(admin.email || "");
   }, [admin]);
 
-  const stats = useMemo(() => {
-    const today = todayYmdDhaka();
-    let todayCount = 0;
-    let hourlyCount = 0;
-    let totalMwSum = 0;
-    for (const r of rows) {
-      const d = (r.calculatedAt || r.createdAt || "").toString().slice(0, 10);
-      // approximate local day from ISO — good enough for dashboard card
-      try {
-        const local = new Date(r.calculatedAt || r.createdAt).toLocaleDateString(
-          "en-CA",
-          { timeZone: "Asia/Dhaka" }
-        );
-        if (local === today) todayCount++;
-      } catch {
-        if (d === today) todayCount++;
-      }
-      if (r.isHourly || r.hourSlot) hourlyCount++;
-      totalMwSum += Number(r.totalMW) || 0;
-    }
-    return {
-      todayCount,
-      hourlyCount,
-      avgMw:
-        rows.length > 0 ? (totalMwSum / rows.length).toFixed(2) : "—",
-      totalMine,
-    };
-  }, [rows, totalMine]);
+  const effectiveTodayYmd = shiftInfo.todayYmd || todayYmdDhaka();
 
-  const roleMeta = ROLE_META[role] || ROLE_META.viewer;
+  const metrics = useMemo(
+    () => computeDashboardMetrics(rows, totalMine, effectiveTodayYmd),
+    [rows, totalMine, effectiveTodayYmd]
+  );
+
+  const filteredRows = useMemo(
+    () =>
+      filterDashboardRows(rows, {
+        filter,
+        query,
+        todayYmd: effectiveTodayYmd,
+      }),
+    [rows, filter, query, effectiveTodayYmd]
+  );
+
+  const roleLabel = ROLE_LABELS[role || "viewer"] || "Viewer";
+  const displayName = admin?.displayName || admin?.username || "Operator";
+  const initial = String(displayName).charAt(0).toUpperCase();
 
   const handleLogout = async () => {
     try {
@@ -258,8 +165,8 @@ export default function UserDashboard() {
     }
   };
 
-  const handleSaveProfile = async (e) => {
-    e?.preventDefault?.();
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
     setSavingProfile(true);
     try {
       const res = await updateProfile({
@@ -268,15 +175,15 @@ export default function UserDashboard() {
       });
       if (applyAdminUpdate) applyAdminUpdate(res.data);
       toast.success("Profile updated");
-    } catch (err) {
-      toast.error(err.message || "Could not update profile");
+    } catch (err: any) {
+      toast.error(err?.message || "Could not update profile");
     } finally {
       setSavingProfile(false);
     }
   };
 
-  const handleChangePassword = async (e) => {
-    e?.preventDefault?.();
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (newPassword.length < 8) {
       toast.error("New password must be at least 8 characters");
       return;
@@ -287,16 +194,13 @@ export default function UserDashboard() {
     }
     setSavingPassword(true);
     try {
-      await changePassword({
-        currentPassword,
-        newPassword,
-      });
+      await changePassword({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      toast.success("Password changed");
-    } catch (err) {
-      toast.error(err.message || "Could not change password");
+      toast.success("Password updated");
+    } catch (err: any) {
+      toast.error(err?.message || "Could not change password");
     } finally {
       setSavingPassword(false);
     }
@@ -307,546 +211,657 @@ export default function UserDashboard() {
     setTrashing(true);
     try {
       await trashCalculation(trashId);
-      toast.success("Moved to trash");
+      toast.success("Moved to History trash");
       setTrashId(null);
       await loadMine(true);
-    } catch (err) {
-      toast.error(err.message || "Could not move to trash");
+    } catch (err: any) {
+      toast.error(err?.message || "Could not move to trash");
     } finally {
       setTrashing(false);
     }
   };
 
-  const visibleActions = QUICK_ACTIONS.filter(
-    (a) => !a.write || canWrite
-  ).concat(
-    isAdmin
-      ? [
-          {
-            href: "/admin",
-            title: "Admin Panel",
-            desc: "Users & app settings",
-            icon: Shield,
-            write: false,
-          },
-          {
-            href: "/admin/duty",
-            title: "Monthly Duty",
-            desc: "A / B / C shift operators by day",
-            icon: Clock,
-            write: false,
-          },
-        ]
-      : []
-  );
-
   if (authLoading || (!isAuthenticated && loading)) {
     return (
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-8 space-y-6 animate-pulse">
-        <div className="h-28 rounded-2xl bg-surface-2 border border-app" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
+        <div className="h-24 rounded-xl bg-white dark:bg-[#092532] border border-zinc-200 dark:border-app animate-pulse" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-xl bg-surface-2 border border-app" />
+            <div
+              key={i}
+              className="h-28 rounded-xl bg-white dark:bg-[#092532] border border-zinc-200 dark:border-app animate-pulse"
+            />
           ))}
         </div>
-        <div className="h-64 rounded-2xl bg-surface-2 border border-app" />
+        <div className="h-80 rounded-xl bg-white dark:bg-[#092532] border border-zinc-200 dark:border-app animate-pulse" />
       </div>
     );
   }
 
-  const displayName =
-    admin?.displayName || admin?.username || "Operator";
-  const initial = String(displayName).charAt(0).toUpperCase();
+  const slotCoveragePct = Math.min(
+    100,
+    Math.round((metrics.todaySlotsCount / 26) * 100)
+  );
+  const maxTrendMw = Math.max(
+    1,
+    ...metrics.recentTrend.map((pt) => pt.mw + pt.lsMw)
+  );
+
+  const workflowLinks = [
+    {
+      href: "/calculator",
+      label: "Record Hourly Load",
+      detail: "Compute feeder MW and bus kV",
+      icon: Calculator,
+    },
+    ...(canWrite
+      ? [
+          {
+            href: "/loadshed",
+            label: "Load Shed Sheet",
+            detail: "Update feeder allotments & LS",
+            icon: Zap,
+          },
+          {
+            href: "/generate-night-log",
+            label: "Night Log Generator",
+            detail: "Prepare overnight 22–08h slots",
+            icon: Moon,
+          },
+        ]
+      : []),
+    {
+      href: "/history",
+      label: "Full History Ledger",
+      detail: "Search, audit & restore logs",
+      icon: History,
+    },
+    {
+      href: "/max-load",
+      label: "Peak Demand Report",
+      detail: "Monthly feeder peak breakdown",
+      icon: TrendingUp,
+    },
+    ...(isAdmin
+      ? [
+          {
+            href: "/admin",
+            label: "User & Settings Admin",
+            detail: "Accounts, limits & defaults",
+            icon: Shield,
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Header */}
-      <motion.section
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative overflow-hidden rounded-2xl border border-app bg-surface shadow-[var(--app-shadow)]"
-      >
-        <div
-          className="absolute inset-0 opacity-[0.07] pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 10% 0%, var(--app-accent), transparent 55%)",
-          }}
-        />
-        <div className="relative flex flex-col sm:flex-row sm:items-center gap-5 p-5 sm:p-6">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-accent/15 border border-accent/30 flex items-center justify-center shrink-0 shadow-inner">
-              <span className="text-2xl sm:text-3xl font-bold text-accent font-mono">
+    <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4">
+      {/* Executive Header */}
+      <header className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 dark:bg-[#00ED64]/15 dark:border-[#00ED64]/35 dark:text-[#00ED64] flex items-center justify-center shrink-0">
+              <span className="text-xl sm:text-2xl font-bold font-mono">
                 {initial}
               </span>
             </div>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-app tracking-tight truncate">
-                  {displayName}
-                </h1>
-                <span
-                  className={`inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${roleMeta.bg} ${roleMeta.color}`}
-                >
-                  <LayoutDashboard className="w-3 h-3" />
-                  {roleMeta.label}
+              <h1 className="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-white tracking-tight font-display truncate">
+                {displayName}
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-slate-300 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="font-semibold text-emerald-700 dark:text-[#00ED64]">
+                  {roleLabel}
                 </span>
-              </div>
-              <p className="text-sm text-muted flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="inline-flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5" />
+                <span aria-hidden="true" className="text-zinc-400 dark:text-slate-500">
+                  ·
+                </span>
+                <span className="font-mono text-zinc-700 dark:text-slate-200">
                   @{admin?.username || "—"}
                 </span>
-                {admin?.assignedStation ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5" />
-                    Station: {admin.assignedStation}
-                  </span>
-                ) : null}
-                <span className="inline-flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-accent" />
-                  My activity dashboard
+                <span aria-hidden="true" className="text-zinc-400 dark:text-slate-500">
+                  ·
+                </span>
+                <span>
+                  {admin?.assignedStation || "Bottail 33/11 kV Substation"}
+                </span>
+                <span aria-hidden="true" className="text-zinc-400 dark:text-slate-500">
+                  ·
+                </span>
+                <span className="font-mono tabular-nums text-zinc-700 dark:text-slate-300">
+                  {shiftInfo.label} ({shiftInfo.window})
                 </span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               type="button"
               onClick={() => loadMine(true)}
               disabled={refreshing}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-app text-secondary hover:text-app hover:bg-surface-3/70 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-app bg-white dark:bg-[#0D3349] text-zinc-700 dark:text-slate-200 hover:bg-zinc-50 dark:hover:bg-[#133E56] transition-colors whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
               />
               Refresh
             </button>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-app text-secondary hover:text-danger hover:border-danger/40 hover:bg-danger/5 transition-all"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign out
-            </button>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Stats */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {[
-          {
-            label: "My total saves",
-            value: stats.totalMine,
-            icon: FileText,
-            hint: "All-time records you created",
-          },
-          {
-            label: "Today (Dhaka)",
-            value: stats.todayCount,
-            icon: Clock,
-            hint: "Entries dated today",
-          },
-          {
-            label: "Hourly slots",
-            value: stats.hourlyCount,
-            icon: CheckCircle2,
-            hint: "In recent page of your data",
-          },
-          {
-            label: "Avg MW (recent)",
-            value: stats.avgMw,
-            icon: Activity,
-            hint: "Mean total MW on this page",
-          },
-        ].map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * i, duration: 0.28 }}
-            className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm hover:border-accent/30 transition-colors"
-          >
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-muted">
-                {s.label}
-              </p>
-              <s.icon className="w-4 h-4 text-accent shrink-0" />
-            </div>
-            <p className="text-2xl sm:text-3xl font-bold text-app font-mono tabular-nums tracking-tight">
-              {s.value}
-            </p>
-            <p className="text-[11px] text-faint mt-1.5 leading-snug">{s.hint}</p>
-          </motion.div>
-        ))}
-      </section>
-
-      {/* Quick actions */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-app uppercase tracking-wider">
-            Quick actions
-          </h2>
-          <Link
-            href="/"
-            className="text-xs font-semibold text-accent hover:underline inline-flex items-center gap-1"
-          >
-            All modules <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {visibleActions.map((a, i) => {
-            const Icon = a.icon;
-            return (
-              <motion.div
-                key={a.href}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.03 * i, duration: 0.25 }}
-              >
-                <Link
-                  href={a.href}
-                  className="group flex items-start gap-3 rounded-xl border border-app bg-surface p-4 hover:border-accent/40 hover:bg-surface-2/80 transition-all shadow-sm h-full"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Icon className="w-5 h-5 text-accent" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="text-sm font-semibold text-app group-hover:text-accent transition-colors">
-                        {a.title}
-                      </h3>
-                      <ArrowRight className="w-3.5 h-3.5 text-faint group-hover:text-accent group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                    <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                      {a.desc}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Account settings */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <form
-          onSubmit={handleSaveProfile}
-          className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm space-y-4"
-        >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-              <Settings2 className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-app">Profile details</h2>
-              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
-                Update how your name appears on saves and reports. Username and
-                role are controlled by administrators.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Username
-              </span>
-              <input
-                type="text"
-                value={admin?.username || ""}
-                disabled
-                className="mt-1 w-full rounded-xl border border-app bg-surface-2/60 px-3 py-2 text-sm text-muted cursor-not-allowed"
-              />
-            </label>
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Display name
-              </span>
-              <div className="relative mt-1">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
-                <input
-                  type="text"
-                  value={displayNameDraft}
-                  onChange={(e) => setDisplayNameDraft(e.target.value)}
-                  maxLength={80}
-                  placeholder="e.g. Duty Operator — Bottail"
-                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pl-9 text-sm text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
-                />
-              </div>
-            </label>
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Email
-              </span>
-              <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint pointer-events-none" />
-                <input
-                  type="email"
-                  value={emailDraft}
-                  onChange={(e) => setEmailDraft(e.target.value)}
-                  placeholder="you@wzpdcl.gov.bd"
-                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pl-9 text-sm text-app placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
-                />
-              </div>
-            </label>
-            {admin?.assignedStation ? (
-              <p className="text-xs text-muted flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5" />
-                Assigned station:{" "}
-                <span className="font-semibold text-app">
-                  {admin.assignedStation}
-                </span>
-              </p>
-            ) : null}
-          </div>
-
-          <div className="flex justify-end pt-1">
-            <button
-              type="submit"
-              disabled={savingProfile}
-              className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
-            >
-              <Save className="w-4 h-4" />
-              {savingProfile ? "Saving…" : "Save profile"}
-            </button>
-          </div>
-        </form>
-
-        <form
-          onSubmit={handleChangePassword}
-          className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm space-y-4"
-        >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-              <KeyRound className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-app">Change password</h2>
-              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
-                Use a strong password (min. 8 characters). You stay signed in
-                after a successful change.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Current password
-              </span>
-              <div className="relative mt-1">
-                <input
-                  type={showCurrentPw ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pr-10 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPw((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-faint hover:text-app"
-                  tabIndex={-1}
-                >
-                  {showCurrentPw ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </label>
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                New password
-              </span>
-              <div className="relative mt-1">
-                <input
-                  type={showNewPw ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  className="w-full rounded-xl border border-app bg-surface px-3 py-2 pr-10 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPw((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-faint hover:text-app"
-                  tabIndex={-1}
-                >
-                  {showNewPw ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </label>
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Confirm new password
-              </span>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                minLength={8}
-                required
-                className="mt-1 w-full rounded-xl border border-app bg-surface px-3 py-2 text-sm text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent/40"
-              />
-            </label>
-          </div>
-
-          <div className="flex justify-end pt-1">
-            <button
-              type="submit"
-              disabled={savingPassword}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-app text-app hover:border-accent/40 hover:bg-accent/5 transition-all disabled:opacity-60"
-            >
-              <KeyRound className="w-4 h-4 text-accent" />
-              {savingPassword ? "Updating…" : "Update password"}
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* My recent activity */}
-      <section className="rounded-2xl border border-app bg-surface overflow-hidden shadow-[var(--app-shadow)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-app bg-surface-2/50">
-          <div>
-            <h2 className="text-sm font-bold text-app flex items-center gap-2">
-              <History className="w-4 h-4 text-accent" />
-              My recent activity
-            </h2>
-            <p className="text-[11px] text-muted mt-0.5">
-              Calculations you saved · soft-delete moves them to History trash
-            </p>
-          </div>
-          <Link
-            href="/history"
-            className="text-xs font-semibold text-accent hover:underline inline-flex items-center gap-1"
-          >
-            Open full history <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="p-6 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-12 rounded-lg bg-surface-2 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : rows.length === 0 ? (
-          <div className="px-6 py-16 text-center">
-            <Activity className="w-10 h-10 text-faint mx-auto mb-3 opacity-60" />
-            <p className="text-sm font-semibold text-secondary">
-              No personal activity yet
-            </p>
-            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
-              Saves from the Calculator (and other write tools) will appear here
-              once you record data while signed in.
-            </p>
             <Link
               href="/calculator"
-              className="btn-primary inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-xl text-sm font-semibold"
+              className="btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0"
             >
-              <Calculator className="w-4 h-4" />
+              <Calculator className="w-3.5 h-3.5" />
               Open Calculator
             </Link>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="text-[11px] uppercase tracking-wider text-muted border-b border-app bg-surface-2/40">
-                  <th className="px-4 sm:px-5 py-2.5 font-semibold">When</th>
-                  <th className="px-3 py-2.5 font-semibold">Slot</th>
-                  <th className="px-3 py-2.5 font-semibold text-right">Total MW</th>
-                  <th className="px-3 py-2.5 font-semibold text-right hidden sm:table-cell">
-                    Bus 1 / 2
-                  </th>
-                  <th className="px-3 py-2.5 font-semibold hidden md:table-cell">
-                    Note
-                  </th>
-                  <th className="px-4 sm:px-5 py-2.5 font-semibold text-right">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr
-                    key={r._id}
-                    className="border-b border-app/60 hover:bg-surface-2/50 transition-colors"
-                  >
-                    <td className="px-4 sm:px-5 py-3 whitespace-nowrap font-mono text-xs text-secondary">
-                      {formatDhaka(r.calculatedAt || r.createdAt)}
-                    </td>
-                    <td className="px-3 py-3">
-                      {r.hourSlot ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold font-mono bg-accent/10 text-accent border border-accent/20">
-                          {r.hourSlot}
-                        </span>
-                      ) : (
-                        <span className="text-faint text-xs">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 text-right font-mono font-semibold text-app tabular-nums">
-                      {Number(r.totalMW || 0).toFixed(2)}
-                    </td>
-                    <td className="px-3 py-3 text-right font-mono text-xs text-muted tabular-nums hidden sm:table-cell">
-                      {r.busVoltages?.bus1 ?? "—"} / {r.busVoltages?.bus2 ?? "—"}
-                    </td>
-                    <td className="px-3 py-3 text-xs text-muted truncate max-w-[160px] hidden md:table-cell">
-                      {r.note || "—"}
-                    </td>
-                    <td className="px-4 sm:px-5 py-3 text-right">
-                      <div className="inline-flex items-center gap-1.5">
-                        <Link
-                          href={`/history?id=${r._id}`}
-                          className="text-[11px] font-semibold text-accent hover:underline px-2 py-1 rounded-md hover:bg-accent/10"
-                        >
-                          View
-                        </Link>
-                        {canWrite && (
-                          <button
-                            type="button"
-                            onClick={() => setTrashId(r._id)}
-                            className="text-[11px] font-semibold text-danger/80 hover:text-danger px-2 py-1 rounded-md hover:bg-danger/10"
-                          >
-                            Trash
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+        </div>
 
-      <p className="text-center text-[11px] text-faint pb-4">
-        WZPDCL · Bottail-Kushtia 33/11 kV · User action centre
-      </p>
+        {/* Workspace Tab Bar + Dhaka Operational Date */}
+        <div className="mt-4 pt-3.5 border-t border-zinc-200 dark:border-app/70 flex flex-wrap items-center justify-between gap-3">
+          <div
+            role="tablist"
+            aria-label="Dashboard sections"
+            className="inline-flex items-center gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-[#0D3349] border border-zinc-200 dark:border-app"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "overview"}
+              onClick={() => setTab("overview")}
+              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                tab === "overview"
+                  ? "bg-white dark:bg-[#00ED64] text-zinc-800 dark:text-[#001E2B] shadow-xs"
+                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "account"}
+              onClick={() => setTab("account")}
+              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                tab === "account"
+                  ? "bg-white dark:bg-[#00ED64] text-zinc-800 dark:text-[#001E2B] shadow-xs"
+                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+              }`}
+            >
+              Account &amp; Security
+            </button>
+          </div>
+
+          <div className="text-xs text-zinc-600 dark:text-slate-300 font-mono tabular-nums flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5 text-blue-500 dark:text-sky-400 shrink-0" />
+            <span suppressHydrationWarning>
+              {shiftInfo.dateLabel
+                ? `${shiftInfo.dateLabel} · ${shiftInfo.timeLabel} BST`
+                : "Asia/Dhaka Operational Clock"}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {tab === "account" ? (
+        <DashboardAccountPanel
+          username={admin?.username || ""}
+          roleLabel={roleLabel}
+          assignedStation={admin?.assignedStation || ""}
+          lastLoginLabel={formatDhakaDateTime(admin?.lastLogin)}
+          canWrite={canWrite}
+          isAdmin={isAdmin}
+          displayNameDraft={displayNameDraft}
+          emailDraft={emailDraft}
+          savingProfile={savingProfile}
+          onChangeDisplayName={setDisplayNameDraft}
+          onChangeEmail={setEmailDraft}
+          onSaveProfile={handleSaveProfile}
+          currentPassword={currentPassword}
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          savingPassword={savingPassword}
+          onChangeCurrentPassword={setCurrentPassword}
+          onChangeNewPassword={setNewPassword}
+          onChangeConfirmPassword={setConfirmPassword}
+          onChangePassword={handleChangePassword}
+          onLogout={handleLogout}
+        />
+      ) : (
+        <>
+          {/* 4-Column Operational KPI Strip */}
+          <section
+            aria-label="Key operator metrics"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                  My Total Logs
+                </p>
+                <FileText className="w-4 h-4 text-blue-500 dark:text-sky-400 shrink-0" />
+              </div>
+              <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
+                {metrics.totalMine}
+              </p>
+              <p className="mt-1.5 text-xs text-zinc-500 dark:text-slate-400 font-mono tabular-nums">
+                {metrics.hourlyCount} hourly in latest 25
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                  Today&apos;s Coverage
+                </p>
+                <Clock className="w-4 h-4 text-emerald-600 dark:text-[#00ED64] shrink-0" />
+              </div>
+              <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
+                {metrics.todaySlotsCount}
+                <span className="text-base font-semibold text-zinc-500 dark:text-slate-400">
+                  {" "}
+                  / 26
+                </span>
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 h-1.5 rounded-full bg-zinc-100 dark:bg-[#0D3349] overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[var(--app-accent)] transition-all"
+                    style={{ width: `${slotCoveragePct}%` }}
+                  />
+                </div>
+                <span className="text-[11px] font-mono tabular-nums font-semibold text-zinc-600 dark:text-slate-300">
+                  {metrics.todayCount} saves
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                  Latest Recorded Load
+                </p>
+                <Activity className="w-4 h-4 text-emerald-600 dark:text-[#00ED64] shrink-0" />
+              </div>
+              <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-[#00ED64] font-mono tabular-nums tracking-tight">
+                {metrics.latestMw === "—" ? "—" : `${metrics.latestMw} MW`}
+              </p>
+              <p className="mt-1.5 text-xs text-zinc-500 dark:text-slate-400 font-mono tabular-nums">
+                Slot {metrics.latestSlot}
+                {metrics.latestLsMw > 0
+                  ? ` · ${metrics.latestLsMw.toFixed(1)} MW shed`
+                  : " · Nominal"}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                  Recent Peak Load
+                </p>
+                <BarChart3 className="w-4 h-4 text-orange-500 dark:text-amber-400 shrink-0" />
+              </div>
+              <p className="mt-2.5 text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white font-mono tabular-nums tracking-tight">
+                {metrics.peakMw === "—" ? "—" : `${metrics.peakMw} MW`}
+              </p>
+              <p className="mt-1.5 text-xs text-zinc-500 dark:text-slate-400 font-mono tabular-nums">
+                Mean {metrics.avgMw === "—" ? "—" : `${metrics.avgMw} MW`} ·{" "}
+                {metrics.totalLsEntries} LS events
+              </p>
+            </div>
+          </section>
+
+          {/* 12-Col Main Operational Workspace */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            {/* Left 8 Columns: Personal Activity Ledger */}
+            <section
+              aria-label="Personal activity log"
+              className="lg:col-span-8 rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] overflow-hidden"
+            >
+              <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-app/70 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-base font-semibold text-zinc-800 dark:text-white font-display">
+                      Recent Activity Ledger
+                    </h2>
+                    <p className="text-xs text-zinc-600 dark:text-slate-400 mt-0.5">
+                      Personal calculation entries · soft-delete moves items to History trash
+                    </p>
+                  </div>
+                  <Link
+                    href="/history"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-[#00ED64] hover:underline whitespace-nowrap shrink-0"
+                  >
+                    Full history <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                {/* Filter + Search Bar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <div
+                    role="group"
+                    aria-label="Filter activity"
+                    className="inline-flex items-center gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-[#0D3349] border border-zinc-200 dark:border-app self-start"
+                  >
+                    {(
+                      [
+                        { id: "all", label: "All" },
+                        { id: "today", label: "Today" },
+                        { id: "loadshed", label: "With Loadshed" },
+                      ] as const
+                    ).map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setFilter(opt.id)}
+                        className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          filter === opt.id
+                            ? opt.id === "loadshed"
+                              ? "bg-orange-500 text-white shadow-xs"
+                              : opt.id === "today"
+                                ? "bg-blue-500 text-white shadow-xs"
+                                : "bg-white dark:bg-[#00ED64] text-zinc-800 dark:text-[#001E2B] shadow-xs"
+                            : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="relative w-full sm:w-60">
+                    <Search className="w-3.5 h-3.5 text-zinc-400 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Filter slot, note, or MW…"
+                      aria-label="Filter recent activity"
+                      className="w-full h-9 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-[#0D3349] pl-8 pr-3 text-xs text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 dark:focus:border-[#00ED64]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {loadError ? (
+                <div className="px-5 py-4 bg-rose-50 dark:bg-rose-950/30 border-b border-rose-200 dark:border-rose-500/30 text-xs font-medium text-rose-700 dark:text-rose-200 flex items-center justify-between gap-3">
+                  <span>{loadError}</span>
+                  <button
+                    type="button"
+                    onClick={() => loadMine()}
+                    className="font-semibold underline shrink-0 cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : null}
+
+              {loading ? (
+                <div className="p-5 space-y-2.5">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-11 rounded-lg bg-zinc-100 dark:bg-[#0D3349]/60 animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : rows.length === 0 ? (
+                <div className="px-6 py-16 text-center">
+                  <Activity className="w-9 h-9 text-zinc-400 dark:text-slate-500 mx-auto mb-3" />
+                  <p className="text-sm font-semibold text-zinc-800 dark:text-white">
+                    No recorded entries yet
+                  </p>
+                  <p className="text-xs text-zinc-600 dark:text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+                    Hourly saves and manual entries you create while signed in appear in this ledger.
+                  </p>
+                  <Link
+                    href="/calculator"
+                    className="btn-primary inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-lg text-xs font-semibold"
+                  >
+                    <Calculator className="w-3.5 h-3.5" />
+                    Log First Entry
+                  </Link>
+                </div>
+              ) : filteredRows.length === 0 ? (
+                <div className="px-6 py-14 text-center">
+                  <p className="text-sm font-semibold text-zinc-800 dark:text-white">
+                    No matching entries
+                  </p>
+                  <p className="text-xs text-zinc-600 dark:text-slate-400 mt-1">
+                    No records match the current filter or search term.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilter("all");
+                      setQuery("");
+                    }}
+                    className="mt-4 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-app text-zinc-700 dark:text-slate-200 hover:bg-zinc-50 dark:hover:bg-[#0D3349] cursor-pointer"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="text-[11px] font-semibold uppercase tracking-wider text-zinc-600 dark:text-slate-300 border-b border-zinc-200 dark:border-app bg-zinc-50 dark:bg-[#0D3349]/70">
+                        <th className="px-4 py-2.5">Timestamp (BST)</th>
+                        <th className="px-3 py-2.5">Slot</th>
+                        <th className="px-3 py-2.5 text-right hidden sm:table-cell">
+                          Bus 1 / 2 (kV)
+                        </th>
+                        <th className="px-3 py-2.5 text-right">Total MW</th>
+                        <th className="px-3 py-2.5 text-right">LS MW</th>
+                        <th className="px-3 py-2.5 hidden md:table-cell">Note</th>
+                        <th className="px-4 py-2.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-200 dark:divide-app/60">
+                      {filteredRows.map((r) => {
+                        const ls = recordLoadShedMW(r);
+                        const dayParam = toDayKey(
+                          r.calculatedAt || r.createdAt || ""
+                        );
+                        return (
+                          <tr
+                            key={r._id}
+                            className="hover:bg-zinc-50 dark:hover:bg-[#0D3349]/50 transition-colors"
+                          >
+                            <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums text-zinc-700 dark:text-slate-300">
+                              {formatDhakaDateTime(
+                                r.calculatedAt || r.createdAt
+                              )}
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap font-mono font-semibold text-zinc-800 dark:text-white">
+                              {r.hourSlot || "Manual"}
+                            </td>
+                            <td className="px-3 py-3 text-right font-mono tabular-nums hidden sm:table-cell">
+                              <span className="text-blue-600 dark:text-sky-300 font-semibold">
+                                {r.busVoltages?.bus1 ?? "—"}
+                              </span>
+                              <span className="text-zinc-400 mx-1">/</span>
+                              <span className="text-orange-600 dark:text-amber-300 font-semibold">
+                                {r.busVoltages?.bus2 ?? "—"}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3 text-right font-mono tabular-nums font-bold text-emerald-700 dark:text-[#00ED64]">
+                              {Number(r.totalMW || 0).toFixed(1)}
+                            </td>
+                            <td
+                              className={`px-3 py-3 text-right font-mono tabular-nums font-semibold ${
+                                ls > 0
+                                  ? "text-orange-600 dark:text-amber-300"
+                                  : "text-zinc-400 dark:text-slate-500"
+                              }`}
+                            >
+                              {ls > 0 ? ls.toFixed(1) : "—"}
+                            </td>
+                            <td className="px-3 py-3 text-zinc-600 dark:text-slate-300 truncate max-w-[160px] hidden md:table-cell">
+                              {r.note || "—"}
+                            </td>
+                            <td className="px-4 py-3 text-right whitespace-nowrap">
+                              <div className="inline-flex items-center gap-2">
+                                <Link
+                                  href={`/history?id=${r._id}`}
+                                  className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:underline"
+                                >
+                                  View
+                                </Link>
+                                {canWrite && dayParam ? (
+                                  <Link
+                                    href={`/manual?day=${dayParam}`}
+                                    className="text-xs font-semibold text-zinc-600 dark:text-slate-300 hover:text-zinc-900 dark:hover:text-white hover:underline"
+                                  >
+                                    Sheet
+                                  </Link>
+                                ) : null}
+                                {canWrite ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setTrashId(r._id)}
+                                    aria-label={`Move entry ${r.hourSlot || r._id} to trash`}
+                                    className="p-1 rounded text-zinc-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                ) : null}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            {/* Right 4 Columns: Recent Load Trend + Operational Workflows */}
+            <aside className="lg:col-span-4 space-y-5">
+              {/* Mini Recent Trend Strip */}
+              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-5">
+                <div className="flex items-center justify-between gap-2 pb-3 border-b border-zinc-200 dark:border-app/70">
+                  <div>
+                    <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
+                      Recent Load Profile
+                    </h2>
+                    <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+                      Last {metrics.recentTrend.length || 0} personal readings (MW)
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 text-[11px] font-medium text-zinc-600 dark:text-slate-300">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-xs bg-[var(--app-accent)]" />
+                      Load
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-xs bg-orange-500 dark:bg-amber-400" />
+                      LS
+                    </span>
+                  </div>
+                </div>
+
+                {metrics.recentTrend.length === 0 ? (
+                  <p className="py-8 text-center text-xs text-zinc-500 dark:text-slate-400">
+                    Save readings in Calculator to see your trend bars here.
+                  </p>
+                ) : (
+                  <div className="pt-4 space-y-2.5">
+                    {metrics.recentTrend.map((pt) => {
+                      const loadPct = Math.max(
+                        4,
+                        Math.round((pt.mw / maxTrendMw) * 100)
+                      );
+                      const lsPct =
+                        pt.lsMw > 0
+                          ? Math.max(3, Math.round((pt.lsMw / maxTrendMw) * 100))
+                          : 0;
+                      return (
+                        <div key={pt.id} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs font-mono tabular-nums">
+                            <span className="font-semibold text-zinc-700 dark:text-slate-200">
+                              {pt.label}
+                            </span>
+                            <span className="text-zinc-600 dark:text-slate-300">
+                              <strong className="text-emerald-700 dark:text-[#00ED64]">
+                                {pt.mw.toFixed(1)}
+                              </strong>
+                              {pt.lsMw > 0 ? (
+                                <span className="text-orange-600 dark:text-amber-300 ml-1.5">
+                                  +{pt.lsMw.toFixed(1)} LS
+                                </span>
+                              ) : null}{" "}
+                              MW
+                            </span>
+                          </div>
+                          <div className="h-2 rounded-full bg-zinc-100 dark:bg-[#0D3349] overflow-hidden flex">
+                            <div
+                              className="h-full bg-[var(--app-accent)]"
+                              style={{ width: `${loadPct}%` }}
+                            />
+                            {lsPct > 0 ? (
+                              <div
+                                className="h-full bg-orange-500 dark:bg-amber-400"
+                                style={{ width: `${lsPct}%` }}
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Focused Station Workflows */}
+              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-[#092532] p-5">
+                <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
+                  <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
+                    Station Operations
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
+                    Primary substation worksheets &amp; reports
+                  </p>
+                </div>
+
+                <nav
+                  aria-label="Station workflows"
+                  className="divide-y divide-zinc-100 dark:divide-app/60"
+                >
+                  {workflowLinks.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="group flex items-center justify-between gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-[#0D3349]/40 -mx-2 px-2 rounded-lg transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Icon className="w-4 h-4 text-blue-500 dark:text-[#00ED64] shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-zinc-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-[#00ED64] transition-colors truncate">
+                              {item.label}
+                            </p>
+                            <p className="text-[11px] text-zinc-500 dark:text-slate-400 truncate">
+                              {item.detail}
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-[#00ED64] group-hover:translate-x-0.5 transition-all shrink-0" />
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            </aside>
+          </div>
+        </>
+      )}
 
       <ConfirmModal
         open={!!trashId}
-        title="Move to trash?"
+        title="Move entry to trash?"
         message="This record will be soft-deleted and can be restored from History → Trash."
         confirmLabel={trashing ? "Moving…" : "Move to trash"}
         loading={trashing}

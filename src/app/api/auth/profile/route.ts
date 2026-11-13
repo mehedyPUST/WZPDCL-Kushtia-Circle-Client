@@ -89,11 +89,14 @@ export async function PATCH(request) {
       data: clean,
     });
 
+    const proto = request.headers.get("x-forwarded-proto") || "";
+    const isSecure = request.nextUrl?.protocol === "https:" || proto === "https";
+
     res.cookies.set("admin_token", token, {
       httpOnly: true,
       path: "/",
-      sameSite: "none",
-      secure: true,
+      sameSite: isSecure ? "none" : "lax",
+      secure: isSecure,
       maxAge: 7 * 24 * 60 * 60,
     });
 
