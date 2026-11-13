@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -118,15 +118,15 @@ function metersForCategory(
   }));
 }
 
-function meterRowWash(owner: string, color?: string) {
+function meterOwnerAccent(owner: string, color?: string) {
   const upper = owner.toUpperCase();
   if (upper === "PDB" || color === "yellow") {
-    return "bg-amber-500/[0.045] dark:bg-amber-400/[0.055]";
+    return "shadow-[inset_3px_0_0_0_rgba(245,158,11,0.75)]";
   }
   if (upper === "WZPDCL" || color === "cyan") {
-    return "bg-sky-500/[0.045] dark:bg-sky-400/[0.055]";
+    return "shadow-[inset_3px_0_0_0_rgba(14,165,233,0.75)]";
   }
-  return "bg-surface";
+  return "";
 }
 
 function ownerLabelClass(owner: string) {
@@ -500,34 +500,54 @@ export default function MonthlyEnergyView() {
     );
   }, [categoryBlocks, searchQuery]);
 
-  // Live sheet telemetry & table footer totals
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+
+  // Disallow mouse-wheel changes on all numeric inputs inside the sheet
+  useEffect(() => {
+    const el = tableScrollRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target instanceof HTMLInputElement &&
+        target.type === "number"
+      ) {
+        if (document.activeElement === target) {
+          target.blur();
+        }
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const handleNumberWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
+  const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+    }
+  };
+
+  // Table footer totals
   const sheetStats = useMemo(() => {
-    let totalMeters = 0;
-    let enteredMeters = 0;
-    let wzpdclKwh = 0;
-    let pdbKwh = 0;
     let totalKwhAll = 0;
     let totalKvarhAll = 0;
     let pfSum = 0;
     let pfCount = 0;
     let peakMw = -Infinity;
     let peakFeederName = "";
-    let peakDate = "";
     let totalInterruptions = 0;
     let totalInterruptionMins = 0;
     let totalLsMins = 0;
 
     for (const b of visibleBlocks) {
       for (const m of b.meters) {
-        totalMeters += 1;
-        const hasAny =
-          m.kwh != null || m.kvarh != null || m.avgPf != null;
-        if (hasAny) enteredMeters += 1;
         if (m.kwh != null && Number.isFinite(m.kwh)) {
           totalKwhAll += m.kwh;
-          const upper = m.meterOwner.toUpperCase();
-          if (upper === "WZPDCL") wzpdclKwh += m.kwh;
-          else if (upper === "PDB") pdbKwh += m.kwh;
         }
         if (m.kvarh != null && Number.isFinite(m.kvarh)) {
           totalKvarhAll += m.kvarh;
@@ -540,7 +560,6 @@ export default function MonthlyEnergyView() {
       if (b.maxLoadMw != null && Number.isFinite(b.maxLoadMw) && b.maxLoadMw > peakMw) {
         peakMw = b.maxLoadMw;
         peakFeederName = b.feederName;
-        peakDate = b.maxLoadDate || "";
       }
       if (b.interruptionCount != null && Number.isFinite(b.interruptionCount)) {
         totalInterruptions += b.interruptionCount;
@@ -553,21 +572,12 @@ export default function MonthlyEnergyView() {
       }
     }
 
-    const coveragePct =
-      totalMeters > 0 ? Math.round((enteredMeters / totalMeters) * 100) : 0;
-
     return {
-      totalMeters,
-      enteredMeters,
-      coveragePct,
-      wzpdclKwh,
-      pdbKwh,
       totalKwhAll,
       totalKvarhAll,
       avgPf: pfCount > 0 ? pfSum / pfCount : null,
       peakMw: peakMw > -Infinity ? peakMw : null,
       peakFeederName,
-      peakDate,
       totalInterruptions,
       totalInterruptionMins,
       totalLsMins,
@@ -582,15 +592,6 @@ export default function MonthlyEnergyView() {
     setEditingIds((prev) => {
       const next = new Set(prev);
       next.delete(feederId);
-      return next;
-    });
-  };
-
-  const toggleRowEdit = (feederId: number) => {
-    setEditingIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(feederId)) next.delete(feederId);
-      else next.add(feederId);
       return next;
     });
   };
@@ -980,14 +981,6 @@ export default function MonthlyEnergyView() {
     return (
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-5 space-y-4">
         <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-24 rounded-xl bg-surface border border-app animate-pulse"
-            />
-          ))}
-        </div>
         <div className="h-96 rounded-xl bg-surface border border-app animate-pulse" />
       </div>
     );
@@ -1015,16 +1008,14 @@ export default function MonthlyEnergyView() {
   }
 
   const getEnergyInputClass = (editing: boolean) =>
-    `w-full rounded px-2 py-1 text-xs text-app text-right font-mono tabular-nums transition-colors focus:outline-none ${
+    `w-full rounded px-2 py-1 text-xs text-app text-center font-mono tabular-nums transition-colors focus:outline-none ${
       editing
         ? "border border-app bg-surface hover:border-accent/50 focus:border-accent focus:ring-1 focus:ring-accent/40"
         : "border border-transparent bg-transparent cursor-default opacity-90"
     }`;
 
-  const getSharedInputClass = (editing: boolean, align: "center" | "right" = "right") =>
-    `w-full rounded px-2 py-1.5 text-xs text-app ${
-      align === "center" ? "text-center" : "text-right"
-    } font-mono tabular-nums transition-colors focus:outline-none ${
+  const getSharedInputClass = (editing: boolean) =>
+    `w-full rounded px-2 py-1.5 text-xs text-app text-center font-mono tabular-nums transition-colors focus:outline-none ${
       editing
         ? "border border-app bg-surface hover:border-accent/50 focus:border-accent focus:ring-1 focus:ring-accent/40"
         : "border border-transparent bg-transparent cursor-default opacity-90"
@@ -1125,85 +1116,6 @@ export default function MonthlyEnergyView() {
           </div>
         </div>
       </header>
-
-      {/* 4-Column Sheet Telemetry Strip */}
-      <section
-        aria-label="Monthly energy summary"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3.5"
-      >
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Meter Entry Progress</p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app font-mono tabular-nums tracking-tight">
-            {sheetStats.enteredMeters}
-            <span className="text-sm font-medium text-muted">
-              {" "}
-              / {sheetStats.totalMeters}
-            </span>
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-[var(--app-accent)] transition-all"
-                style={{ width: `${sheetStats.coveragePct}%` }}
-              />
-            </div>
-            <span className="text-[11px] font-mono tabular-nums text-muted">
-              {sheetStats.coveragePct}%
-            </span>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">
-            {sheetStats.wzpdclKwh > 0
-              ? "WZPDCL Energy (KWH)"
-              : "Total Energy (KWH)"}
-          </p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app font-mono tabular-nums tracking-tight truncate">
-            {formatStatNum(
-              sheetStats.wzpdclKwh > 0
-                ? sheetStats.wzpdclKwh
-                : sheetStats.totalKwhAll,
-              0
-            )}
-          </p>
-          <p className="mt-1 text-xs text-muted font-mono tabular-nums truncate">
-            {sheetStats.pdbKwh > 0
-              ? `PDB: ${formatStatNum(sheetStats.pdbKwh, 0)} KWH`
-              : `${visibleBlocks.length} feeders in view`}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">Peak Feeder Load</p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-accent font-mono tabular-nums tracking-tight">
-            {sheetStats.peakMw != null
-              ? `${sheetStats.peakMw.toFixed(2)} MW`
-              : "—"}
-          </p>
-          <p className="mt-1 text-xs text-muted truncate">
-            {sheetStats.peakFeederName
-              ? `${sheetStats.peakFeederName}${
-                  sheetStats.peakDate ? ` · ${sheetStats.peakDate}` : ""
-                }`
-              : "No peak load recorded"}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-app bg-surface p-4">
-          <p className="text-xs font-medium text-muted">
-            Outages &amp; Load Shed
-          </p>
-          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app font-mono tabular-nums tracking-tight">
-            {formatStatNum(sheetStats.totalInterruptions)}
-            <span className="text-xs font-medium text-muted ml-1">trips</span>
-          </p>
-          <p className="mt-1 text-xs text-muted font-mono tabular-nums">
-            {formatStatNum(sheetStats.totalInterruptionMins)}m outage ·{" "}
-            {formatStatNum(sheetStats.totalLsMins)}m LS
-          </p>
-        </div>
-      </section>
 
       {/* Toolbar: Category Tabs, Search & Row Actions */}
       <div className="flex flex-col xl:flex-row xl:items-center gap-3">
@@ -1332,37 +1244,37 @@ export default function MonthlyEnergyView() {
 
       {/* High-Density Engineering Data Table */}
       <div className="rounded-xl border border-app bg-surface shadow-sm overflow-hidden">
-        <div className="overflow-auto max-h-[66vh]">
+        <div ref={tableScrollRef} className="overflow-auto max-h-[70vh]">
           <table className="w-full border-separate border-spacing-0 text-xs min-w-[1140px]">
             <thead className="sticky top-0 z-20">
               <tr className="bg-surface-2 text-app">
                 <th
                   rowSpan={2}
-                  className="border-b border-r border-app px-3 py-2.5 text-left font-semibold sticky left-0 z-30 bg-surface-2 min-w-[11.5rem] shadow-[2px_0_8px_-2px_rgba(0,0,0,0.14)]"
+                  className="border-b border-r border-app px-3 py-2.5 text-center align-middle font-semibold sticky left-0 z-30 bg-surface-2 min-w-[11.5rem] shadow-[2px_0_8px_-2px_rgba(0,0,0,0.14)]"
                 >
                   Feeder Name
                 </th>
                 <th
                   rowSpan={2}
-                  className="border-b border-r border-app px-2.5 py-2.5 text-left font-semibold min-w-[5.5rem]"
+                  className="border-b border-r border-app px-2.5 py-2.5 text-center align-middle font-semibold min-w-[5.5rem]"
                 >
                   Meter
                 </th>
                 <th
                   colSpan={3}
-                  className="border-b border-r border-app px-2.5 py-2 font-semibold text-center bg-amber-500/[0.08] dark:bg-amber-400/[0.09]"
+                  className="border-b border-r border-app px-2.5 py-2 font-semibold text-center align-middle bg-amber-500/[0.08] dark:bg-amber-400/[0.09]"
                 >
                   Energy Reading
                 </th>
                 <th
                   colSpan={3}
-                  className="border-b border-r border-app px-2.5 py-2 font-semibold text-center bg-sky-500/[0.08] dark:bg-sky-400/[0.09]"
+                  className="border-b border-r border-app px-2.5 py-2 font-semibold text-center align-middle bg-sky-500/[0.08] dark:bg-sky-400/[0.09]"
                 >
                   Max Load
                 </th>
                 <th
                   rowSpan={2}
-                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-right min-w-[6rem] leading-tight"
+                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-center align-middle min-w-[6rem] leading-tight"
                 >
                   Interruptions
                   <br />
@@ -1372,7 +1284,7 @@ export default function MonthlyEnergyView() {
                 </th>
                 <th
                   rowSpan={2}
-                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-right min-w-[6.25rem] leading-tight"
+                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-center align-middle min-w-[6.25rem] leading-tight"
                 >
                   Outage Time
                   <br />
@@ -1382,7 +1294,7 @@ export default function MonthlyEnergyView() {
                 </th>
                 <th
                   rowSpan={2}
-                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-right min-w-[5.5rem] leading-tight"
+                  className="border-b border-r border-app px-2.5 py-2.5 font-semibold text-center align-middle min-w-[5.5rem] leading-tight"
                 >
                   Total LS
                   <br />
@@ -1392,28 +1304,28 @@ export default function MonthlyEnergyView() {
                 </th>
                 <th
                   rowSpan={2}
-                  className="border-b border-app px-2 py-2.5 font-semibold text-center w-20"
+                  className="border-b border-app px-2 py-2.5 font-semibold text-center align-middle w-24"
                 >
                   Actions
                 </th>
               </tr>
               <tr className="bg-surface-2 text-app">
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-right bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[7.5rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[7.5rem]">
                   KWH
                 </th>
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-right bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[7.5rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[7.5rem]">
                   Kvarh
                 </th>
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-right bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[5rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-amber-500/[0.06] dark:bg-amber-400/[0.06] min-w-[5rem]">
                   Avg. PF
                 </th>
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-right bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[5.25rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[5.25rem]">
                   MW
                 </th>
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[8rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[8rem]">
                   Date
                 </th>
-                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[6.25rem]">
+                <th className="border-b border-r border-app px-2.5 py-1.5 font-semibold text-center align-middle bg-sky-500/[0.06] dark:bg-sky-400/[0.06] min-w-[6.25rem]">
                   Time
                 </th>
               </tr>
@@ -1424,7 +1336,7 @@ export default function MonthlyEnergyView() {
                 <tr>
                   <td
                     colSpan={12}
-                    className="border-b border-app px-4 py-14 text-center text-muted"
+                    className="border-b border-app px-4 py-14 text-center align-middle text-muted"
                   >
                     <span className="inline-flex items-center gap-2 text-sm">
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1436,7 +1348,7 @@ export default function MonthlyEnergyView() {
                 <tr>
                   <td
                     colSpan={12}
-                    className="border-b border-app px-4 py-12 text-center text-muted space-y-2"
+                    className="border-b border-app px-4 py-12 text-center align-middle text-muted space-y-2"
                   >
                     <p className="text-sm font-medium text-app">
                       {searchQuery.trim()
@@ -1466,7 +1378,7 @@ export default function MonthlyEnergyView() {
                   </td>
                 </tr>
               ) : (
-                visibleBlocks.map((block) => {
+                visibleBlocks.map((block, blockIndex) => {
                   const meters = block.meters.length
                     ? block.meters
                     : metersForCategory(block.category);
@@ -1476,15 +1388,13 @@ export default function MonthlyEnergyView() {
                     block.category === "auxiliary" ||
                     !FEEDERS.some((f) => f.id === block.feederId);
                   const isEditing = editingIds.has(block.feederId);
+                  const isEvenFeeder = blockIndex % 2 === 0;
+                  const rowBg = isEvenFeeder ? "bg-surface" : "bg-surface-2";
                   const energyInput = getEnergyInputClass(isEditing);
-                  const sharedInput = getSharedInputClass(isEditing, "right");
-                  const sharedCenterInput = getSharedInputClass(
-                    isEditing,
-                    "center"
-                  );
+                  const sharedInput = getSharedInputClass(isEditing);
 
                   return meters.map((meter, mi) => {
-                    const rowWash = meterRowWash(
+                    const ownerAccent = meterOwnerAccent(
                       meter.meterOwner,
                       meter.rowColor
                     );
@@ -1500,69 +1410,40 @@ export default function MonthlyEnergyView() {
                           if (!isEditing) startEdit(block.feederId);
                         }}
                         className={`transition-colors ${
-                          isEditing
-                            ? "bg-accent/[0.04]"
-                            : "hover:bg-surface-2/40"
+                          isEditing ? "ring-1 ring-inset ring-accent/20" : ""
                         }`}
                       >
                         {mi === 0 && (
                           <td
                             rowSpan={meterCount}
-                            className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-3 py-2 align-middle sticky left-0 z-10 bg-surface font-semibold text-app text-[13px] shadow-[2px_0_8px_-2px_rgba(0,0,0,0.12)]"
+                            className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-2 py-2 text-center align-middle sticky left-0 z-10 ${rowBg} font-semibold text-app text-[13px] shadow-[2px_0_8px_-2px_rgba(0,0,0,0.12)]`}
                           >
-                            <div className="flex items-center justify-between gap-2 min-w-0">
+                            <div className="relative flex items-center justify-center px-6 min-w-0">
                               <span
-                                className="truncate font-semibold"
+                                className="truncate font-semibold text-center"
                                 title={`${block.feederName} (double-click row to edit)`}
                               >
                                 {block.feederName}
                               </span>
-                              <div className="flex items-center gap-0.5 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => toggleRowEdit(block.feederId)}
-                                  className={`p-1 rounded-md transition-colors ${
-                                    isEditing
-                                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25"
-                                      : "text-muted hover:text-accent hover:bg-accent/10"
-                                  }`}
-                                  title={
-                                    isEditing
-                                      ? "Lock row inputs"
-                                      : "Edit row values"
-                                  }
-                                  aria-label={
-                                    isEditing
-                                      ? `Lock ${block.feederName}`
-                                      : `Edit values for ${block.feederName}`
-                                  }
-                                >
-                                  {isEditing ? (
-                                    <Check className="w-3.5 h-3.5" />
-                                  ) : (
-                                    <Pencil className="w-3.5 h-3.5" />
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => openEditFeederModal(block)}
-                                  className="p-1 rounded-md text-muted hover:text-app hover:bg-surface-2 transition-colors"
-                                  title="Configure feeder name & meters"
-                                  aria-label={`Configure ${block.feederName}`}
-                                >
-                                  <Settings2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                onClick={() => openEditFeederModal(block)}
+                                className="absolute right-0.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted hover:text-app hover:bg-surface-3 transition-colors"
+                                title="Configure feeder name & meters"
+                                aria-label={`Configure ${block.feederName}`}
+                              >
+                                <Settings2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           </td>
                         )}
 
                         <td
-                          className={`${rowBorderBottom} border-r border-r-app px-2.5 py-2 font-semibold align-middle ${rowWash}`}
+                          className={`${rowBorderBottom} border-r border-r-app px-2.5 py-2 font-semibold text-center align-middle ${rowBg} ${ownerAccent}`}
                         >
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col items-center justify-center gap-1">
                             <span
-                              className={`text-xs font-bold tracking-wide ${ownerLabelClass(meter.meterOwner)}`}
+                              className={`text-xs font-bold tracking-wide text-center ${ownerLabelClass(meter.meterOwner)}`}
                             >
                               {meter.meterOwner}
                             </span>
@@ -1573,7 +1454,7 @@ export default function MonthlyEnergyView() {
                                   onClick={() =>
                                     togglePeakOffPeak(block.feederId, mi)
                                   }
-                                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border self-start whitespace-nowrap transition-colors ${
+                                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border self-center whitespace-nowrap transition-colors ${
                                     meter.hasPeakOffPeak
                                       ? "border-accent text-accent bg-accent/10"
                                       : "border-app text-muted hover:text-app bg-surface"
@@ -1590,16 +1471,18 @@ export default function MonthlyEnergyView() {
 
                         {/* KWH */}
                         <td
-                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 align-middle ${rowWash}`}
+                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                         >
                           {meter.meterOwner.toUpperCase() === "PDB" &&
                           meter.hasPeakOffPeak ? (
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col items-center justify-center gap-1">
                               <input
                                 type="number"
                                 step="any"
                                 disabled={!isEditing}
                                 value={numOrEmpty(meter.kwh)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setMeter(
                                     block.feederId,
@@ -1611,12 +1494,14 @@ export default function MonthlyEnergyView() {
                                 className={energyInput}
                                 placeholder="Total"
                               />
-                              <div className="grid grid-cols-2 gap-1">
+                              <div className="grid grid-cols-2 gap-1 w-full">
                                 <input
                                   type="number"
                                   step="any"
                                   disabled={!isEditing}
                                   value={numOrEmpty(meter.peakKwh)}
+                                  onWheel={handleNumberWheel}
+                                  onKeyDown={handleNumberKeyDown}
                                   onChange={(e) =>
                                     setMeter(
                                       block.feederId,
@@ -1633,6 +1518,8 @@ export default function MonthlyEnergyView() {
                                   step="any"
                                   disabled={!isEditing}
                                   value={numOrEmpty(meter.offPeakKwh)}
+                                  onWheel={handleNumberWheel}
+                                  onKeyDown={handleNumberKeyDown}
                                   onChange={(e) =>
                                     setMeter(
                                       block.feederId,
@@ -1652,6 +1539,8 @@ export default function MonthlyEnergyView() {
                               step="any"
                               disabled={!isEditing}
                               value={numOrEmpty(meter.kwh)}
+                              onWheel={handleNumberWheel}
+                              onKeyDown={handleNumberKeyDown}
                               onChange={(e) =>
                                 setMeter(
                                   block.feederId,
@@ -1668,16 +1557,18 @@ export default function MonthlyEnergyView() {
 
                         {/* Kvarh */}
                         <td
-                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 align-middle ${rowWash}`}
+                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                         >
                           {meter.meterOwner.toUpperCase() === "PDB" &&
                           meter.hasPeakOffPeak ? (
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col items-center justify-center gap-1">
                               <input
                                 type="number"
                                 step="any"
                                 disabled={!isEditing}
                                 value={numOrEmpty(meter.kvarh)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setMeter(
                                     block.feederId,
@@ -1689,12 +1580,14 @@ export default function MonthlyEnergyView() {
                                 className={energyInput}
                                 placeholder="Total"
                               />
-                              <div className="grid grid-cols-2 gap-1">
+                              <div className="grid grid-cols-2 gap-1 w-full">
                                 <input
                                   type="number"
                                   step="any"
                                   disabled={!isEditing}
                                   value={numOrEmpty(meter.peakKvarh)}
+                                  onWheel={handleNumberWheel}
+                                  onKeyDown={handleNumberKeyDown}
                                   onChange={(e) =>
                                     setMeter(
                                       block.feederId,
@@ -1711,6 +1604,8 @@ export default function MonthlyEnergyView() {
                                   step="any"
                                   disabled={!isEditing}
                                   value={numOrEmpty(meter.offPeakKvarh)}
+                                  onWheel={handleNumberWheel}
+                                  onKeyDown={handleNumberKeyDown}
                                   onChange={(e) =>
                                     setMeter(
                                       block.feederId,
@@ -1730,6 +1625,8 @@ export default function MonthlyEnergyView() {
                               step="any"
                               disabled={!isEditing}
                               value={numOrEmpty(meter.kvarh)}
+                              onWheel={handleNumberWheel}
+                              onKeyDown={handleNumberKeyDown}
                               onChange={(e) =>
                                 setMeter(
                                   block.feederId,
@@ -1746,13 +1643,15 @@ export default function MonthlyEnergyView() {
 
                         {/* Avg PF */}
                         <td
-                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 align-middle ${rowWash}`}
+                          className={`${rowBorderBottom} border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                         >
                           <input
                             type="number"
                             step="0.001"
                             disabled={!isEditing}
                             value={numOrEmpty(meter.avgPf)}
+                            onWheel={handleNumberWheel}
+                            onKeyDown={handleNumberKeyDown}
                             onChange={(e) =>
                               setMeter(
                                 block.feederId,
@@ -1771,13 +1670,15 @@ export default function MonthlyEnergyView() {
                           <>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="number"
                                 step="0.01"
                                 disabled={!isEditing}
                                 value={numOrEmpty(block.maxLoadMw)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setShared(
                                     block.feederId,
@@ -1791,7 +1692,7 @@ export default function MonthlyEnergyView() {
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="date"
@@ -1804,12 +1705,12 @@ export default function MonthlyEnergyView() {
                                     e.target.value
                                   )
                                 }
-                                className={`${sharedCenterInput} min-w-[7.75rem]`}
+                                className={`${sharedInput} min-w-[7.75rem]`}
                               />
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="time"
@@ -1822,18 +1723,20 @@ export default function MonthlyEnergyView() {
                                     e.target.value
                                   )
                                 }
-                                className={`${sharedCenterInput} min-w-[5.75rem]`}
+                                className={`${sharedInput} min-w-[5.75rem]`}
                               />
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="number"
                                 step="1"
                                 disabled={!isEditing}
                                 value={numOrEmpty(block.interruptionCount)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setShared(
                                     block.feederId,
@@ -1847,13 +1750,15 @@ export default function MonthlyEnergyView() {
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="number"
                                 step="1"
                                 disabled={!isEditing}
                                 value={numOrEmpty(block.interruptionMinutes)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setShared(
                                     block.feederId,
@@ -1867,13 +1772,15 @@ export default function MonthlyEnergyView() {
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 align-middle bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] border-r border-r-app px-1.5 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <input
                                 type="number"
                                 step="1"
                                 disabled={!isEditing}
                                 value={numOrEmpty(block.totalLsMinutes)}
+                                onWheel={handleNumberWheel}
+                                onKeyDown={handleNumberKeyDown}
                                 onChange={(e) =>
                                   setShared(
                                     block.feederId,
@@ -1887,7 +1794,7 @@ export default function MonthlyEnergyView() {
                             </td>
                             <td
                               rowSpan={meterCount}
-                              className="border-b-2 border-b-[var(--app-border-strong)] px-2 py-1.5 align-middle text-center bg-surface"
+                              className={`border-b-2 border-b-[var(--app-border-strong)] px-2 py-1.5 text-center align-middle ${rowBg}`}
                             >
                               <div className="inline-flex items-center justify-center gap-1">
                                 {isEditing ? (
@@ -1906,6 +1813,7 @@ export default function MonthlyEnergyView() {
                                     onClick={() => startEdit(block.feederId)}
                                     className="inline-flex p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent/10 transition-colors"
                                     title="Edit feeder readings"
+                                    aria-label={`Edit ${block.feederName}`}
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
                                   </button>
@@ -1921,6 +1829,7 @@ export default function MonthlyEnergyView() {
                                     }
                                     className="inline-flex p-1.5 rounded-md text-muted hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                                     title="Remove custom feeder"
+                                    aria-label={`Remove ${block.feederName}`}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -1941,44 +1850,44 @@ export default function MonthlyEnergyView() {
                 <tr>
                   <td
                     colSpan={2}
-                    className="border-t border-r border-app px-3 py-2.5 sticky left-0 z-30 bg-surface-2 text-xs font-bold shadow-[2px_0_8px_-2px_rgba(0,0,0,0.14)]"
+                    className="border-t border-r border-app px-3 py-2.5 sticky left-0 z-30 bg-surface-2 text-xs font-bold text-center align-middle shadow-[2px_0_8px_-2px_rgba(0,0,0,0.14)]"
                   >
                     Sheet Totals ({visibleBlocks.length} feeders)
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs">
                     {formatStatNum(sheetStats.totalKwhAll, 0)}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs">
                     {formatStatNum(sheetStats.totalKvarhAll, 0)}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs text-muted">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs text-muted">
                     {sheetStats.avgPf != null
                       ? sheetStats.avgPf.toFixed(3)
                       : "—"}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs text-accent">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs text-accent">
                     {sheetStats.peakMw != null
                       ? sheetStats.peakMw.toFixed(2)
                       : "—"}
                   </td>
                   <td
                     colSpan={2}
-                    className="border-t border-r border-app px-3 py-2.5 text-center text-[11px] text-muted truncate"
+                    className="border-t border-r border-app px-3 py-2.5 text-center align-middle text-[11px] text-muted truncate"
                   >
                     {sheetStats.peakFeederName
                       ? `Peak: ${sheetStats.peakFeederName}`
                       : "—"}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs">
                     {formatStatNum(sheetStats.totalInterruptions)}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs">
                     {formatStatNum(sheetStats.totalInterruptionMins)}
                   </td>
-                  <td className="border-t border-r border-app px-3 py-2.5 text-right font-mono tabular-nums text-xs">
+                  <td className="border-t border-r border-app px-3 py-2.5 text-center align-middle font-mono tabular-nums text-xs">
                     {formatStatNum(sheetStats.totalLsMins)}
                   </td>
-                  <td className="border-t border-app px-2 py-2.5 text-center text-[11px] text-muted">
+                  <td className="border-t border-app px-2 py-2.5 text-center align-middle text-[11px] text-muted">
                     —
                   </td>
                 </tr>

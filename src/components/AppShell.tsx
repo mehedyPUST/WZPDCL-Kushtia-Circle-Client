@@ -38,22 +38,60 @@ import ShiftMessageBell from "./ShiftMessageBell";
 import toast from "react-hot-toast";
 import { useLiveClock } from "@/hooks/useLiveClock";
 
-const NAV_LINKS = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, authOnly: true },
-  { href: "/station-notes", label: "Station Notes", icon: MessageSquare, authOnly: true },
-  { href: "/calculator", label: "Calculator", icon: Calculator },
-  { href: "/loadshed", label: "Loadshed", icon: Zap },
-  { href: "/manual-input", label: "Manual Input", icon: ClipboardEdit },
-  { href: "/night-logs", label: "Night Logs", icon: Moon },
-  { href: "/history", label: "History", icon: History },
-  { href: "/circle-load", label: "Circle Load", icon: CircleDot },
-  { href: "/kushtia-district-load", label: "Kushtia District Load", icon: MapPin },
-  { href: "/max-load", label: "MAX Load", icon: TrendingUp },
-  { href: "/statistics", label: "Statistics", icon: BarChart3 },
-  { href: "/admin", label: "Admin", icon: Shield },
-  { href: "/admin/duty", label: "Duty Roster", icon: CalendarDays, adminOnly: true },
-  { href: "/admin/monthly-energy", label: "Monthly Energy", icon: FileSpreadsheet, adminOnly: true },
+type NavLinkItem = {
+  href: string;
+  label: string;
+  icon: typeof Home;
+  authOnly?: boolean;
+  adminOnly?: boolean;
+};
+
+type NavSection = {
+  id: string;
+  title?: string;
+  items: NavLinkItem[];
+};
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    id: "overview",
+    title: "Overview",
+    items: [
+      { href: "/", label: "Home", icon: Home },
+      { href: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, authOnly: true },
+      { href: "/station-notes", label: "Station Notes", icon: MessageSquare, authOnly: true },
+    ],
+  },
+  {
+    id: "operations",
+    title: "Load Operations",
+    items: [
+      { href: "/calculator", label: "Calculator", icon: Calculator },
+      { href: "/manual-input", label: "Manual Input", icon: ClipboardEdit },
+      { href: "/loadshed", label: "Loadshed", icon: Zap },
+      { href: "/night-logs", label: "Night Logs", icon: Moon },
+    ],
+  },
+  {
+    id: "reports",
+    title: "Logs & Analytics",
+    items: [
+      { href: "/history", label: "History", icon: History },
+      { href: "/max-load", label: "MAX Load", icon: TrendingUp },
+      { href: "/circle-load", label: "Circle Load", icon: CircleDot },
+      { href: "/kushtia-district-load", label: "Kushtia District Load", icon: MapPin },
+      { href: "/statistics", label: "Statistics", icon: BarChart3 },
+    ],
+  },
+  {
+    id: "administration",
+    title: "Administration",
+    items: [
+      { href: "/admin", label: "Admin", icon: Shield, adminOnly: true },
+      { href: "/admin/duty", label: "Duty Roster", icon: CalendarDays, adminOnly: true },
+      { href: "/admin/monthly-energy", label: "Monthly Energy", icon: FileSpreadsheet, adminOnly: true },
+    ],
+  },
 ];
 
 function TopbarLiveClock() {
@@ -138,7 +176,7 @@ export default function AppShell({ children }) {
     }
   };
 
-  const visibleLinks = NAV_LINKS.filter((link) => {
+  const canViewLink = (link: NavLinkItem) => {
     const href = link.href;
     if (!isAuthenticated) {
       return href === "/" || href === "/calculator";
@@ -155,7 +193,12 @@ export default function AppShell({ children }) {
       return canWrite;
     }
     return true;
-  });
+  };
+
+  const visibleSections = NAV_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.filter(canViewLink),
+  })).filter((section) => section.items.length > 0);
 
   return (
     <div className="app-grid-shell">
@@ -255,50 +298,64 @@ export default function AppShell({ children }) {
         className="app-grid-3 flex flex-col justify-between"
         aria-label="Sidebar"
       >
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-          {visibleLinks.map((link) => {
-            const active = isActive(link.href);
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
-                  active
-                    ? "font-semibold text-[var(--sidebar-active-fg)]"
-                    : "text-secondary hover:text-app hover:bg-surface-3/50"
-                }`}
-              >
-                {active && (
-                  <motion.div
-                    layoutId="sidebar-active-tab"
-                    className="absolute inset-0 rounded-xl shadow-sm border"
-                    style={{
-                      background: "var(--sidebar-active-bg)",
-                      borderColor: "var(--sidebar-active-border)",
-                    }}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-3 min-w-0 flex-1">
-                  <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${
-                      active
-                        ? "text-[var(--sidebar-active-fg)]"
-                        : "text-muted group-hover:text-accent"
-                    }`}
-                  />
-                  <span
-                    className={`truncate ${
-                      active ? "text-[var(--sidebar-active-fg)]" : ""
-                    }`}
-                  >
-                    {link.label}
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-3">
+          {visibleSections.map((section, idx) => (
+            <div
+              key={section.id}
+              className={idx > 0 ? "pt-2.5 border-t border-app/60" : ""}
+            >
+              {section.title && (
+                <div className="px-3 pb-1.5 text-[11px] font-semibold tracking-wide text-faint select-none">
+                  {section.title}
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((link) => {
+                  const active = isActive(link.href);
+                  const Icon = link.icon;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+                        active
+                          ? "font-semibold text-[var(--sidebar-active-fg)]"
+                          : "text-secondary hover:text-app hover:bg-surface-3/50"
+                      }`}
+                    >
+                      {active && (
+                        <motion.div
+                          layoutId="sidebar-active-tab"
+                          className="absolute inset-0 rounded-xl shadow-sm border"
+                          style={{
+                            background: "var(--sidebar-active-bg)",
+                            borderColor: "var(--sidebar-active-border)",
+                          }}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center gap-3 min-w-0 flex-1">
+                        <Icon
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            active
+                              ? "text-[var(--sidebar-active-fg)]"
+                              : "text-muted group-hover:text-accent"
+                          }`}
+                        />
+                        <span
+                          className={`truncate ${
+                            active ? "text-[var(--sidebar-active-fg)]" : ""
+                          }`}
+                        >
+                          {link.label}
+                        </span>
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Sidebar Footer User Card */}
@@ -414,30 +471,44 @@ export default function AppShell({ children }) {
                     </button>
                   </div>
                 </div>
-                <nav className="flex-1 overflow-y-auto overscroll-contain py-3 px-2.5 space-y-1">
-                  {visibleLinks.map((link) => {
-                    const active = isActive(link.href);
-                    const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 min-h-[44px] py-2.5 rounded-xl text-[13px] font-medium transition-all border ${
-                          active
-                            ? "font-semibold shadow-sm bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)] border-[var(--sidebar-active-border)]"
-                            : "text-secondary hover:text-app hover:bg-surface-3 border-transparent"
-                        }`}
-                      >
-                        <Icon
-                          className={`w-4 h-4 shrink-0 ${
-                            active ? "text-[var(--sidebar-active-fg)]" : "text-muted"
-                          }`}
-                        />
-                        <span>{link.label}</span>
-                      </Link>
-                    );
-                  })}
+                <nav className="flex-1 overflow-y-auto overscroll-contain py-3 px-2.5 space-y-3">
+                  {visibleSections.map((section, idx) => (
+                    <div
+                      key={section.id}
+                      className={idx > 0 ? "pt-2.5 border-t border-app/60" : ""}
+                    >
+                      {section.title && (
+                        <div className="px-3 pb-1.5 text-[11px] font-semibold tracking-wide text-faint select-none">
+                          {section.title}
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        {section.items.map((link) => {
+                          const active = isActive(link.href);
+                          const Icon = link.icon;
+                          return (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex items-center gap-3 px-3 min-h-[44px] py-2 rounded-xl text-[13px] font-medium transition-all border ${
+                                active
+                                  ? "font-semibold shadow-sm bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)] border-[var(--sidebar-active-border)]"
+                                  : "text-secondary hover:text-app hover:bg-surface-3 border-transparent"
+                              }`}
+                            >
+                              <Icon
+                                className={`w-4 h-4 shrink-0 ${
+                                  active ? "text-[var(--sidebar-active-fg)]" : "text-muted"
+                                }`}
+                              />
+                              <span>{link.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </nav>
                 <div className="px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-app bg-elevated/40 space-y-2">
                   <PWAUpdateButton
