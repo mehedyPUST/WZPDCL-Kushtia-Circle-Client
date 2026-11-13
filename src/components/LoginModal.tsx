@@ -281,7 +281,7 @@ export default function LoginModal({
                 <button
                   type="submit"
                   disabled={disabled}
-                  className="w-full h-11 mt-1 rounded-xl text-sm font-bold shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white dark:bg-[#00ED64] dark:text-[#001E2B] dark:hover:bg-[#00c753] shadow-blue-600/20 dark:shadow-[#00ED64]/20"
+                  className="w-full h-11 mt-1 rounded-xl text-sm font-bold shadow-md transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-[#00ED64] dark:text-[#001E2B] dark:hover:bg-[#00c753] shadow-emerald-600/20 dark:shadow-[#00ED64]/20"
                 >
                   {disabled ? (
                     <>
