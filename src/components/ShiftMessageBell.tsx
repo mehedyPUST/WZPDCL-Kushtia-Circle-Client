@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   Bell,
   Check,
+  CheckCheck,
   ExternalLink,
   Forward,
   Loader2,
@@ -20,8 +21,17 @@ import {
   createStationNote,
   fetchStationNotes,
   forwardStationNote,
+  markStationNoteRead,
 } from "@/lib/api";
 import { SHIFT_META, type ShiftId } from "@/lib/dutyShifts";
+
+type ReadReceipt = {
+  userId?: string | null;
+  username?: string;
+  displayName?: string;
+  shift?: string;
+  readAt?: string | null;
+};
 
 type ShiftMessage = {
   id: string;
@@ -32,9 +42,12 @@ type ShiftMessage = {
   fromShift?: string;
   targetShift?: string;
   status: string;
+  acknowledgedBy?: string | null;
+  acknowledgedByUsername?: string;
   acknowledgedByDisplayName?: string;
   acknowledgedAt?: string | null;
   forwardNote?: string;
+  readReceipts?: ReadReceipt[];
   createdAt?: string | null;
 };
 
@@ -63,7 +76,7 @@ function shiftLabel(s?: string) {
 }
 
 export default function ShiftMessageBell() {
-  const { isAuthenticated, canWrite, isAdmin } = useAuth();
+  const { admin, isAuthenticated, canWrite, isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<ShiftMessage[]>([]);
@@ -74,6 +87,7 @@ export default function ShiftMessageBell() {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [actingId, setActingId] = useState<string | null>(null);
+  const [actingAction, setActingAction] = useState<"ack" | "read" | "forward" | null>(null);
   const [forwardId, setForwardId] = useState<string | null>(null);
   const [forwardNote, setForwardNote] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -177,19 +191,37 @@ export default function ShiftMessageBell() {
   const handleAck = async (id: string) => {
     try {
       setActingId(id);
+      setActingAction("ack");
       await acknowledgeStationNote(id);
-      toast.success("Acknowledged");
+      toast.success("Acknowledged & read receipt logged");
       await load();
     } catch (err: any) {
       toast.error(err?.message || "Failed to acknowledge");
     } finally {
       setActingId(null);
+      setActingAction(null);
+    }
+  };
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      setActingId(id);
+      setActingAction("read");
+      await markStationNoteRead(id);
+      toast.success("Read receipt confirmed");
+      await load();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to confirm read receipt");
+    } finally {
+      setActingId(null);
+      setActingAction(null);
     }
   };
 
   const handleForward = async (id: string) => {
     try {
       setActingId(id);
+      setActingAction("forward");
       await forwardStationNote(id, forwardNote);
       setForwardId(null);
       setForwardNote("");
@@ -199,7 +231,32 @@ export default function ShiftMessageBell() {
       toast.error(err?.message || "Failed to forward");
     } finally {
       setActingId(null);
+      setActingAction(null);
     }
+  };
+
+  const hasCurrentUserRead = (m: ShiftMessage) => {
+    const uid = admin?.id ? String(admin.id) : "";
+    const uname = admin?.username ? String(admin.username).toLowerCase() : "";
+    const receipts = m.readReceipts || [];
+    if (
+      receipts.some((r) => {
+        if (uid && r.userId && String(r.userId) === uid) return true;
+        if (uname && r.username && r.username.toLowerCase() === uname) return true;
+        return false;
+      })
+    ) {
+      return true;
+    }
+    if (uid && m.acknowledgedBy && String(m.acknowledgedBy) === uid) return true;
+    if (
+      uname &&
+      m.acknowledgedByUsername &&
+      m.acknowledgedByUsername.toLowerCase() === uname
+    ) {
+      return true;
+    }
+    return false;
   };
 
   if (!isAuthenticated) return null;
@@ -304,6 +361,8 @@ export default function ShiftMessageBell() {
                 {messages.map((m) => {
                   const pending = m.status === "pending";
                   const isActing = actingId === m.id;
+                  const receipts = m.readReceipts || [];
+                  const userHasRead = hasCurrentUserRead(m);
                   return (
                     <li
                       key={m.id}
@@ -349,30 +408,70 @@ export default function ShiftMessageBell() {
                       <p className="text-[12px] text-app whitespace-pre-wrap break-words leading-relaxed">
                         {m.content}
                       </p>
+                      {m.forwardNote && (
+                        <div className="mt-1.5 rounded-md border border-app bg-surface-2 px-2 py-1 text-[11px] text-secondary">
+                          <span className="font-semibold text-app">Forward remark: </span>
+                          {m.forwardNote}
+                        </div>
+                      )}
                       {!pending && m.acknowledgedByDisplayName && (
                         <div className="mt-1 text-[10px] text-muted">
-                          Acked by {m.acknowledgedByDisplayName}
+                          {m.status === "forwarded" ? "Forwarded" : "Acked"} by{" "}
+                          {m.acknowledgedByDisplayName}
                           {m.acknowledgedAt
                             ? ` · ${formatWhen(m.acknowledgedAt)}`
                             : ""}
                         </div>
                       )}
+                      {receipts.length > 0 && (
+                        <div className="mt-1 flex items-center gap-1 text-[10px] text-muted">
+                          <CheckCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span className="truncate">
+                            Read by{" "}
+                            {receipts
+                              .map((r) => r.displayName || r.username || "Officer")
+                              .join(", ")}
+                          </span>
+                        </div>
+                      )}
 
-                      {pending && (
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        {pending && (
                           <button
                             type="button"
                             disabled={isActing}
                             onClick={() => handleAck(m.id)}
                             className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-emerald-600/40 text-emerald-900 dark:text-emerald-100 bg-emerald-500/15 hover:bg-emerald-500/25 disabled:opacity-50"
                           >
-                            {isActing && !forwardId ? (
+                            {isActing && actingAction === "ack" ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
                             ) : (
                               <Check className="w-3 h-3" />
                             )}
                             Acknowledge
                           </button>
+                        )}
+                        {!userHasRead ? (
+                          <button
+                            type="button"
+                            disabled={isActing}
+                            onClick={() => handleMarkRead(m.id)}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-app text-secondary hover:text-app bg-surface-2 hover:bg-surface-3 disabled:opacity-50"
+                          >
+                            {isActing && actingAction === "read" ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <CheckCheck className="w-3 h-3 text-accent" />
+                            )}
+                            Confirm Read
+                          </button>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 px-1">
+                            <CheckCheck className="w-3 h-3" />
+                            Read
+                          </span>
+                        )}
+                        {pending && (
                           <button
                             type="button"
                             disabled={isActing}
@@ -387,8 +486,8 @@ export default function ShiftMessageBell() {
                             <Forward className="w-3 h-3" />
                             Forward
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {forwardId === m.id && (
                         <div className="mt-2 space-y-1.5 rounded-lg border border-app bg-surface-2 p-2">

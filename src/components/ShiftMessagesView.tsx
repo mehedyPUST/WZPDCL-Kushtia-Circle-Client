@@ -1,16 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { motion } from "motion/react";
 import {
-  ArrowLeft,
-  Bell,
+  ArrowRight,
   Check,
+  CheckCheck,
+  CheckCircle2,
+  Clock3,
   Forward,
   Loader2,
   MessageSquare,
   RefreshCw,
+  Search,
   Send,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -20,8 +23,17 @@ import {
   createStationNote,
   fetchStationNotes,
   forwardStationNote,
+  markStationNoteRead,
 } from "@/lib/api";
 import { SHIFT_META, type ShiftId } from "@/lib/dutyShifts";
+
+type ReadReceipt = {
+  userId?: string | null;
+  username?: string;
+  displayName?: string;
+  shift?: string;
+  readAt?: string | null;
+};
 
 type ShiftMessage = {
   id: string;
@@ -32,11 +44,33 @@ type ShiftMessage = {
   fromShift?: string;
   targetShift?: string;
   status: string;
+  acknowledgedBy?: string | null;
+  acknowledgedByUsername?: string;
   acknowledgedByDisplayName?: string;
   acknowledgedAt?: string | null;
   forwardNote?: string;
+  readReceipts?: ReadReceipt[];
   createdAt?: string | null;
 };
+
+type FilterTab = "all" | "pending" | "acknowledged" | "forwarded";
+
+const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
+
+const QUICK_TEMPLATES = [
+  {
+    label: "Restricted feeder",
+    text: "Feeder restriction active: ",
+  },
+  {
+    label: "Voltage / tap note",
+    text: "Bus voltage / tap position observation: ",
+  },
+  {
+    label: "Circle instruction",
+    text: "Circle control instruction: ",
+  },
+];
 
 function formatWhen(iso?: string | null) {
   if (!iso) return "—";
@@ -63,61 +97,118 @@ function shiftLabel(s?: string) {
   return meta?.label || `${s} Shift`;
 }
 
-function StatusPill({ status }: { status: string }) {
+function shiftWindow(s?: string) {
+  if (!s) return "—";
+  const meta = SHIFT_META[s as ShiftId];
+  return meta?.window || "Operational window";
+}
+
+function StatusLabel({ status }: { status: string }) {
   if (status === "pending") {
     return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-500/35">
-        Pending
+      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 shrink-0 whitespace-nowrap">
+        <Clock3 className="w-3.5 h-3.5 shrink-0" />
+        Pending sign-off
       </span>
     );
   }
   if (status === "forwarded") {
     return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-sky-500/15 text-sky-800 dark:text-sky-200 border border-sky-500/35">
+      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300 shrink-0 whitespace-nowrap">
+        <Forward className="w-3.5 h-3.5 shrink-0" />
         Forwarded
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border border-emerald-500/35">
+    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 shrink-0 whitespace-nowrap">
+      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
       Acknowledged
     </span>
   );
 }
 
 export default function ShiftMessagesView() {
-  const { isAuthenticated, canWrite, isAdmin, loading: authLoading } = useAuth();
+  const {
+    admin,
+    isAuthenticated,
+    canWrite,
+    isAdmin,
+    loading: authLoading,
+  } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [messages, setMessages] = useState<ShiftMessage[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [currentShift, setCurrentShift] = useState("");
   const [nextShift, setNextShift] = useState("");
+  const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftId | "">("");
   const [dutyDay, setDutyDay] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [actingId, setActingId] = useState<string | null>(null);
+  const [actingAction, setActingAction] = useState<"ack" | "read" | "forward" | null>(null);
   const [forwardId, setForwardId] = useState<string | null>(null);
   const [forwardNote, setForwardNote] = useState("");
-  const [filter, setFilter] = useState<"all" | "pending">("all");
+  const [filter, setFilter] = useState<FilterTab>("all");
+  const [query, setQuery] = useState("");
 
   const canPost = isAuthenticated && (canWrite || isAdmin);
+  const canHandleNotes = isAuthenticated && (canWrite || isAdmin);
 
-  const load = useCallback(async () => {
-    if (!isAuthenticated) return;
-    try {
-      setLoading(true);
-      const data = await fetchStationNotes({ limit: 40 });
-      setMessages(data.messages || []);
-      setPendingCount(Number(data.pendingCount) || 0);
-      setCurrentShift(data.currentShift || "");
-      setNextShift(data.nextShift || "");
-      setDutyDay(data.dutyDay || "");
-    } catch (err: any) {
-      toast.error(err?.message || "Could not load station notes");
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated]);
+  const hasCurrentUserRead = useCallback(
+    (m: ShiftMessage) => {
+      const uid = admin?.id ? String(admin.id) : "";
+      const uname = admin?.username ? String(admin.username).toLowerCase() : "";
+      const receipts = m.readReceipts || [];
+      if (
+        receipts.some((r) => {
+          if (uid && r.userId && String(r.userId) === uid) return true;
+          if (uname && r.username && r.username.toLowerCase() === uname) return true;
+          return false;
+        })
+      ) {
+        return true;
+      }
+      if (uid && m.acknowledgedBy && String(m.acknowledgedBy) === uid) return true;
+      if (
+        uname &&
+        m.acknowledgedByUsername &&
+        m.acknowledgedByUsername.toLowerCase() === uname
+      ) {
+        return true;
+      }
+      return false;
+    },
+    [admin?.id, admin?.username]
+  );
+
+  const load = useCallback(
+    async (silent = false) => {
+      if (!isAuthenticated) return;
+      try {
+        if (!silent) setLoading(true);
+        else setRefreshing(true);
+        setLoadError("");
+        const data = await fetchStationNotes({ limit: 50 });
+        setMessages(data.messages || []);
+        setPendingCount(Number(data.pendingCount) || 0);
+        setCurrentShift(data.currentShift || "");
+        setNextShift(data.nextShift || "");
+        setDutyDay(data.dutyDay || "");
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error ? err.message : "Could not load station notes";
+        setLoadError(msg);
+        if (!silent) toast.error(msg);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [isAuthenticated]
+  );
 
   useEffect(() => {
     if (authLoading) return;
@@ -128,10 +219,46 @@ export default function ShiftMessagesView() {
     load();
   }, [authLoading, isAuthenticated, load]);
 
+  const effectiveTargetShift = (selectedTargetShift || nextShift || "B") as ShiftId;
+
+  const counts = useMemo(() => {
+    let pending = 0;
+    let acknowledged = 0;
+    let forwarded = 0;
+    for (const m of messages) {
+      if (m.status === "pending") pending += 1;
+      else if (m.status === "forwarded") forwarded += 1;
+      else acknowledged += 1;
+    }
+    return {
+      all: messages.length,
+      pending: Math.max(pending, pendingCount),
+      acknowledged,
+      forwarded,
+    };
+  }, [messages, pendingCount]);
+
   const visible = useMemo(() => {
-    if (filter === "pending") return messages.filter((m) => m.status === "pending");
-    return messages;
-  }, [messages, filter]);
+    const q = query.trim().toLowerCase();
+    return messages.filter((m) => {
+      if (filter !== "all" && m.status !== filter) return false;
+      if (!q) return true;
+      const haystack = [
+        m.content,
+        m.forwardNote,
+        m.createdByDisplayName,
+        m.createdByUsername,
+        m.acknowledgedByDisplayName,
+        m.fromShift,
+        m.targetShift,
+        m.dutyDay,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [messages, filter, query]);
 
   const handleSend = async () => {
     const text = draft.trim();
@@ -141,12 +268,13 @@ export default function ShiftMessagesView() {
     }
     try {
       setSending(true);
-      await createStationNote(text);
+      await createStationNote(text, effectiveTargetShift);
       setDraft("");
-      toast.success(`Note left for ${shiftLabel(nextShift || "next shift")}`);
-      await load();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to send");
+      setSelectedTargetShift("");
+      toast.success(`Handover note sent to ${shiftLabel(effectiveTargetShift)}`);
+      await load(true);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to send");
     } finally {
       setSending(false);
     }
@@ -155,339 +283,718 @@ export default function ShiftMessagesView() {
   const handleAck = async (id: string) => {
     try {
       setActingId(id);
+      setActingAction("ack");
       await acknowledgeStationNote(id);
-      toast.success("Message acknowledged");
-      await load();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to acknowledge");
+      toast.success("Note acknowledged & read receipt logged");
+      await load(true);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to acknowledge");
     } finally {
       setActingId(null);
+      setActingAction(null);
+    }
+  };
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      setActingId(id);
+      setActingAction("read");
+      const res = await markStationNoteRead(id);
+      toast.success(
+        res?.alreadyRead ? "Read receipt already recorded" : "Read receipt confirmed"
+      );
+      await load(true);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to confirm read receipt");
+    } finally {
+      setActingId(null);
+      setActingAction(null);
     }
   };
 
   const handleForward = async (id: string) => {
     try {
       setActingId(id);
+      setActingAction("forward");
       await forwardStationNote(id, forwardNote);
       setForwardId(null);
       setForwardNote("");
       toast.success("Forwarded to next shift");
-      await load();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to forward");
+      await load(true);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to forward");
     } finally {
       setActingId(null);
+      setActingAction(null);
     }
+  };
+
+  const applyTemplate = (prefix: string) => {
+    setDraft((prev) => {
+      const trimmed = prev.trim();
+      if (!trimmed) return prefix;
+      return `${prev.trimEnd()}\n${prefix}`;
+    });
   };
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh] text-muted text-sm gap-2">
-        <Loader2 className="w-4 h-4 animate-spin" />
-        Loading…
+      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-5 space-y-4">
+        <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-24 rounded-xl bg-surface border border-app animate-pulse"
+            />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div className="lg:col-span-5 h-72 rounded-xl bg-surface border border-app animate-pulse" />
+          <div className="lg:col-span-7 h-96 rounded-xl bg-surface border border-app animate-pulse" />
+        </div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full max-w-lg mx-auto mt-16 px-4 text-center">
-        <MessageSquare className="w-10 h-10 text-muted mx-auto mb-3" />
-        <h1 className="text-lg font-semibold text-app">Station Notes</h1>
-        <p className="text-sm text-muted mt-2">
-          Sign in to leave or acknowledge messages for the next duty shift.
-        </p>
-        <Link
-          href="/login"
-          className="inline-flex mt-4 btn-primary px-4 py-2 rounded-lg text-sm font-semibold"
-        >
-          Sign in
-        </Link>
+      <div className="w-full max-w-md mx-auto mt-16 px-4">
+        <div className="rounded-xl border border-app bg-surface p-6 text-center shadow-sm">
+          <div className="w-11 h-11 rounded-xl bg-surface-2 border border-app flex items-center justify-center mx-auto mb-3 text-muted">
+            <MessageSquare className="w-5 h-5" />
+          </div>
+          <h1 className="text-lg font-semibold text-app tracking-tight">
+            Station Handover Notes
+          </h1>
+          <p className="text-sm text-muted mt-1.5 leading-relaxed">
+            Sign in with your operator account to read, acknowledge, or record shift handover notes.
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex mt-5 btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap"
+          >
+            Sign in
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full min-w-0 max-w-3xl mx-auto px-3 sm:px-5 py-4 sm:py-6 space-y-5">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-muted text-[12px] mb-1">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+    <div className="w-full min-w-0 max-w-[1360px] mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5">
+      {/* Page Header */}
+      <header className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="min-w-0">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center gap-2 text-xs text-muted mb-1.5"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Dashboard
-            </Link>
+              <Link
+                href="/dashboard"
+                className="hover:text-accent transition-colors font-medium whitespace-nowrap"
+              >
+                Dashboard
+              </Link>
+              <span aria-hidden="true">/</span>
+              <span className="text-secondary font-medium">Station Notes</span>
+            </nav>
+            <h1 className="text-xl sm:text-2xl font-bold text-app tracking-tight">
+              Station Handover Notes
+            </h1>
+            <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl leading-relaxed">
+              Operational handover log between shifts at Bottail 33/11 kV Substation. Incoming duty staff acknowledge or forward pending items.
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-app tracking-tight flex items-center gap-2">
-            <Bell className="w-5 h-5 text-accent shrink-0" />
-            Station Notes
-          </h1>
-          <p className="text-[13px] text-muted mt-1">
-            Leave operational notes for the incoming shift. Duty staff acknowledge
-            or forward as needed.
+
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => load(true)}
+              disabled={loading || refreshing}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-secondary hover:text-app hover:bg-surface-3 transition-colors whitespace-nowrap shrink-0 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${loading || refreshing ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* 4-Column Shift Context Strip */}
+      <section
+        aria-label="Shift handover summary"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3.5"
+      >
+        <div className="rounded-xl border border-app bg-surface p-4">
+          <p className="text-xs font-medium text-muted">Current Shift</p>
+          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app tracking-tight">
+            {shiftLabel(currentShift)}
+          </p>
+          <p className="mt-1 text-xs text-muted font-mono tabular-nums">
+            {shiftWindow(currentShift)} BST
           </p>
         </div>
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-app text-secondary hover:text-app hover:bg-surface-3/60 transition disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-          Refresh
-        </button>
-      </div>
 
-      {/* Shift context cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-        <div className="rounded-xl border border-app bg-elevated/80 px-3.5 py-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-            Current shift
-          </div>
-          <div className="text-[15px] font-bold text-app mt-0.5">
-            {shiftLabel(currentShift)}
-          </div>
-        </div>
-        <div className="rounded-xl border border-accent/30 bg-accent/5 px-3.5 py-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-accent">
-            Next shift
-          </div>
-          <div className="text-[15px] font-bold text-app mt-0.5">
+        <div className="rounded-xl border border-app bg-surface p-4">
+          <p className="text-xs font-medium text-muted">Incoming Shift</p>
+          <p className="mt-1.5 text-lg sm:text-xl font-bold text-accent tracking-tight">
             {shiftLabel(nextShift)}
-          </div>
+          </p>
+          <p className="mt-1 text-xs text-muted font-mono tabular-nums">
+            {shiftWindow(nextShift)} BST
+          </p>
         </div>
-        <div className="rounded-xl border border-app bg-elevated/80 px-3.5 py-3">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-            Duty day · Pending
-          </div>
-          <div className="text-[15px] font-bold text-app mt-0.5 flex items-center gap-2">
-            <span className="font-mono text-[13px]">{dutyDay || "—"}</span>
-            {pendingCount > 0 && (
-              <span className="inline-flex items-center justify-center min-w-[1.35rem] h-5 px-1.5 rounded-full bg-rose-500 text-white text-[11px] font-bold">
-                {pendingCount}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
 
-      {/* Compose */}
-      {canPost && (
-        <motion.section
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-app bg-elevated shadow-sm overflow-hidden"
-        >
-          <div className="px-4 py-2.5 border-b border-app bg-surface-2/50 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-accent" />
-            <h2 className="text-[13px] font-semibold text-app">
-              Note for next shift
-            </h2>
-            <span className="text-[11px] text-muted ml-auto">
-              → {shiftLabel(nextShift)}
-            </span>
-          </div>
-          <div className="p-4 space-y-3">
-            <textarea
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && draft.trim() && !sending) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              rows={4}
-              maxLength={2000}
-              placeholder="e.g. Feeder-7 still on restricted load. Allotment reduced after 18:00. Inform circle if MW exceeds 12.5…"
-              className="w-full rounded-lg border border-app bg-surface px-3 py-2.5 text-[13px] text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 resize-y min-h-[6rem]"
-            />
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] text-muted tabular-nums">
-                {draft.length} / 2000
-              </span>
-              <button
-                type="button"
-                disabled={sending || !draft.trim()}
-                onClick={handleSend}
-                className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition"
-              >
-                {sending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
+        <div className="rounded-xl border border-app bg-surface p-4">
+          <p className="text-xs font-medium text-muted">Operational Duty Day</p>
+          <p className="mt-1.5 text-lg sm:text-xl font-bold text-app font-mono tabular-nums tracking-tight">
+            {dutyDay || "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            Asia/Dhaka shift calendar
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-app bg-surface p-4">
+          <p className="text-xs font-medium text-muted">Pending Handovers</p>
+          <p
+            className={`mt-1.5 text-lg sm:text-xl font-bold font-mono tabular-nums tracking-tight ${
+              pendingCount > 0
+                ? "text-amber-600 dark:text-amber-300"
+                : "text-emerald-600 dark:text-emerald-300"
+            }`}
+          >
+            {pendingCount}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            {pendingCount > 0
+              ? `${pendingCount} awaiting sign-off`
+              : "All notes acknowledged"}
+          </p>
+        </div>
+      </section>
+
+      {/* Main Split Workspace */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Compose Handover Panel */}
+        {canPost && (
+          <section
+            aria-label="Compose station note"
+            className="lg:col-span-5 lg:sticky lg:top-4 rounded-xl border border-app bg-surface overflow-hidden shadow-sm"
+          >
+            <div className="px-4 sm:px-5 py-3.5 border-b border-app flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold text-app">
+                  New Handover Note
+                </h2>
+                <p className="text-xs text-muted mt-0.5">
+                  Delivered to incoming shift log &amp; notification bell
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
+              {/* Target shift segmented selector */}
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-medium text-secondary">
+                    Target Shift
+                  </label>
+                  <span className="text-xs text-muted font-mono tabular-nums">
+                    {shiftWindow(effectiveTargetShift)}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-surface-2 border border-app">
+                  {SHIFT_ORDER.map((sid) => {
+                    const active = effectiveTargetShift === sid;
+                    const isNext = nextShift === sid;
+                    return (
+                      <button
+                        key={sid}
+                        type="button"
+                        onClick={() => setSelectedTargetShift(sid)}
+                        className={`px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                          active
+                            ? "btn-primary shadow-sm"
+                            : "text-secondary hover:text-app hover:bg-surface-3/60"
+                        }`}
+                      >
+                        {shiftLabel(sid)}
+                        {isNext && !active ? " · Next" : ""}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quick operational templates */}
+              <div>
+                <span className="block text-xs font-medium text-secondary mb-1.5">
+                  Quick Templates
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_TEMPLATES.map((tpl) => (
+                    <button
+                      key={tpl.label}
+                      type="button"
+                      onClick={() => applyTemplate(tpl.text)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-app bg-surface-2 text-secondary hover:text-app hover:border-accent/40 transition-colors whitespace-nowrap"
+                    >
+                      + {tpl.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message textarea */}
+              <div>
+                <label
+                  htmlFor="station-note-draft"
+                  className="block text-xs font-medium text-secondary mb-1.5"
+                >
+                  Operational Message
+                </label>
+                <textarea
+                  id="station-note-draft"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.metaKey || e.ctrlKey) &&
+                      e.key === "Enter" &&
+                      draft.trim() &&
+                      !sending
+                    ) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  rows={5}
+                  maxLength={2000}
+                  placeholder="Describe feeder restrictions, relay flags, circle allotment adjustments, or equipment checks for the incoming operator..."
+                  className="w-full rounded-lg border border-app bg-surface-2/60 px-3.5 py-2.5 text-sm text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 resize-y min-h-[8rem] leading-relaxed"
+                />
+                <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted">
+                  <span className="font-mono tabular-nums">
+                    {draft.length} / 2000
+                  </span>
+                  <span>Ctrl / ⌘ + Enter to send</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                {draft.trim() && (
+                  <button
+                    type="button"
+                    disabled={sending}
+                    onClick={() => setDraft("")}
+                    className="px-3.5 py-2 rounded-lg text-xs font-semibold text-secondary hover:text-app hover:bg-surface-2 border border-app transition-colors whitespace-nowrap"
+                  >
+                    Clear
+                  </button>
                 )}
-                Send to {shiftLabel(nextShift)}
-              </button>
+                <button
+                  type="button"
+                  disabled={sending || !draft.trim()}
+                  onClick={handleSend}
+                  className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
+                >
+                  {sending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  Send to {shiftLabel(effectiveTargetShift)}
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Handover Log Feed */}
+        <section
+          aria-label="Station handover log"
+          className={`${
+            canPost ? "lg:col-span-7" : "lg:col-span-12"
+          } rounded-xl border border-app bg-surface overflow-hidden shadow-sm`}
+        >
+          {/* Log Header + Filter Controls */}
+          <div className="px-4 sm:px-5 py-3.5 border-b border-app space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-app">
+                  Handover Log
+                </h2>
+                <p className="text-xs text-muted mt-0.5 tabular-nums">
+                  {visible.length} of {messages.length} entries shown
+                </p>
+              </div>
+
+              <div
+                role="tablist"
+                aria-label="Filter handover notes by status"
+                className="inline-flex flex-wrap items-center gap-1 p-1 rounded-lg bg-surface-2 border border-app"
+              >
+                {(
+                  [
+                    { id: "all", label: "All", count: counts.all },
+                    { id: "pending", label: "Pending", count: counts.pending },
+                    {
+                      id: "acknowledged",
+                      label: "Acked",
+                      count: counts.acknowledged,
+                    },
+                    {
+                      id: "forwarded",
+                      label: "Forwarded",
+                      count: counts.forwarded,
+                    },
+                  ] as const
+                ).map((tab) => {
+                  const active = filter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setFilter(tab.id)}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+                        active
+                          ? "bg-surface text-app shadow-sm border border-app"
+                          : "text-muted hover:text-app"
+                      }`}
+                    >
+                      {tab.label}
+                      <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-80">
+                        {tab.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search bar */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by note content, operator name, shift, or duty day..."
+                className="w-full rounded-lg border border-app bg-surface-2/60 pl-9 pr-9 py-2 text-xs sm:text-sm text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded text-muted hover:text-app"
+                  aria-label="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
-        </motion.section>
-      )}
 
-      {/* Filters + list */}
-      <section className="rounded-xl border border-app bg-elevated shadow-sm overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-app bg-surface-2/50 flex items-center gap-2 flex-wrap">
-          <h2 className="text-[13px] font-semibold text-app mr-auto">Messages</h2>
-          <div className="inline-flex rounded-lg border border-app p-0.5 bg-surface-2">
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition ${
-                filter === "all"
-                  ? "bg-accent/15 text-accent"
-                  : "text-muted hover:text-app"
-              }`}
-            >
-              All
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("pending")}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition ${
-                filter === "pending"
-                  ? "bg-amber-500/15 text-amber-800 dark:text-amber-200"
-                  : "text-muted hover:text-app"
-              }`}
-            >
-              Pending{pendingCount > 0 ? ` (${pendingCount})` : ""}
-            </button>
-          </div>
-        </div>
+          {loadError && (
+            <div className="px-4 sm:px-5 py-3 border-b border-app bg-rose-500/10 flex items-center justify-between gap-3 text-xs text-rose-700 dark:text-rose-200">
+              <span>{loadError}</span>
+              <button
+                type="button"
+                onClick={() => load()}
+                className="px-2.5 py-1 rounded border border-rose-500/40 font-semibold hover:bg-rose-500/15 whitespace-nowrap"
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
-        {loading && messages.length === 0 ? (
-          <div className="flex items-center justify-center gap-2 py-14 text-muted text-[13px]">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Loading messages…
-          </div>
-        ) : visible.length === 0 ? (
-          <div className="py-14 px-4 text-center text-[13px] text-muted">
-            {filter === "pending"
-              ? "No pending station notes."
-              : "No station notes yet. Leave a note for the incoming shift above."}
-          </div>
-        ) : (
-          <ul className="divide-y divide-app">
-            {visible.map((m) => {
-              const pending = m.status === "pending";
-              const isActing = actingId === m.id;
-              return (
-                <li
-                  key={m.id}
-                  className={`px-4 py-3.5 ${
-                    pending ? "bg-amber-500/[0.06]" : ""
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3 mb-1.5">
-                    <div className="min-w-0">
-                      <div className="text-[13px] font-semibold text-app truncate">
-                        {m.createdByDisplayName ||
-                          m.createdByUsername ||
-                          "Operator"}
-                        {m.fromShift ? (
-                          <span className="ml-1.5 text-[11px] font-medium text-muted">
-                            · {shiftLabel(m.fromShift)}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className="text-[11px] text-muted mt-0.5">
-                        {formatWhen(m.createdAt)}
-                        {m.targetShift ? ` → ${shiftLabel(m.targetShift)}` : ""}
-                      </div>
-                    </div>
-                    <StatusPill status={m.status} />
+          {loading && messages.length === 0 ? (
+            <div className="divide-y divide-app">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="p-4 sm:p-5 space-y-2.5 animate-pulse">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="h-4 w-44 rounded bg-surface-2" />
+                    <div className="h-4 w-24 rounded bg-surface-2" />
                   </div>
+                  <div className="h-3 w-56 rounded bg-surface-2" />
+                  <div className="h-12 w-full rounded bg-surface-2" />
+                </div>
+              ))}
+            </div>
+          ) : visible.length === 0 ? (
+            <div className="py-16 px-6 text-center space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-surface-2 border border-app flex items-center justify-center mx-auto text-muted">
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-app">
+                  {query.trim()
+                    ? "No matching station notes"
+                    : filter === "pending"
+                      ? "No pending handovers"
+                      : `No ${filter === "all" ? "" : `${filter} `}station notes found`}
+                </p>
+                <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
+                  {query.trim() || filter !== "all"
+                    ? "Try clearing your search or switching back to all handover notes."
+                    : "Use the compose panel to leave the first operational note for the incoming shift."}
+                </p>
+              </div>
+              {(query.trim() || filter !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setFilter("all");
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-app hover:bg-surface-3 transition-colors"
+                >
+                  Reset filters
+                </button>
+              )}
+            </div>
+          ) : (
+            <ul className="divide-y divide-app">
+              {visible.map((m) => {
+                const pending = m.status === "pending";
+                const isActing = actingId === m.id;
+                const authorName =
+                  m.createdByDisplayName || m.createdByUsername || "Operator";
+                const userHasRead = hasCurrentUserRead(m);
+                const receipts = m.readReceipts || [];
 
-                  <p className="text-[13px] text-app/95 whitespace-pre-wrap break-words leading-relaxed mt-1">
-                    {m.content}
-                  </p>
+                return (
+                  <li
+                    key={m.id}
+                    className={`p-4 sm:p-5 transition-colors ${
+                      pending
+                        ? "bg-amber-500/[0.04] hover:bg-amber-500/[0.06]"
+                        : "hover:bg-surface-2/40"
+                    }`}
+                  >
+                    {/* Top Author + Routing Row (unboxed metadata with separators) */}
+                    <div className="flex flex-wrap items-start justify-between gap-2.5">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-semibold text-app">
+                          <span className="truncate">{authorName}</span>
+                          {m.fromShift && (
+                            <>
+                              <span aria-hidden="true" className="text-muted font-normal">
+                                ·
+                              </span>
+                              <span className="text-xs font-medium text-secondary inline-flex items-center gap-1">
+                                {shiftLabel(m.fromShift)}
+                                {m.targetShift && (
+                                  <>
+                                    <ArrowRight className="w-3 h-3 text-muted" />
+                                    {shiftLabel(m.targetShift)}
+                                  </>
+                                )}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted font-mono tabular-nums">
+                          <span>{formatWhen(m.createdAt)} BST</span>
+                          {m.dutyDay && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <span>Duty Day {m.dutyDay}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
 
-                  {!pending && m.acknowledgedByDisplayName && (
-                    <div className="mt-1.5 text-[11px] text-muted">
-                      {m.status === "forwarded" ? "Forwarded" : "Acknowledged"} by{" "}
-                      {m.acknowledgedByDisplayName}
-                      {m.acknowledgedAt ? ` · ${formatWhen(m.acknowledgedAt)}` : ""}
+                      <StatusLabel status={m.status} />
                     </div>
-                  )}
 
-                  {pending && (
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={isActing}
-                        onClick={() => handleAck(m.id)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-semibold border border-emerald-600/40 text-emerald-800 dark:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 disabled:opacity-50 transition"
-                      >
-                        {isActing && forwardId !== m.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Check className="w-3.5 h-3.5" />
+                    {/* Note Body */}
+                    <p className="mt-3 text-sm text-app whitespace-pre-wrap break-words leading-relaxed">
+                      {m.content}
+                    </p>
+
+                    {/* Forward Handover Remark (if forwarded with a note) */}
+                    {m.forwardNote && (
+                      <div className="mt-3 rounded-lg border border-app bg-surface-2/70 px-3 py-2 text-xs text-secondary">
+                        <span className="font-semibold text-app">
+                          Forward remark:{" "}
+                        </span>
+                        {m.forwardNote}
+                      </div>
+                    )}
+
+                    {/* Audit Sign-off & Read Receipts Trail */}
+                    {(!pending && m.acknowledgedByDisplayName) || receipts.length > 0 ? (
+                      <div className="mt-3 pt-2.5 border-t border-app/60 space-y-1">
+                        {!pending && m.acknowledgedByDisplayName && (
+                          <p className="text-xs text-muted font-mono tabular-nums">
+                            {m.status === "forwarded" ? "Forwarded" : "Acknowledged"} by{" "}
+                            <span className="font-sans font-medium text-secondary">
+                              {m.acknowledgedByDisplayName}
+                            </span>
+                            {m.acknowledgedAt
+                              ? ` · ${formatWhen(m.acknowledgedAt)} BST`
+                              : ""}
+                          </p>
                         )}
-                        Acknowledge
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isActing}
-                        onClick={() => {
-                          setForwardId((cur) => (cur === m.id ? null : m.id));
-                          setForwardNote("");
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-semibold border border-sky-600/40 text-sky-800 dark:text-sky-200 bg-sky-500/10 hover:bg-sky-500/20 disabled:opacity-50 transition"
-                      >
-                        <Forward className="w-3.5 h-3.5" />
-                        Forward to next
-                      </button>
-                    </div>
-                  )}
+                        {receipts.length > 0 && (
+                          <div className="flex items-start gap-1.5 text-xs text-muted">
+                            <CheckCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                            <p className="leading-relaxed">
+                              <span className="font-medium text-secondary">
+                                Read by ({receipts.length}):{" "}
+                              </span>
+                              {receipts.map((r, idx) => (
+                                <span key={`${r.username || r.displayName}-${idx}`}>
+                                  {idx > 0 && (
+                                    <span aria-hidden="true" className="mx-1.5 text-muted">
+                                      ·
+                                    </span>
+                                  )}
+                                  <span className="text-app font-medium">
+                                    {r.displayName || r.username || "Officer"}
+                                  </span>
+                                  {r.shift && (
+                                    <span className="text-muted">
+                                      {" "}
+                                      ({shiftLabel(r.shift)})
+                                    </span>
+                                  )}
+                                  {r.readAt && (
+                                    <span className="font-mono tabular-nums text-[11px] text-muted">
+                                      {" "}
+                                      {formatWhen(r.readAt)}
+                                    </span>
+                                  )}
+                                </span>
+                              ))}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
 
-                  {forwardId === m.id && (
-                    <div className="mt-3 rounded-lg border border-app bg-surface-2/60 p-3 space-y-2">
-                      <label className="block text-[11px] font-medium text-muted">
-                        Optional note for the following shift
-                      </label>
-                      <input
-                        type="text"
-                        value={forwardNote}
-                        onChange={(e) => setForwardNote(e.target.value)}
-                        maxLength={500}
-                        placeholder="e.g. Still unresolved — please check with circle"
-                        className="w-full rounded-md border border-app bg-surface px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setForwardId(null);
-                            setForwardNote("");
-                          }}
-                          className="px-2.5 py-1.5 text-[12px] text-muted hover:text-app"
-                        >
-                          Cancel
-                        </button>
+                    {/* Officer Read Receipt & Handover Actions */}
+                    <div className="mt-3.5 flex flex-wrap items-center gap-2">
+                      {pending && canHandleNotes && (
                         <button
                           type="button"
                           disabled={isActing}
-                          onClick={() => handleForward(m.id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
+                          onClick={() => handleAck(m.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-600/35 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors whitespace-nowrap"
                         >
-                          {isActing ? (
+                          {isActing && actingAction === "ack" ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           ) : (
-                            <Forward className="w-3.5 h-3.5" />
+                            <Check className="w-3.5 h-3.5" />
                           )}
-                          Confirm forward
+                          Acknowledge
                         </button>
-                      </div>
+                      )}
+
+                      {!userHasRead ? (
+                        <button
+                          type="button"
+                          disabled={isActing}
+                          onClick={() => handleMarkRead(m.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-secondary hover:text-app hover:border-accent/40 hover:bg-surface-3 disabled:opacity-50 transition-colors whitespace-nowrap"
+                          title="Record a timestamped read receipt confirming you read this note"
+                        >
+                          {isActing && actingAction === "read" ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <CheckCheck className="w-3.5 h-3.5 text-accent" />
+                          )}
+                          Confirm Read
+                        </button>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300 px-1 py-1 whitespace-nowrap">
+                          <CheckCheck className="w-3.5 h-3.5 shrink-0" />
+                          Read confirmed
+                        </span>
+                      )}
+
+                      {pending && canHandleNotes && (
+                        <button
+                          type="button"
+                          disabled={isActing}
+                          onClick={() => {
+                            setForwardId((cur) => (cur === m.id ? null : m.id));
+                            setForwardNote("");
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-sky-600/35 text-sky-700 dark:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 disabled:opacity-50 transition-colors whitespace-nowrap"
+                        >
+                          <Forward className="w-3.5 h-3.5" />
+                          Forward to next shift
+                        </button>
+                      )}
                     </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+
+                    {/* Inline Forward Form */}
+                    {forwardId === m.id && (
+                      <div className="mt-3 rounded-lg border border-app bg-surface-2/80 p-3 space-y-2.5">
+                        <label className="block text-xs font-medium text-secondary">
+                          Optional handover remark for the next shift
+                        </label>
+                        <input
+                          type="text"
+                          value={forwardNote}
+                          onChange={(e) => setForwardNote(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !isActing) {
+                              e.preventDefault();
+                              handleForward(m.id);
+                            } else if (e.key === "Escape") {
+                              setForwardId(null);
+                              setForwardNote("");
+                            }
+                          }}
+                          maxLength={500}
+                          placeholder="e.g. Unresolved — follow up with Kushtia circle desk"
+                          className="w-full rounded-lg border border-app bg-surface px-3 py-2 text-xs text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                          autoFocus
+                        />
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForwardId(null);
+                              setForwardNote("");
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium text-secondary hover:text-app hover:bg-surface-3 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isActing}
+                            onClick={() => handleForward(m.id)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50 transition-colors whitespace-nowrap"
+                          >
+                            {isActing ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Forward className="w-3.5 h-3.5" />
+                            )}
+                            Confirm forward
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

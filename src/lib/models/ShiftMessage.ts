@@ -78,6 +78,23 @@ const shiftMessageSchema = new mongoose.Schema(
       trim: true,
       maxlength: 500,
     },
+    /** Per-officer read receipts confirming operational instructions were read */
+    readReceipts: {
+      type: [
+        {
+          userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Admin",
+            default: null,
+          },
+          username: { type: String, default: "", trim: true },
+          displayName: { type: String, default: "", trim: true },
+          shift: { type: String, enum: ["A", "B", "C", ""], default: "" },
+          readAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

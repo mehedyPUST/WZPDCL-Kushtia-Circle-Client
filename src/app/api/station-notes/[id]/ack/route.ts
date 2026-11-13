@@ -4,33 +4,13 @@ import { requireAuth } from "@/lib/serverAuth";
 import { connectDB, isDbConnected } from "@/lib/db";
 import ShiftMessage from "@/lib/models/ShiftMessage";
 import { getMockStore } from "@/lib/mockStore";
+import {
+  appendReadReceipt,
+  currentShiftInfo,
+  serializeStationNote,
+} from "@/lib/stationNoteUtils";
 
 export const dynamic = "force-dynamic";
-
-function serializeMessage(doc: any) {
-  if (!doc) return null;
-  const id = doc._id?.toString?.() || doc.id || String(doc._id);
-  return {
-    id,
-    content: doc.content || "",
-    createdBy: doc.createdBy?.toString?.() || doc.createdBy || null,
-    createdByUsername: doc.createdByUsername || "",
-    createdByDisplayName: doc.createdByDisplayName || doc.createdByUsername || "",
-    dutyDay: doc.dutyDay || "",
-    fromShift: doc.fromShift || "",
-    targetShift: doc.targetShift || "",
-    status: doc.status || "pending",
-    acknowledgedBy: doc.acknowledgedBy?.toString?.() || doc.acknowledgedBy || null,
-    acknowledgedByUsername: doc.acknowledgedByUsername || "",
-    acknowledgedByDisplayName:
-      doc.acknowledgedByDisplayName || doc.acknowledgedByUsername || "",
-    acknowledgedAt: doc.acknowledgedAt || null,
-    forwardedFrom: doc.forwardedFrom?.toString?.() || doc.forwardedFrom || null,
-    forwardNote: doc.forwardNote || "",
-    createdAt: doc.createdAt || null,
-    updatedAt: doc.updatedAt || null,
-  };
-}
 
 export async function POST(
   request: Request,
@@ -53,6 +33,7 @@ export async function POST(
     const username = admin?.username || admin?.displayName || "unknown";
     const displayName = admin?.displayName || admin?.username || username;
     const now = new Date();
+    const info = currentShiftInfo(now);
 
     if (!isDbConnected()) {
       await connectDB();
@@ -68,13 +49,24 @@ export async function POST(
           { status: 404 }
         );
       }
+
+      const { receipts } = appendReadReceipt(
+        msg.readReceipts,
+        admin,
+        info.shift,
+        now
+      );
+      msg.readReceipts = receipts;
+
       if (msg.status !== "pending") {
+        msg.updatedAt = now.toISOString();
         return NextResponse.json({
           success: true,
-          message: serializeMessage(msg),
+          message: serializeStationNote(msg),
           alreadyHandled: true,
         });
       }
+
       msg.status = "acknowledged";
       msg.acknowledgedBy = admin?.id || admin?._id || null;
       msg.acknowledgedByUsername = username;
@@ -83,7 +75,7 @@ export async function POST(
       msg.updatedAt = now.toISOString();
       return NextResponse.json({
         success: true,
-        message: serializeMessage(msg),
+        message: serializeStationNote(msg),
       });
     }
 
@@ -102,10 +94,22 @@ export async function POST(
       );
     }
 
+    const { receipts, alreadyRead } = appendReadReceipt(
+      doc.readReceipts,
+      admin,
+      info.shift,
+      now
+    );
+
     if (doc.status !== "pending") {
+      if (!alreadyRead) {
+        doc.readReceipts = receipts;
+        doc.markModified?.("readReceipts");
+        await doc.save();
+      }
       return NextResponse.json({
         success: true,
-        message: serializeMessage(doc.toObject()),
+        message: serializeStationNote(doc.toObject()),
         alreadyHandled: true,
       });
     }
@@ -115,11 +119,13 @@ export async function POST(
     doc.acknowledgedByUsername = username;
     doc.acknowledgedByDisplayName = displayName;
     doc.acknowledgedAt = now;
+    doc.readReceipts = receipts;
+    doc.markModified?.("readReceipts");
     await doc.save();
 
     return NextResponse.json({
       success: true,
-      message: serializeMessage(doc.toObject()),
+      message: serializeStationNote(doc.toObject()),
     });
   } catch (err: any) {
     console.error("[station-notes ack]", err);

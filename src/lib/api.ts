@@ -1000,6 +1000,19 @@ export async function acknowledgeStationNote(id: string) {
   return data;
 }
 
+export async function markStationNoteRead(id: string) {
+  const res = await fetchWithCredentials(url(`/api/station-notes/${id}/read`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to confirm read receipt");
+  }
+  return data;
+}
+
 export async function forwardStationNote(id: string, note?: string) {
   const res = await fetchWithCredentials(
     url(`/api/station-notes/${id}/forward`),
@@ -1022,6 +1035,8 @@ export const fetchShiftMessages = fetchStationNotes;
 export const createShiftMessage = createStationNote;
 /** @deprecated use acknowledgeStationNote */
 export const acknowledgeShiftMessage = acknowledgeStationNote;
+/** @deprecated use markStationNoteRead */
+export const markShiftMessageRead = markStationNoteRead;
 /** @deprecated use forwardStationNote */
 export const forwardShiftMessage = forwardStationNote;
 

@@ -4,53 +4,14 @@ import { requireAuth } from "@/lib/serverAuth";
 import { connectDB, isDbConnected } from "@/lib/db";
 import ShiftMessage from "@/lib/models/ShiftMessage";
 import { getMockStore, generateId } from "@/lib/mockStore";
-import { dhakaNowParts, shiftFromHour, type ShiftId } from "@/lib/dutyShifts";
+import {
+  appendReadReceipt,
+  currentShiftInfo,
+  nextShiftId,
+  serializeStationNote,
+} from "@/lib/stationNoteUtils";
 
 export const dynamic = "force-dynamic";
-
-const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
-
-function nextShiftId(current: ShiftId): ShiftId {
-  const idx = SHIFT_ORDER.indexOf(current);
-  return SHIFT_ORDER[(idx + 1) % SHIFT_ORDER.length];
-}
-
-function currentShiftInfo(now = new Date()) {
-  const parts = dhakaNowParts(now);
-  const shift = shiftFromHour(parts.hour);
-  let dutyDay = parts.ymd;
-  if (shift === "C" && parts.hour <= 8) {
-    const [y, m, d] = parts.ymd.split("-").map(Number);
-    const prev = new Date(Date.UTC(y, m - 1, d - 1));
-    dutyDay = `${prev.getUTCFullYear()}-${String(prev.getUTCMonth() + 1).padStart(2, "0")}-${String(prev.getUTCDate()).padStart(2, "0")}`;
-  }
-  return { shift, dutyDay };
-}
-
-function serializeMessage(doc: any) {
-  if (!doc) return null;
-  const id = doc._id?.toString?.() || doc.id || String(doc._id);
-  return {
-    id,
-    content: doc.content || "",
-    createdBy: doc.createdBy?.toString?.() || doc.createdBy || null,
-    createdByUsername: doc.createdByUsername || "",
-    createdByDisplayName: doc.createdByDisplayName || doc.createdByUsername || "",
-    dutyDay: doc.dutyDay || "",
-    fromShift: doc.fromShift || "",
-    targetShift: doc.targetShift || "",
-    status: doc.status || "pending",
-    acknowledgedBy: doc.acknowledgedBy?.toString?.() || doc.acknowledgedBy || null,
-    acknowledgedByUsername: doc.acknowledgedByUsername || "",
-    acknowledgedByDisplayName:
-      doc.acknowledgedByDisplayName || doc.acknowledgedByUsername || "",
-    acknowledgedAt: doc.acknowledgedAt || null,
-    forwardedFrom: doc.forwardedFrom?.toString?.() || doc.forwardedFrom || null,
-    forwardNote: doc.forwardNote || "",
-    createdAt: doc.createdAt || null,
-    updatedAt: doc.updatedAt || null,
-  };
-}
 
 /** POST — acknowledge + create a new pending message for the following shift */
 export async function POST(
@@ -95,7 +56,13 @@ export async function POST(
         );
       }
 
-      // mark original as forwarded
+      const { receipts } = appendReadReceipt(
+        msg.readReceipts,
+        admin,
+        info.shift,
+        now
+      );
+      msg.readReceipts = receipts;
       msg.status = "forwarded";
       msg.acknowledgedBy = admin?.id || admin?._id || null;
       msg.acknowledgedByUsername = username;
@@ -125,6 +92,7 @@ export async function POST(
         acknowledgedAt: null,
         forwardedFrom: msg.id,
         forwardNote,
+        readReceipts: [],
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
       };
@@ -132,8 +100,8 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        message: serializeMessage(msg),
-        forwardedMessage: serializeMessage(newMsg),
+        message: serializeStationNote(msg),
+        forwardedMessage: serializeStationNote(newMsg),
       });
     }
 
@@ -152,11 +120,20 @@ export async function POST(
       );
     }
 
+    const { receipts } = appendReadReceipt(
+      doc.readReceipts,
+      admin,
+      info.shift,
+      now
+    );
+
     doc.status = "forwarded";
     doc.acknowledgedBy = admin?.id || admin?._id || null;
     doc.acknowledgedByUsername = username;
     doc.acknowledgedByDisplayName = displayName;
     doc.acknowledgedAt = now;
+    doc.readReceipts = receipts;
+    doc.markModified?.("readReceipts");
     if (forwardNote) doc.forwardNote = forwardNote;
     await doc.save();
 
@@ -176,12 +153,13 @@ export async function POST(
       status: "pending",
       forwardedFrom: doc._id,
       forwardNote,
+      readReceipts: [],
     });
 
     return NextResponse.json({
       success: true,
-      message: serializeMessage(doc.toObject()),
-      forwardedMessage: serializeMessage(newDoc.toObject()),
+      message: serializeStationNote(doc.toObject()),
+      forwardedMessage: serializeStationNote(newDoc.toObject()),
     });
   } catch (err: any) {
     console.error("[station-notes forward]", err);
