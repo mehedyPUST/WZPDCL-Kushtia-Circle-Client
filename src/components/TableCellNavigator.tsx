@@ -210,10 +210,30 @@ export default function TableCellNavigator() {
       return null;
     };
 
-    // Intercept mousedown on table cells to prevent input focus/cursor on single click
+    const isEditableControl = (el: HTMLElement | null): boolean => {
+      if (!el) return false;
+      const tag = el.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        tag === "OPTION" ||
+        el.isContentEditable
+      );
+    };
+
+    // Handle mousedown on table cells (never block focusing inputs/controls)
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
+
+      if (
+        isEditableControl(target) ||
+        target.closest("button, a, [role='button']")
+      ) {
+        clearHighlight();
+        return;
+      }
 
       const cell = target.closest("td, th") as HTMLElement | null;
       const table = cell?.closest("table");
@@ -227,26 +247,17 @@ export default function TableCellNavigator() {
         return;
       }
 
-      // If clicked on an input or cell containing an input:
-      // Single click should NOT make it editable; it should just highlight!
-      const isInput =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.tagName === "SELECT";
-
-      // If single click, prevent default focusing so text cursor/editing doesn't start
-      if (e.detail <= 1) {
-        if (isInput) {
-          e.preventDefault();
-          if (document.activeElement instanceof HTMLElement) {
-            document.activeElement.blur();
-          }
-        }
-        highlightCell(cell, table, { scroll: false, updateCenterX: true });
-      } else if (e.detail >= 2 && isInput) {
-        // Double click on an input: allow user to edit
-        (target as HTMLElement).focus();
+      if (
+        cell.classList.contains("cell-input") &&
+        cell.querySelector(
+          "input:not(:disabled), textarea:not(:disabled), select:not(:disabled)"
+        )
+      ) {
+        clearHighlight();
+        return;
       }
+
+      highlightCell(cell, table, { scroll: false, updateCenterX: true });
     };
 
     // Also handle click event
@@ -254,17 +265,26 @@ export default function TableCellNavigator() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      if (
+        isEditableControl(target) ||
+        target.closest("button, a, [role='button']")
+      ) {
+        clearHighlight();
+        return;
+      }
+
       const cell = target.closest("td, th") as HTMLElement | null;
       const table = cell?.closest("table");
 
       if (cell && table) {
-        // Single click: ensure blur on inputs so field is not editable
-        if (e.detail <= 1) {
-          if (
-            document.activeElement instanceof HTMLInputElement ||
-            document.activeElement instanceof HTMLTextAreaElement
-          ) {
-            document.activeElement.blur();
+        if (cell.classList.contains("cell-input")) {
+          const innerInput = cell.querySelector(
+            "input:not(:disabled), textarea:not(:disabled), select:not(:disabled)"
+          ) as HTMLElement | null;
+          if (innerInput) {
+            clearHighlight();
+            innerInput.focus();
+            return;
           }
         }
         highlightCell(cell, table, { scroll: false, updateCenterX: true });
