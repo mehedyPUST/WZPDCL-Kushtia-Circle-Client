@@ -7,7 +7,7 @@ export default function KushtiaDistrictLoadPage() {
     <div className="flex-1 flex flex-col min-h-0 w-full">
       <div className="shrink-0 px-3 sm:px-5 lg:px-6 pt-2 sm:pt-3 pb-1.5">
         <h1 className="text-base sm:text-lg font-semibold text-app tracking-tight">
-          Kushtia District Load
+          District Load
         </h1>
         <p className="text-[11px] sm:text-xs text-muted mt-0.5">
           Operational day · Bottail + Bheramara · Circle Load rules

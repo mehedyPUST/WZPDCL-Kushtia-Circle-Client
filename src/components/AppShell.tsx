@@ -81,7 +81,7 @@ const NAV_SECTIONS: NavSection[] = [
       { href: "/history", label: "History", icon: History },
       { href: "/max-load", label: "MAX Load", icon: TrendingUp },
       { href: "/circle-load", label: "Circle Load", icon: CircleDot },
-      { href: "/kushtia-district-load", label: "Kushtia District Load", icon: MapPin },
+      { href: "/kushtia-district-load", label: "District Load", icon: MapPin },
       { href: "/statistics", label: "Statistics", icon: BarChart3 },
     ],
   },
@@ -328,11 +328,10 @@ export default function AppShell({ children }) {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
-                        active
+                      className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group ${active
                           ? "font-semibold text-[var(--sidebar-active-fg)]"
                           : "text-secondary hover:text-app hover:bg-surface-3/50"
-                      }`}
+                        }`}
                     >
                       {active && (
                         <motion.div
@@ -347,16 +346,14 @@ export default function AppShell({ children }) {
                       )}
                       <span className="relative z-10 flex items-center gap-3 min-w-0 flex-1">
                         <Icon
-                          className={`w-4 h-4 shrink-0 transition-colors ${
-                            active
+                          className={`w-4 h-4 shrink-0 transition-colors ${active
                               ? "text-[var(--sidebar-active-fg)]"
                               : "text-muted group-hover:text-accent"
-                          }`}
+                            }`}
                         />
                         <span
-                          className={`truncate ${
-                            active ? "text-[var(--sidebar-active-fg)]" : ""
-                          }`}
+                          className={`truncate ${active ? "text-[var(--sidebar-active-fg)]" : ""
+                            }`}
                         >
                           {link.label}
                         </span>
@@ -502,16 +499,14 @@ export default function AppShell({ children }) {
                               key={link.href}
                               href={link.href}
                               onClick={() => setMobileOpen(false)}
-                              className={`flex items-center gap-3 px-3 min-h-[44px] py-2 rounded-xl text-[13px] font-medium transition-all border ${
-                                active
+                              className={`flex items-center gap-3 px-3 min-h-[44px] py-2 rounded-xl text-[13px] font-medium transition-all border ${active
                                   ? "font-semibold shadow-sm bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)] border-[var(--sidebar-active-border)]"
                                   : "text-secondary hover:text-app hover:bg-surface-3 border-transparent"
-                              }`}
+                                }`}
                             >
                               <Icon
-                                className={`w-4 h-4 shrink-0 ${
-                                  active ? "text-[var(--sidebar-active-fg)]" : "text-muted"
-                                }`}
+                                className={`w-4 h-4 shrink-0 ${active ? "text-[var(--sidebar-active-fg)]" : "text-muted"
+                                  }`}
                               />
                               <span>{link.label}</span>
                             </Link>
