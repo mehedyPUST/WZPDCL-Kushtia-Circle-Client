@@ -1,35 +1,41 @@
 # WZPDCL Bottail Load Calculator — Frontend
 
-Next.js user interface for the WZPDCL Bottail-Kushtia 33/11 kV substation load calculator. This project contains no API route handlers, database connection, authentication secrets, or AI-provider credentials. All application APIs and data operations are handled by the separate Express backend.
+This is the **UI-only Next.js application** for the WZPDCL Bottail-Kushtia 33/11 kV substation load calculator. It contains no API route handlers, database models, database connection, authentication implementation, or AI-provider integration. Every data request is sent directly from the browser to the separate Express API through `NEXT_PUBLIC_API_URL`.
 
 ## Local development
 
-Start the backend first at `http://localhost:5000`, then configure the frontend:
+1. Start the backend from `WZPDCL-Kushtia-Circle-Server` (default: `http://localhost:5000`).
+2. Create `.env.local` from `.env.example` and set:
 
-```bash
-cp .env.example .env.local
-# NEXT_PUBLIC_API_URL=http://localhost:5000
-npm install
-npm run dev
-```
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   ```
 
-Open http://localhost:3000.
+3. Install dependencies and start the frontend:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+4. Open `http://localhost:3000`.
 
 ## Environment variables
 
-| Name | Required | Description |
+| Variable | Required | Description |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | Yes | Public base URL of the Express API, without trailing slash |
-| `NEXT_PUBLIC_APP_BUILD_ID` | No | Optional frontend build identifier |
+| `NEXT_PUBLIC_API_URL` | Yes | Public base URL of the Express API, without a trailing slash |
+| `NEXT_PUBLIC_APP_BUILD_ID` | No | Optional PWA build identifier |
 
-Do not configure `MONGODB_URI`, `JWT_SECRET`, `ADMIN_REGISTRATION_SECRET`, or `GROQ_API_KEY` in this project. Those belong only in the backend environment.
+Do not add `MONGODB_URI`, `JWT_SECRET`, `ADMIN_REGISTRATION_SECRET`, or `GROQ_API_KEY` to the frontend. Those values belong exclusively in the backend environment.
 
-## Deploy to Vercel
+## Deployment
 
-1. Deploy the Express backend project first.
-2. Set `NEXT_PUBLIC_API_URL` in the frontend Vercel project to the backend's public URL.
-3. Deploy this Next.js project.
-4. In the backend project, set `FRONTEND_URL` to the exact frontend origin (and any required preview origins).
+1. Deploy `WZPDCL-Kushtia-Circle-Server` as the API service.
+2. Configure the backend's `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRY`, `ADMIN_REGISTRATION_SECRET`, and `FRONTEND_URL` (plus optional AI-provider keys).
+3. Deploy this frontend project.
+4. Set the frontend's `NEXT_PUBLIC_API_URL` to the deployed backend URL.
+5. Ensure the backend `FRONTEND_URL` includes the exact deployed frontend origin(s), then redeploy the backend.
 
 ## Scripts
 
@@ -41,4 +47,4 @@ Do not configure `MONGODB_URI`, `JWT_SECRET`, `ADMIN_REGISTRATION_SECRET`, or `G
 
 ## Stack
 
-Next.js 15, React 19, TypeScript, Tailwind CSS v4, Serwist PWA.
+Next.js 15, React 19, TypeScript, Tailwind CSS v4, and Serwist PWA.
