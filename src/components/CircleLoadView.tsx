@@ -246,16 +246,18 @@ function StationTable({
                     {can ? (
                       <input
                         className={inputCls}
-                        value={d[allotKey] ?? ""}
+                        value={d[allotKey] === "" || d[allotKey] == null
+                          ? (ls === 0 ? String(cons) : "")
+                          : d[allotKey]}
                         onChange={(e) => setField(s.id, allotKey, e.target.value)}
-                        placeholder={fmt(demand)}
-                        title="Default = demand; type to set custom"
+                        placeholder={ls === 0 ? fmt(cons) : "Optional"}
+                        title="Defaults to consumption when there is no loadshed; editable"
                         inputMode="decimal"
                       />
                     ) : (
                       <span className={`${readCls} text-amber-800 dark:text-amber-300/90`}>
                         {d[allotKey] == null || d[allotKey] === ""
-                          ? fmt(demand)
+                          ? (ls === 0 ? fmt(cons) : "—")
                           : fmt(d[allotKey])}
                       </span>
                     )}
@@ -311,8 +313,9 @@ function StationTable({
               cons += c;
               ls += l;
               const demand = c + l;
-              if (d[allotKey] === "" || d[allotKey] == null) allot += demand;
-              else allot += numOr0(d[allotKey]);
+              if (d[allotKey] === "" || d[allotKey] == null) {
+                if (l === 0) allot += c;
+              } else allot += numOr0(d[allotKey]);
             });
             const demand = cons + ls;
             return (
@@ -386,9 +389,9 @@ function StationCards({
     const l = numOr0(d[lsKey]);
     totalCons += c;
     totalLs += l;
-    const dem = c + l;
-    if (d[allotKey] === "" || d[allotKey] == null) totalAllot += dem;
-    else totalAllot += numOr0(d[allotKey]);
+    if (d[allotKey] === "" || d[allotKey] == null) {
+      if (l === 0) totalAllot += c;
+    } else totalAllot += numOr0(d[allotKey]);
   });
   const totalDemand = totalCons + totalLs;
 
@@ -525,16 +528,18 @@ function StationCards({
                   {can ? (
                     <input
                       className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
-                      value={d[allotKey] ?? ""}
+                      value={d[allotKey] === "" || d[allotKey] == null
+                        ? (ls === 0 ? String(cons) : "")
+                        : d[allotKey]}
                       onChange={(e) => setField(s.id, allotKey, e.target.value)}
-                      placeholder={fmt(demand)}
+                      placeholder={ls === 0 ? fmt(cons) : "Optional"}
                       inputMode="decimal"
                       aria-label={`${s.name} allotment`}
                     />
                   ) : (
                     <div className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-amber-800 dark:text-amber-300">
                       {d[allotKey] == null || d[allotKey] === ""
-                        ? fmt(demand)
+                        ? (ls === 0 ? fmt(cons) : "—")
                         : fmt(d[allotKey])}
                     </div>
                   )}
@@ -707,24 +712,20 @@ export default function CircleLoadView() {
       return;
     }
     const d = drafts[stationId] || {};
-    // Demand = consumption + LS. Allotment optional → defaults to demand.
+    // Demand = consumption + LS. With zero LS, default allotment to consumption.
     const consumption = numOr0(d.actualLoad);
     const ls = d.loadshed === "" || d.loadshed == null ? 0 : numOr0(d.loadshed);
-    const demand = consumption + ls;
     const allotment =
       d.pgcbAllotment === "" || d.pgcbAllotment == null
-        ? demand
+        ? (ls === 0 ? consumption : null)
         : numOr0(d.pgcbAllotment);
 
     const pbsCons = numOr0(d.pbsLoad);
     const pbsLs =
       d.pbsLoadshed === "" || d.pbsLoadshed == null ? 0 : numOr0(d.pbsLoadshed);
-    const pbsDemand = pbsCons + pbsLs;
     const pbsAllotment =
       d.pbsAllotment === "" || d.pbsAllotment == null
-        ? pbsDemand > 0
-          ? pbsDemand
-          : null
+        ? (pbsLs === 0 ? pbsCons : null)
         : numOr0(d.pbsAllotment);
 
     setSavingId(stationId);

@@ -39,7 +39,6 @@ function fmt(n) {
   return (Math.round((Number(n) + Number.EPSILON) * 10) / 10).toFixed(1);
 }
 
-const dayCache = new Map();
 
 function StationMini({ title, tone, cons, ls, demand, allot }) {
   const tones = {
@@ -306,16 +305,11 @@ export default function KushtiaDistrictLoadView() {
   }, [mobileView]);
 
   const load = useCallback(
-    async (force = false) => {
-      if (!force && dayCache.has(day)) {
-        setData(dayCache.get(day));
-        return;
-      }
+    async () => {
       setLoading(true);
       try {
         const res = await fetchDistrictDay({ day });
         const payload = res.data;
-        dayCache.set(day, payload);
         setData(payload);
       } catch (err) {
         toast.error(err.message || "Failed to load");
@@ -329,6 +323,11 @@ export default function KushtiaDistrictLoadView() {
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  useEffect(() => {
+    const id = setInterval(() => load(), 30000);
+    return () => clearInterval(id);
   }, [load]);
 
   const slots = useMemo(() => data?.slots || [], [data?.slots]);
@@ -504,7 +503,7 @@ export default function KushtiaDistrictLoadView() {
             </button>
             <button
               type="button"
-              onClick={() => load(true)}
+              onClick={() => load()}
               disabled={loading}
               className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-surface-3 text-app text-[11px] font-bold uppercase tracking-wide hover:bg-surface-2 disabled:opacity-50 border border-app transition-colors inline-flex items-center justify-center shrink-0"
               title="Reload data"
@@ -807,8 +806,7 @@ export default function KushtiaDistrictLoadView() {
 
       {/* ── Fixed Footer Note ── */}
       <p className="shrink-0 px-3 py-2 text-[10px] text-muted border-t border-app bg-elevated/70 leading-relaxed">
-        <strong className="text-secondary">Demand</strong> = Consumption + LS · Allotment
-        defaults to demand · Window ends on selected date at{" "}
+        <strong className="text-secondary">Demand</strong> = Consumption + LS · Allotment defaults to consumption when LS is zero; otherwise optional · Window ends on selected date at{" "}
         <strong className="text-secondary">{boundary}</strong>
       </p>
     </div>
