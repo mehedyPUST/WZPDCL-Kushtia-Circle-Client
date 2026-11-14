@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
 import toast from "react-hot-toast";
+import { ArrowUp, ChevronLeft, ChevronRight, LocateFixed, RefreshCw } from "lucide-react";
 import { fetchDistrictDay } from "@/lib/api";
 import SkeletonTable from "./SkeletonTable";
 
@@ -114,7 +115,8 @@ const MobileSlotCard = memo(function MobileSlotCard({
   return (
     <article
       data-slot={row.hourSlot}
-      className={`rounded-2xl border bg-gradient-to-br shadow-sm overflow-hidden transition-all ${
+      data-prev={row.isPreviousDay ? "true" : "false"}
+      className={`scroll-mt-4 rounded-2xl border bg-gradient-to-br shadow-sm overflow-hidden transition-all ${
         isCurrentSlot
           ? "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-400 ring-2 ring-emerald-500/40 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/40"
           : row.isPreviousDay
@@ -216,7 +218,8 @@ const DesktopRow = memo(function DesktopRow({
   return (
     <tr
       data-slot={row.hourSlot}
-      className={`${base} group hover:!bg-[var(--sticky-hover)] transition-colors`}
+      data-prev={prev ? "true" : "false"}
+      className={`scroll-mt-20 ${base} group hover:!bg-[var(--sticky-hover)] transition-colors`}
     >
       <td
         className={`time-col-sticky px-1 py-1.5 border-b border-r border-app text-center group-hover:!bg-[var(--sticky-hover)] ${
@@ -269,12 +272,38 @@ export default function KushtiaDistrictLoadView() {
   const [mobileView, setMobileView] = useState("table");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const tableContainerRef = useRef(null);
-  const cardsContainerRef = useRef(null);
+  const [clockTick, setClockTick] = useState(0);
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const cardsContainerRef = useRef<HTMLDivElement | null>(null);
+  const pendingJumpRef = useRef(false);
 
-  const today = dayKeyNow();
-  const currentSlot = currentSlotNow();
+  useEffect(() => {
+    const id = setInterval(() => setClockTick((t) => t + 1), 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const today = useMemo(() => {
+    void clockTick;
+    return dayKeyNow();
+  }, [clockTick]);
+
+  const currentSlot = useMemo(() => {
+    void clockTick;
+    return currentSlotNow();
+  }, [clockTick]);
+
   const isToday = day === today;
+
+  const getActiveContainer = useCallback(() => {
+    if (
+      mobileView === "cards" &&
+      cardsContainerRef.current &&
+      cardsContainerRef.current.offsetParent !== null
+    ) {
+      return cardsContainerRef.current;
+    }
+    return tableContainerRef.current;
+  }, [mobileView]);
 
   const load = useCallback(
     async (force = false) => {
@@ -305,40 +334,57 @@ export default function KushtiaDistrictLoadView() {
   const slots = useMemo(() => data?.slots || [], [data?.slots]);
   const boundary = data?.boundary || "22:00";
 
-  // Smooth scroll logic: scroll to current slot
+  const scrollSlotIntoView = useCallback(
+    (notifyIfMissing = true) => {
+      const container = getActiveContainer();
+      if (!container) return false;
+      const target =
+        container.querySelector(
+          `[data-slot="${currentSlot}"][data-prev="false"]`
+        ) || null;
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        return true;
+      }
+      if (notifyIfMissing) {
+        toast(`Current hour (${currentSlot}) is outside this operational window`, {
+          icon: "ℹ️",
+        });
+      }
+      return false;
+    },
+    [currentSlot, getActiveContainer]
+  );
+
+  // Smooth scroll logic: jump to today's current hour slot (switching back to today if needed)
   const scrollToNow = useCallback(() => {
-    const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
-    if (!container) return;
-    const target = container.querySelector(`[data-slot="${currentSlot}"]`);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else {
-      toast("Current hour slot is not within this range", { icon: "ℹ️" });
+    if (day !== today) {
+      pendingJumpRef.current = true;
+      setDay(today);
+      return;
     }
-  }, [currentSlot, mobileView]);
+    scrollSlotIntoView(true);
+  }, [day, today, scrollSlotIntoView]);
 
   // Smooth scroll logic: scroll to top
   const scrollToTop = useCallback(() => {
-    const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
+    const container = getActiveContainer();
     if (container) {
       container.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [mobileView]);
+  }, [getActiveContainer]);
 
-  // Auto-scroll to active slot on initial load if viewing today
+  // Auto-scroll to active slot on initial load or after switching back to today via Jump-to-Now
   useEffect(() => {
     if (!loading && data && isToday) {
+      const notify = pendingJumpRef.current;
+      pendingJumpRef.current = false;
       const timer = setTimeout(() => {
-        const container = mobileView === "cards" ? cardsContainerRef.current : tableContainerRef.current;
-        if (!container) return;
-        const target = container.querySelector(`[data-slot="${currentSlot}"]`);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }, 200);
+        scrollSlotIntoView(notify);
+      }, 150);
       return () => clearTimeout(timer);
     }
-  }, [loading, data, isToday, currentSlot, mobileView]);
+  }, [loading, data, isToday, scrollSlotIntoView]);
 
   const summary = useMemo(() => {
     let peakDemand = 0;
@@ -392,39 +438,46 @@ export default function KushtiaDistrictLoadView() {
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap">
-            {/* Scroll navigation helpers */}
-            {isToday && (
-              <button
-                type="button"
-                onClick={scrollToNow}
-                className="h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-accent text-xs font-semibold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm"
-                title={`Jump to current hour slot (${currentSlot})`}
+            {/* High-contrast Jump to Current Hour Slot button (always visible) */}
+            <button
+              type="button"
+              onClick={scrollToNow}
+              className="btn-primary h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm whitespace-nowrap shrink-0"
+              title={
+                isToday
+                  ? `Jump to current hour slot (${currentSlot})`
+                  : `Return to today and jump to current hour slot (${currentSlot})`
+              }
+            >
+              <LocateFixed className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-[11px] uppercase tracking-wider">Now</span>
+              <span
+                suppressHydrationWarning
+                className="font-mono text-[11px] tabular-nums opacity-95"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Now</span>
-                <span className="font-mono text-[11px] hidden sm:inline">{currentSlot}</span>
-              </button>
-            )}
+                {currentSlot}
+              </span>
+            </button>
 
             <button
               type="button"
               onClick={scrollToTop}
-              className="h-8 sm:h-9 px-2 rounded-xl border border-app bg-surface-2 hover:bg-surface-3 text-secondary text-xs font-semibold inline-flex items-center gap-0.5 active:scale-95 transition-all shadow-sm"
+              className="h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl border border-app bg-surface-2 hover:bg-surface-3 text-secondary hover:text-app text-xs font-semibold inline-flex items-center gap-1 active:scale-95 transition-all shadow-sm shrink-0"
               title="Scroll to top of sheet"
               aria-label="Scroll to top"
             >
-              <span className="text-xs">↑</span>
-              <span className="text-[10px] font-semibold hidden md:inline">Top</span>
+              <ArrowUp className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-[11px] font-semibold hidden md:inline">Top</span>
             </button>
 
             {/* Date controls */}
             <button
               type="button"
               onClick={() => setDay((d) => shiftDay(d, -1))}
-              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 transition-colors"
+              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 transition-colors shrink-0"
               aria-label="Previous day"
             >
-              ‹
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <input
               type="date"
@@ -444,19 +497,20 @@ export default function KushtiaDistrictLoadView() {
                 })
               }
               disabled={day >= today}
-              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 disabled:opacity-40 transition-colors"
+              className="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-xl border border-app bg-surface-2 text-app hover:bg-surface-3 active:scale-95 disabled:opacity-40 transition-colors shrink-0"
               aria-label="Next day"
             >
-              ›
+              <ChevronRight className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => load(true)}
               disabled={loading}
-              className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-surface-3 text-app text-[11px] font-bold uppercase tracking-wide hover:bg-surface-2 disabled:opacity-50 border border-app transition-colors"
+              className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-surface-3 text-app text-[11px] font-bold uppercase tracking-wide hover:bg-surface-2 disabled:opacity-50 border border-app transition-colors inline-flex items-center justify-center shrink-0"
               title="Reload data"
+              aria-label="Reload data"
             >
-              {loading ? "…" : "↻"}
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             </button>
 
             {/* Mobile View Toggle */}
@@ -557,7 +611,9 @@ export default function KushtiaDistrictLoadView() {
                 <MobileSlotCard
                   key={`${row.dayKey}-${row.hourSlot}`}
                   row={row}
-                  isCurrentSlot={isToday && row.hourSlot === currentSlot}
+                  isCurrentSlot={
+                    isToday && !row.isPreviousDay && row.hourSlot === currentSlot
+                  }
                 />
               ))}
               {!loading && slots.length === 0 && (
@@ -728,7 +784,9 @@ export default function KushtiaDistrictLoadView() {
                     key={`${row.dayKey}-${row.hourSlot}`}
                     row={row}
                     isAlt={i % 2 === 1}
-                    isCurrentSlot={isToday && row.hourSlot === currentSlot}
+                    isCurrentSlot={
+                      isToday && !row.isPreviousDay && row.hourSlot === currentSlot
+                    }
                   />
                 ))}
                 {!loading && slots.length === 0 && (
