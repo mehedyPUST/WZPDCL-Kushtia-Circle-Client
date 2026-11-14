@@ -203,7 +203,7 @@ function StationTable({
                     </div>
                   </td>
                   <td className="px-1.5 py-1.5 border-b border-r border-app align-middle">
-                    {can ? (
+                    {can && !(isBottail && mode === "main") ? (
                       <input
                         className={inputCls}
                         value={d[consKey] ?? ""}
@@ -211,7 +211,12 @@ function StationTable({
                         inputMode="decimal"
                       />
                     ) : (
-                      <span className={`${readCls} text-accent`}>{fmt(d[consKey])}</span>
+                      <span
+                        className={`${readCls} text-accent`}
+                        title={isBottail && mode === "main" ? "From Bottail calculator" : undefined}
+                      >
+                        {fmt(d[consKey])}
+                      </span>
                     )}
                   </td>
                   <td className="px-1.5 py-1.5 border-b border-r border-app align-middle">
@@ -221,6 +226,8 @@ function StationTable({
                         value={d[lsKey] ?? (mode === "main" ? "0" : "")}
                         onChange={(e) => setField(s.id, lsKey, e.target.value)}
                         inputMode="decimal"
+                        placeholder="0"
+                        title="Loadshed (manual)"
                       />
                     ) : (
                       <span className={`${readCls} text-rose-700 dark:text-rose-300`}>
@@ -474,7 +481,7 @@ function StationCards({
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-accent text-center">
                     Cons.
                   </label>
-                  {can ? (
+                  {can && !(isBottail && mode === "main") ? (
                     <input
                       className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
                       value={d[consKey] ?? ""}
@@ -483,7 +490,10 @@ function StationCards({
                       aria-label={`${s.name} consumption`}
                     />
                   ) : (
-                    <div className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-accent">
+                    <div
+                      className="h-11 rounded-lg bg-surface-2/60 border border-app/60 flex items-center justify-center font-mono text-sm font-bold tabular-nums text-accent"
+                      title={isBottail && mode === "main" ? "From Bottail calculator" : undefined}
+                    >
                       {fmt(d[consKey])}
                     </div>
                   )}
@@ -697,15 +707,18 @@ export default function CircleLoadView() {
       return;
     }
     const d = drafts[stationId] || {};
+    // Demand = consumption + LS. Allotment optional → defaults to demand.
     const consumption = numOr0(d.actualLoad);
     const ls = d.loadshed === "" || d.loadshed == null ? 0 : numOr0(d.loadshed);
+    const demand = consumption + ls;
     const allotment =
       d.pgcbAllotment === "" || d.pgcbAllotment == null
-        ? consumption + ls
+        ? demand
         : numOr0(d.pgcbAllotment);
 
     const pbsCons = numOr0(d.pbsLoad);
-    const pbsLs = numOr0(d.pbsLoadshed);
+    const pbsLs =
+      d.pbsLoadshed === "" || d.pbsLoadshed == null ? 0 : numOr0(d.pbsLoadshed);
     const pbsDemand = pbsCons + pbsLs;
     const pbsAllotment =
       d.pbsAllotment === "" || d.pbsAllotment == null
@@ -720,6 +733,7 @@ export default function CircleLoadView() {
         dayKey: day,
         hourSlot: slot,
         stationId,
+        // Bottail: backend keeps calculator consumption for non-admin; still send current value.
         actualLoad: d.actualLoad === "" ? null : consumption,
         loadshed: ls,
         pgcbAllotment: allotment,
