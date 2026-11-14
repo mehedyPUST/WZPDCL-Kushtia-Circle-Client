@@ -43,7 +43,7 @@ import DashboardAccountPanel from "./DashboardAccountPanel";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrator",
-  duty: "Duty Operator",
+  duty: "Duty SBA",
   "circle-load-input": "Circle Load Input",
   viewer: "Viewer",
 };
@@ -273,19 +273,19 @@ export default function UserDashboard() {
     },
     ...(canWrite
       ? [
-          {
-            href: "/loadshed",
-            label: "Load Shed Sheet",
-            detail: "Update feeder allotments & LS",
-            icon: Zap,
-          },
-          {
-            href: "/night-logs",
-            label: "Night Log Generator",
-            detail: "Prepare overnight 22–08h slots",
-            icon: Moon,
-          },
-        ]
+        {
+          href: "/loadshed",
+          label: "Load Shed Sheet",
+          detail: "Update feeder allotments & LS",
+          icon: Zap,
+        },
+        {
+          href: "/night-logs",
+          label: "Night Log Generator",
+          detail: "Prepare overnight 22–08h slots",
+          icon: Moon,
+        },
+      ]
       : []),
     {
       href: "/history",
@@ -301,13 +301,13 @@ export default function UserDashboard() {
     },
     ...(isAdmin
       ? [
-          {
-            href: "/admin",
-            label: "User & Settings Admin",
-            detail: "Accounts, limits & defaults",
-            icon: Shield,
-          },
-        ]
+        {
+          href: "/admin",
+          label: "User & Settings Admin",
+          detail: "Accounts, limits & defaults",
+          icon: Shield,
+        },
+      ]
       : []),
   ];
 
@@ -386,11 +386,10 @@ export default function UserDashboard() {
               role="tab"
               aria-selected={tab === "overview"}
               onClick={() => setTab("overview")}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                tab === "overview"
+              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${tab === "overview"
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
                   : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
-              }`}
+                }`}
             >
               Overview
             </button>
@@ -399,11 +398,10 @@ export default function UserDashboard() {
               role="tab"
               aria-selected={tab === "account"}
               onClick={() => setTab("account")}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                tab === "account"
+              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${tab === "account"
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
                   : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
-              }`}
+                }`}
             >
               Account &amp; Security
             </button>
@@ -580,15 +578,14 @@ export default function UserDashboard() {
                         key={opt.id}
                         type="button"
                         onClick={() => setFilter(opt.id)}
-                        className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                          filter === opt.id
+                        className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${filter === opt.id
                             ? opt.id === "loadshed"
                               ? "bg-orange-500 dark:bg-amber-500 text-white dark:text-[#1c1002] shadow-xs"
                               : opt.id === "today"
                                 ? "bg-blue-500 dark:bg-sky-500 text-white dark:text-[#041827] shadow-xs"
                                 : "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/25 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
                             : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
-                        }`}
+                          }`}
                       >
                         {opt.label}
                       </button>
@@ -715,11 +712,10 @@ export default function UserDashboard() {
                               {Number(r.totalMW || 0).toFixed(1)}
                             </td>
                             <td
-                              className={`px-3 py-3 text-right font-mono tabular-nums font-semibold ${
-                                ls > 0
+                              className={`px-3 py-3 text-right font-mono tabular-nums font-semibold ${ls > 0
                                   ? "text-orange-600 dark:text-amber-300"
                                   : "text-zinc-400 dark:text-slate-500"
-                              }`}
+                                }`}
                             >
                               {ls > 0 ? ls.toFixed(1) : "—"}
                             </td>

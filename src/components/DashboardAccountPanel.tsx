@@ -164,62 +164,62 @@ export default function DashboardAccountPanel({
             </div>
             <div className="p-4 sm:p-5 space-y-3">
 
-            <div>
-              <label
-                htmlFor="dash-profile-username"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                Username (system-locked)
-              </label>
-              <input
-                id="dash-profile-username"
-                type="text"
-                value={username || ""}
-                disabled
-                className="w-full h-10 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-surface-2/60 px-3 text-sm font-mono text-zinc-500 dark:text-slate-400 cursor-not-allowed"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="dash-profile-displayname"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                Display name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-slate-400 pointer-events-none" />
+              <div>
+                <label
+                  htmlFor="dash-profile-username"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
+                >
+                  Username (system-locked)
+                </label>
                 <input
-                  id="dash-profile-displayname"
+                  id="dash-profile-username"
                   type="text"
-                  value={displayNameDraft}
-                  onChange={(e) => onChangeDisplayName(e.target.value)}
-                  maxLength={80}
-                  placeholder="e.g. Duty Operator — Bottail"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
+                  value={username || ""}
+                  disabled
+                  className="w-full h-10 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-surface-2/60 px-3 text-sm font-mono text-zinc-500 dark:text-slate-400 cursor-not-allowed"
                 />
               </div>
-            </div>
 
-            <div>
-              <label
-                htmlFor="dash-profile-email"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                Official email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-slate-400 pointer-events-none" />
-                <input
-                  id="dash-profile-email"
-                  type="email"
-                  value={emailDraft}
-                  onChange={(e) => onChangeEmail(e.target.value)}
-                  placeholder="operator@wzpdcl.gov.bd"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
-                />
+              <div>
+                <label
+                  htmlFor="dash-profile-displayname"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
+                >
+                  Display name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-slate-400 pointer-events-none" />
+                  <input
+                    id="dash-profile-displayname"
+                    type="text"
+                    value={displayNameDraft}
+                    onChange={(e) => onChangeDisplayName(e.target.value)}
+                    maxLength={80}
+                    placeholder="e.g. Duty SBA — Bottail"
+                    className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
+                  />
+                </div>
               </div>
-            </div>
+
+              <div>
+                <label
+                  htmlFor="dash-profile-email"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
+                >
+                  Official email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-slate-400 pointer-events-none" />
+                  <input
+                    id="dash-profile-email"
+                    type="email"
+                    value={emailDraft}
+                    onChange={(e) => onChangeEmail(e.target.value)}
+                    placeholder="operator@wzpdcl.gov.bd"
+                    className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-9 pr-3 text-sm font-medium text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400 transition-colors"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -250,129 +250,127 @@ export default function DashboardAccountPanel({
             </div>
             <div className="p-4 sm:p-5 space-y-3">
 
-            <div>
-              <label
-                htmlFor="dash-pw-current"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                Current password
-              </label>
-              <div className="relative">
-                <input
-                  id="dash-pw-current"
-                  type={showCurrentPw ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => onChangeCurrentPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  placeholder="Enter current password"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPw((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
-                  aria-label={showCurrentPw ? "Hide current password" : "Show current password"}
+              <div>
+                <label
+                  htmlFor="dash-pw-current"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
                 >
-                  {showCurrentPw ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+                  Current password
+                </label>
+                <div className="relative">
+                  <input
+                    id="dash-pw-current"
+                    type={showCurrentPw ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => onChangeCurrentPassword(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                    placeholder="Enter current password"
+                    className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPw((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+                    aria-label={showCurrentPw ? "Hide current password" : "Show current password"}
+                  >
+                    {showCurrentPw ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label
-                htmlFor="dash-pw-new"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                New password
-              </label>
-              <div className="relative">
-                <input
-                  id="dash-pw-new"
-                  type={showNewPw ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => onChangeNewPassword(e.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  placeholder="Minimum 8 characters"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPw((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
-                  aria-label={showNewPw ? "Hide new password" : "Show new password"}
+              <div>
+                <label
+                  htmlFor="dash-pw-new"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
                 >
-                  {showNewPw ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+                  New password
+                </label>
+                <div className="relative">
+                  <input
+                    id="dash-pw-new"
+                    type={showNewPw ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => onChangeNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                    placeholder="Minimum 8 characters"
+                    className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPw((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+                    aria-label={showNewPw ? "Hide new password" : "Show new password"}
+                  >
+                    {showNewPw ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label
-                htmlFor="dash-pw-confirm"
-                className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
-              >
-                Confirm new password
-              </label>
-              <div className="relative">
-                <input
-                  id="dash-pw-confirm"
-                  type={showConfirmPw ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => onChangeConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  placeholder="Re-enter new password"
-                  className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPw((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
-                  aria-label={showConfirmPw ? "Hide confirm password" : "Show confirm password"}
+              <div>
+                <label
+                  htmlFor="dash-pw-confirm"
+                  className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1.5"
                 >
-                  {showConfirmPw ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+                  Confirm new password
+                </label>
+                <div className="relative">
+                  <input
+                    id="dash-pw-confirm"
+                    type={showConfirmPw ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => onChangeConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                    placeholder="Re-enter new password"
+                    className="w-full h-10 rounded-lg border border-zinc-300 dark:border-app bg-white dark:bg-surface-2 pl-3 pr-10 text-sm text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-emerald-500/25 focus:border-blue-500 dark:focus:border-emerald-400 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPw((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-zinc-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+                    aria-label={showConfirmPw ? "Hide confirm password" : "Show confirm password"}
+                  >
+                    {showConfirmPw ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-0.5">
-              <span
-                className={`inline-flex items-center gap-1 ${
-                  lengthOk
-                    ? "text-emerald-700 dark:text-emerald-400 font-semibold"
-                    : "text-zinc-500 dark:text-slate-400"
-                }`}
-              >
-                <Check className="w-3.5 h-3.5" />
-                At least 8 characters
-              </span>
-              <span
-                className={`inline-flex items-center gap-1 ${
-                  matchOk
-                    ? "text-emerald-700 dark:text-emerald-400 font-semibold"
-                    : "text-zinc-500 dark:text-slate-400"
-                }`}
-              >
-                <Check className="w-3.5 h-3.5" />
-                Confirmation matches
-              </span>
-            </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs pt-0.5">
+                <span
+                  className={`inline-flex items-center gap-1 ${lengthOk
+                      ? "text-emerald-700 dark:text-emerald-400 font-semibold"
+                      : "text-zinc-500 dark:text-slate-400"
+                    }`}
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  At least 8 characters
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1 ${matchOk
+                      ? "text-emerald-700 dark:text-emerald-400 font-semibold"
+                      : "text-zinc-500 dark:text-slate-400"
+                    }`}
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  Confirmation matches
+                </span>
+              </div>
             </div>
           </div>
 
