@@ -30,6 +30,7 @@ import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
 import DutyLoginNotesModal from "./DutyLoginNotesModal";
+import ShiftCutoffModal from "./ShiftCutoffModal";
 import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
 import PWAInstallButton from "./PWAInstallButton";
@@ -115,8 +116,17 @@ export default function AppShell({ children }) {
   const router = useRouter();
   const [showLogin, setShowLogin] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isAuthenticated, login, logout, loading, canWrite, isAdmin, admin } =
-    useAuth();
+  const {
+    isAuthenticated,
+    login,
+    logout,
+    loading,
+    canWrite,
+    isAdmin,
+    admin,
+    shiftCutoffNotice,
+    dismissShiftCutoffNotice,
+  } = useAuth();
   const isCalculator =
     pathname === "/calculator" || pathname.startsWith("/calculator/");
   const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
@@ -598,6 +608,26 @@ export default function AppShell({ children }) {
 
       {/* Duty Person Login Station Notes Briefing Modal */}
       <DutyLoginNotesModal />
+
+      {/* Shift Change Cutoff Logout Modal */}
+      <ShiftCutoffModal
+        open={Boolean(shiftCutoffNotice)}
+        cutoffAt={shiftCutoffNotice?.cutoffAt ?? null}
+        onClose={dismissShiftCutoffNotice}
+        onLoginClick={() => {
+          dismissShiftCutoffNotice();
+          if (isLoginPage) {
+            window.setTimeout(() => {
+              const el =
+                document.getElementById("page-login-user") ||
+                document.getElementById("username");
+              el?.focus();
+            }, 60);
+          } else {
+            setShowLogin(true);
+          }
+        }}
+      />
     </div>
   );
 }

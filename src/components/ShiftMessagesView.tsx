@@ -775,11 +775,12 @@ export default function ShiftMessagesView() {
             </div>
           ) : (
             <ul className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
-              {visible.map((m) => {
+              {visible.map((m, idx) => {
                 const pending = m.status === "pending";
                 const notePriority = (m.priority || "normal").toLowerCase();
                 const isCritical = notePriority === "critical";
                 const isHigh = notePriority === "high";
+                const isEven = idx % 2 === 0;
                 const isActing = actingId === m.id;
                 const authorName =
                   m.createdByDisplayName || m.createdByUsername || "Operator";
@@ -787,12 +788,16 @@ export default function ShiftMessagesView() {
                 const receipts = m.readReceipts || [];
 
                 const rowColorClass = isCritical
-                  ? "bg-rose-50/90 hover:bg-rose-100/75 dark:bg-rose-500/[0.11] dark:hover:bg-rose-500/[0.16] ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
+                  ? isEven
+                    ? "bg-rose-50/90 hover:bg-rose-100/80 dark:bg-rose-500/[0.11] dark:hover:bg-rose-500/[0.16] ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
+                    : "bg-rose-100/70 hover:bg-rose-100/95 dark:bg-rose-950/45 dark:hover:bg-rose-950/60 ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
                   : isHigh
-                    ? "bg-amber-50/85 hover:bg-amber-100/70 dark:bg-amber-500/[0.09] dark:hover:bg-amber-500/[0.14] ring-1 ring-inset ring-amber-300 dark:ring-amber-500/30"
-                    : pending
-                      ? "bg-emerald-50/35 hover:bg-emerald-50/65 dark:bg-teal-950/20 dark:hover:bg-teal-950/35"
-                      : "hover:bg-emerald-50/40 dark:hover:bg-teal-950/25";
+                    ? isEven
+                      ? "bg-amber-50/90 hover:bg-amber-100/75 dark:bg-amber-500/[0.09] dark:hover:bg-amber-500/[0.15] ring-1 ring-inset ring-amber-300 dark:ring-amber-500/30"
+                      : "bg-orange-50/90 hover:bg-orange-100/75 dark:bg-amber-950/40 dark:hover:bg-amber-950/55 ring-1 ring-inset ring-orange-300 dark:ring-amber-500/30"
+                    : isEven
+                      ? "bg-emerald-50/75 hover:bg-emerald-100/60 dark:bg-teal-950/35 dark:hover:bg-teal-950/50"
+                      : "bg-blue-50/75 hover:bg-blue-100/60 dark:bg-sky-950/30 dark:hover:bg-sky-950/45";
 
                 return (
                   <li

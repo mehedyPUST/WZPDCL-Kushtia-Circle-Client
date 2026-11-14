@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import toast from "react-hot-toast";
 import { login as apiLogin, logout as apiLogout, checkAuth } from "@/lib/api";
 import {
   getStoredAdmin,
@@ -18,7 +17,6 @@ import {
   clearStoredSession,
 } from "@/lib/auth";
 import {
-  formatDhakaCutoffHM,
   getNextShiftCutoffMs,
   isShiftAutoLogoutRole,
   normalizeAuthRole,
@@ -118,7 +116,15 @@ export function AuthProvider({ children }) {
   const [admin, setAdmin] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [shiftCutoffNotice, setShiftCutoffNotice] = useState<{
+    cutoffAt: number | null;
+    triggeredAt: number;
+  } | null>(null);
   const shiftLogoutLockRef = useRef(false);
+
+  const dismissShiftCutoffNotice = useCallback(() => {
+    setShiftCutoffNotice(null);
+  }, []);
 
   const performShiftAutoLogout = useCallback(
     async (cutoffAt?: number | null) => {
@@ -130,13 +136,10 @@ export function AuthProvider({ children }) {
         setAuthenticated(false);
         setAdmin(null);
         await apiLogout().catch(() => {});
-        const hm = formatDhakaCutoffHM(cutoffAt);
-        toast.error(
-          hm
-            ? `Shift cutoff (${hm} BST) reached — signed out automatically. Please sign in to continue.`
-            : "Shift cutoff (08:30 / 14:30 / 20:30 BST) reached — signed out automatically. Please sign in again.",
-          { id: "shift-auto-logout", duration: 6500 }
-        );
+        setShiftCutoffNotice({
+          cutoffAt: cutoffAt ?? null,
+          triggeredAt: Date.now(),
+        });
       } finally {
         setTimeout(() => {
           shiftLogoutLockRef.current = false;
@@ -182,13 +185,10 @@ export function AuthProvider({ children }) {
         setAuthenticated(false);
         setAdmin(null);
         if (result?.reason === "shift_cutoff") {
-          const hm = formatDhakaCutoffHM(result.cutoffAt);
-          toast.error(
-            hm
-              ? `Shift cutoff (${hm} BST) reached — please sign in again.`
-              : "Shift cutoff reached — please sign in again.",
-            { id: "shift-auto-logout", duration: 6500 }
-          );
+          setShiftCutoffNotice({
+            cutoffAt: result.cutoffAt ?? null,
+            triggeredAt: Date.now(),
+          });
         }
       }
     } catch {
@@ -223,6 +223,7 @@ export function AuthProvider({ children }) {
     if (nextAdmin) {
       setStoredSession(data.token || getStoredToken(), nextAdmin);
     }
+    setShiftCutoffNotice(null);
     setAuthenticated(true);
     setAdmin(nextAdmin);
     writeDutyNotesLoginPending(nextAdmin);
@@ -319,6 +320,8 @@ export function AuthProvider({ children }) {
       isAuthenticated: authenticated,
       role,
       shiftLogoutAt,
+      shiftCutoffNotice,
+      dismissShiftCutoffNotice,
       isViewer: role === "viewer" || role === "circle-load-input",
       isDuty: role === "duty" || role === "admin",
       isAdmin: role === "admin",
@@ -339,6 +342,8 @@ export function AuthProvider({ children }) {
       authenticated,
       role,
       shiftLogoutAt,
+      shiftCutoffNotice,
+      dismissShiftCutoffNotice,
       login,
       logout,
       refresh,

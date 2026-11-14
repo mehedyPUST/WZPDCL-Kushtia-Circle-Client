@@ -648,11 +648,12 @@ export default function DutyLoginNotesModal() {
                 </div>
               ) : (
                 <ul className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
-                  {visibleMessages.map((m) => {
+                  {visibleMessages.map((m, idx) => {
                     const pending = m.status === "pending";
                     const p = (m.priority || "normal").toLowerCase();
                     const isCritical = p === "critical";
                     const isHigh = p === "high";
+                    const isEven = idx % 2 === 0;
                     const isForCurrentShift =
                       Boolean(currentShift) && m.targetShift === currentShift;
                     const userHasRead = hasCurrentUserRead(m);
@@ -660,12 +661,16 @@ export default function DutyLoginNotesModal() {
                     const receipts = m.readReceipts || [];
 
                     const rowTone = isCritical
-                      ? "bg-rose-50/90 dark:bg-rose-500/[0.11]"
+                      ? isEven
+                        ? "bg-rose-50/90 dark:bg-rose-500/[0.11]"
+                        : "bg-rose-100/70 dark:bg-rose-950/45"
                       : isHigh
-                        ? "bg-amber-50/85 dark:bg-amber-500/[0.09]"
-                        : pending
-                          ? "bg-emerald-50/35 dark:bg-teal-950/20"
-                          : "bg-transparent";
+                        ? isEven
+                          ? "bg-amber-50/90 dark:bg-amber-500/[0.09]"
+                          : "bg-orange-50/90 dark:bg-amber-950/40"
+                        : isEven
+                          ? "bg-emerald-50/75 dark:bg-teal-950/35"
+                          : "bg-blue-50/75 dark:bg-sky-950/30";
 
                     return (
                       <li key={m.id} className={`p-4 sm:px-5 space-y-2.5 ${rowTone}`}>
