@@ -475,7 +475,9 @@ export async function fetchMaxLoad(
  * Settings are owned by the Express backend.
  */
 function settingsUrls() {
-  return [url("/api/settings")];
+  // [FIX] Port from File 2: try both candidate settings routes so ring
+  // preference keeps syncing even if the backend mounts settings elsewhere.
+  return [url("/api/settings"), url("/api/calculations/settings")];
 }
 
 /**
@@ -1085,6 +1087,8 @@ export async function fetchApiHealth() {
 export async function generateNightLog(payload: { dayKey: string; slots: Record<string, unknown>; startSlot: string; endSlot: string }) {
   const res = await fetchWithCredentials(url("/api/night-log/generate"), { method: "POST", body: JSON.stringify(payload) });
   const data = await parseJson(res);
-  if (!res.ok || !data.success) throw new Error(data.message || "Night-log generation failed");
+  // [FIX] Port from File 2: falsy-safe success check — only treat an explicit
+  // `success: false` (or non-OK HTTP) as failure, not a missing field.
+  if (!res.ok || data.success === false) throw new Error(data.message || "Night-log generation failed");
   return data;
 }
