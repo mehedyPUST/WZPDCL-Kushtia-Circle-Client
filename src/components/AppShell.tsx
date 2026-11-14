@@ -29,6 +29,7 @@ import {
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
+import DutyLoginNotesModal from "./DutyLoginNotesModal";
 import AppShellFooter from "./AppShellFooter";
 import ThemeToggle from "./ThemeToggle";
 import PWAInstallButton from "./PWAInstallButton";
@@ -594,6 +595,9 @@ export default function AppShell({ children }) {
           setShowLogin(false);
         }}
       />
+
+      {/* Duty Person Login Station Notes Briefing Modal */}
+      <DutyLoginNotesModal />
     </div>
   );
 }

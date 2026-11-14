@@ -68,6 +68,48 @@ function resolveShiftLogoutAt(
   return getNextShiftCutoffMs(Date.now());
 }
 
+const DUTY_NOTES_PENDING_KEY = "wzpdcl_duty_notes_login_pending";
+const DUTY_NOTES_DISMISSED_KEY = "wzpdcl_duty_notes_login_dismissed";
+
+function writeDutyNotesLoginPending(userObj: Record<string, any> | null) {
+  if (typeof window === "undefined") return;
+  try {
+    const normRole = normalizeAuthRole(userObj?.role);
+    if (normRole === "duty" && userObj?.username) {
+      window.sessionStorage.removeItem(DUTY_NOTES_DISMISSED_KEY);
+      window.sessionStorage.setItem(
+        DUTY_NOTES_PENDING_KEY,
+        JSON.stringify({
+          username: String(userObj.username).toLowerCase(),
+          shiftLogoutAt: userObj.shiftLogoutAt ?? null,
+          ts: Date.now(),
+        })
+      );
+      window.dispatchEvent(
+        new CustomEvent("wzpdcl:duty-login", {
+          detail: { username: userObj.username, role: normRole },
+        })
+      );
+    } else {
+      window.sessionStorage.removeItem(DUTY_NOTES_PENDING_KEY);
+      window.sessionStorage.removeItem(DUTY_NOTES_DISMISSED_KEY);
+    }
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
+function clearDutyNotesLoginFlags() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(DUTY_NOTES_PENDING_KEY);
+    window.sessionStorage.removeItem(DUTY_NOTES_DISMISSED_KEY);
+    window.dispatchEvent(new CustomEvent("wzpdcl:duty-logout"));
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
 export function AuthProvider({ children }) {
   // CRITICAL: start with null/false/true on BOTH server and first client paint.
   // Reading localStorage during useState() causes hydration mismatch, while
@@ -84,6 +126,7 @@ export function AuthProvider({ children }) {
       shiftLogoutLockRef.current = true;
       try {
         clearStoredSession();
+        clearDutyNotesLoginFlags();
         setAuthenticated(false);
         setAdmin(null);
         await apiLogout().catch(() => {});
@@ -182,6 +225,7 @@ export function AuthProvider({ children }) {
     }
     setAuthenticated(true);
     setAdmin(nextAdmin);
+    writeDutyNotesLoginPending(nextAdmin);
     return data;
   }, []);
 
@@ -190,6 +234,7 @@ export function AuthProvider({ children }) {
       await apiLogout();
     } finally {
       clearStoredSession();
+      clearDutyNotesLoginFlags();
       setAuthenticated(false);
       setAdmin(null);
     }

@@ -980,8 +980,8 @@ export default function MonthlyEnergyView() {
   if (authLoading) {
     return (
       <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-5 space-y-4">
-        <div className="h-24 rounded-xl bg-surface border border-app animate-pulse" />
-        <div className="h-96 rounded-xl bg-surface border border-app animate-pulse" />
+        <div className="h-24 rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse" />
+        <div className="h-96 rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse" />
       </div>
     );
   }
@@ -989,7 +989,7 @@ export default function MonthlyEnergyView() {
   if (!isAuthenticated || !isAdmin) {
     return (
       <div className="w-full max-w-md mx-auto mt-16 px-4">
-        <div className="rounded-xl border border-app bg-surface p-6 text-center shadow-sm">
+        <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-6 text-center shadow-sm">
           <h1 className="text-lg font-semibold text-app tracking-tight">
             Monthly Energy Reading
           </h1>
@@ -1934,8 +1934,8 @@ export default function MonthlyEnergyView() {
             if (e.target === e.currentTarget) setShowAddModal(false);
           }}
         >
-          <div className="w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-app overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
-            <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3 border-b border-app">
+          <div className="w-full max-w-md rounded-2xl shadow-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden">
+            <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35">
               <div>
                 <h3
                   id="add-feeder-title"
@@ -2087,7 +2087,7 @@ export default function MonthlyEnergyView() {
               </label>
             </div>
 
-            <div className="px-5 py-4 flex gap-3 justify-end bg-surface-2 border-t border-app">
+            <div className="px-5 py-4 flex gap-3 justify-end bg-emerald-50/60 dark:bg-teal-950/35 border-t border-emerald-200/80 dark:border-teal-500/20">
               <button
                 type="button"
                 disabled={modalSaving}

@@ -259,6 +259,13 @@ export default function ShiftMessagesView() {
       return;
     }
     load();
+    const onNotesUpdated = () => {
+      load(true);
+    };
+    window.addEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
+    return () => {
+      window.removeEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
+    };
   }, [authLoading, isAuthenticated, load]);
 
   const effectiveTargetShift = (selectedTargetShift || nextShift || "B") as ShiftId;
@@ -334,6 +341,7 @@ export default function ShiftMessagesView() {
       setPriority("normal");
       toast.success(`Handover note sent to ${shiftLabel(effectiveTargetShift)}`);
       await load(true);
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to send");
     } finally {
@@ -348,6 +356,7 @@ export default function ShiftMessagesView() {
       await acknowledgeStationNote(id);
       toast.success("Note acknowledged & read receipt logged");
       await load(true);
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to acknowledge");
     } finally {
@@ -365,6 +374,7 @@ export default function ShiftMessagesView() {
         res?.alreadyRead ? "Read receipt already recorded" : "Read receipt confirmed"
       );
       await load(true);
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to confirm read receipt");
     } finally {
@@ -382,6 +392,7 @@ export default function ShiftMessagesView() {
       setForwardNote("");
       toast.success("Forwarded to next shift");
       await load(true);
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to forward");
     } finally {
@@ -402,11 +413,13 @@ export default function ShiftMessagesView() {
     return (
       <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-3 sm:py-4 space-y-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-14 rounded-xl bg-surface border border-app animate-pulse"
-            />
+          {[
+            "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25",
+            "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25",
+            "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25",
+            "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25",
+          ].map((cls, i) => (
+            <div key={i} className={`h-14 rounded-xl border animate-pulse ${cls}`} />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">

@@ -140,7 +140,14 @@ export default function ShiftMessageBell() {
     if (!isAuthenticated) return;
     load();
     const t = setInterval(load, 45_000);
-    return () => clearInterval(t);
+    const onNotesUpdated = () => {
+      load();
+    };
+    window.addEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
+    };
   }, [isAuthenticated, load]);
 
   useLayoutEffect(() => {
@@ -188,6 +195,7 @@ export default function ShiftMessageBell() {
       setComposeOpen(false);
       toast.success(`Message left for ${shiftLabel(nextShift || "next")}`);
       await load();
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: any) {
       toast.error(err?.message || "Failed to send");
     } finally {
@@ -202,6 +210,7 @@ export default function ShiftMessageBell() {
       await acknowledgeStationNote(id);
       toast.success("Acknowledged & read receipt logged");
       await load();
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: any) {
       toast.error(err?.message || "Failed to acknowledge");
     } finally {
@@ -217,6 +226,7 @@ export default function ShiftMessageBell() {
       await markStationNoteRead(id);
       toast.success("Read receipt confirmed");
       await load();
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: any) {
       toast.error(err?.message || "Failed to confirm read receipt");
     } finally {
@@ -234,6 +244,7 @@ export default function ShiftMessageBell() {
       setForwardNote("");
       toast.success("Forwarded to next shift");
       await load();
+      window.dispatchEvent(new CustomEvent("wzpdcl:station-notes-updated"));
     } catch (err: any) {
       toast.error(err?.message || "Failed to forward");
     } finally {
