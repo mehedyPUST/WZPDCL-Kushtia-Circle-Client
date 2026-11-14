@@ -1032,6 +1032,65 @@ export async function forwardStationNote(id: string, note?: string) {
   return data;
 }
 
+export type StationNoteQuickTemplate = {
+  id: string;
+  label: string;
+  text: string;
+};
+
+export const STATION_NOTE_TEMPLATES_STORAGE_KEY =
+  "wzpdcl_station_note_quick_templates_v1";
+
+export async function saveStationNoteTemplates(
+  templates: StationNoteQuickTemplate[]
+) {
+  const sanitized: StationNoteQuickTemplate[] = (
+    Array.isArray(templates) ? templates : []
+  )
+    .map((t, idx) => ({
+      id: String(t?.id || `tpl-${idx}-${Date.now()}`).trim(),
+      label: String(t?.label || "").trim(),
+      text: String(t?.text ?? ""),
+    }))
+    .filter((t) => t.label.length > 0);
+
+  try {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        STATION_NOTE_TEMPLATES_STORAGE_KEY,
+        JSON.stringify(sanitized)
+      );
+    }
+  } catch {
+    /* ignore */
+  }
+
+  for (const url_ of settingsUrls()) {
+    try {
+      const res = await fetchWithCredentials(url_, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stationNoteTemplates: sanitized }),
+      });
+      if (res.status === 404) {
+        continue;
+      }
+      const data = await parseJson(res);
+      if (!res.ok || !data.success) {
+        continue;
+      }
+      const saved = Array.isArray(data.data?.stationNoteTemplates)
+        ? data.data.stationNoteTemplates
+        : sanitized;
+      return { stationNoteTemplates: saved, localOnly: false };
+    } catch {
+      /* ignore network/config errors and keep local mirror */
+    }
+  }
+
+  return { stationNoteTemplates: sanitized, localOnly: true };
+}
+
 /** @deprecated use fetchStationNotes */
 export const fetchShiftMessages = fetchStationNotes;
 /** @deprecated use createStationNote */

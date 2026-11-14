@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -15,9 +16,12 @@ import {
   Info,
   Loader2,
   MessageSquare,
+  Plus,
   RefreshCw,
+  RotateCcw,
   Search,
   Send,
+  Trash2,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,9 +30,13 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   acknowledgeStationNote,
   createStationNote,
+  fetchSettings,
   fetchStationNotes,
   forwardStationNote,
   markStationNoteRead,
+  saveStationNoteTemplates,
+  STATION_NOTE_TEMPLATES_STORAGE_KEY,
+  type StationNoteQuickTemplate,
 } from "@/lib/api";
 import { SHIFT_META, type ShiftId } from "@/lib/dutyShifts";
 
@@ -76,20 +84,41 @@ const PRIORITY_OPTIONS: {
 
 const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
 
-const QUICK_TEMPLATES = [
+const DEFAULT_QUICK_TEMPLATES: StationNoteQuickTemplate[] = [
   {
-    label: "Restricted feeder",
-    text: "Feeder restriction active: ",
+    id: "shutdown",
+    label: "Shutdown",
+    text: "Shutdown: ",
   },
   {
-    label: "Voltage / tap note",
-    text: "Bus voltage / tap position observation: ",
+    id: "trip",
+    label: "Trip",
+    text: "Trip: ",
   },
   {
-    label: "Circle instruction",
-    text: "Circle control instruction: ",
+    id: "h3-t3",
+    label: "H-3 ⇄ T-3",
+    text: "H-3 ⇄ T-3: ",
   },
 ];
+
+function sanitizeTemplateList(raw: unknown): StationNoteQuickTemplate[] | null {
+  if (!Array.isArray(raw)) return null;
+  const seen = new Set<string>();
+  const list: StationNoteQuickTemplate[] = [];
+  raw.forEach((item, idx) => {
+    const label = String((item as StationNoteQuickTemplate)?.label || "").trim();
+    if (!label) return;
+    const key = label.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    const id = String((item as StationNoteQuickTemplate)?.id || `tpl-${idx}`).trim();
+    const rawText = (item as StationNoteQuickTemplate)?.text;
+    const text = typeof rawText === "string" && rawText.length > 0 ? rawText : `${label}: `;
+    list.push({ id, label, text });
+  });
+  return list;
+}
 
 function formatWhen(iso?: string | null) {
   if (!iso) return "—";
@@ -195,6 +224,14 @@ export default function ShiftMessagesView() {
   const [filter, setFilter] = useState<FilterTab>("all");
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [query, setQuery] = useState("");
+  const [templates, setTemplates] = useState<StationNoteQuickTemplate[]>(
+    DEFAULT_QUICK_TEMPLATES
+  );
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [newTplLabel, setNewTplLabel] = useState("");
+  const [newTplText, setNewTplText] = useState("");
+  const [savingTemplates, setSavingTemplates] = useState(false);
+  const draftRef = useRef<HTMLTextAreaElement>(null);
 
   const canPost = isAuthenticated && (canWrite || isAdmin);
   const canHandleNotes = isAuthenticated && (canWrite || isAdmin);
@@ -267,6 +304,58 @@ export default function ShiftMessagesView() {
       window.removeEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
     };
   }, [authLoading, isAuthenticated, load]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(STATION_NOTE_TEMPLATES_STORAGE_KEY);
+      if (raw) {
+        const parsed = sanitizeTemplateList(JSON.parse(raw));
+        if (parsed) setTemplates(parsed);
+      }
+    } catch {
+      /* ignore invalid localStorage */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+    fetchSettings()
+      .then((res: Record<string, unknown> | null) => {
+        if (cancelled || !res) return;
+        const remote = sanitizeTemplateList(res.stationNoteTemplates);
+        if (remote) {
+          setTemplates(remote);
+          try {
+            window.localStorage.setItem(
+              STATION_NOTE_TEMPLATES_STORAGE_KEY,
+              JSON.stringify(remote)
+            );
+          } catch {
+            /* ignore */
+          }
+        }
+      })
+      .catch(() => {
+        /* fallback to localStorage/defaults */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!templateModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !savingTemplates) {
+        e.preventDefault();
+        setTemplateModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [templateModalOpen, savingTemplates]);
 
   const effectiveTargetShift = (selectedTargetShift || nextShift || "B") as ShiftId;
 
@@ -407,6 +496,82 @@ export default function ShiftMessagesView() {
       if (!trimmed) return prefix;
       return `${prev.trimEnd()}\n${prefix}`;
     });
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        draftRef.current?.focus();
+      });
+    }
+  };
+
+  const persistTemplates = async (next: StationNoteQuickTemplate[]) => {
+    setSavingTemplates(true);
+    try {
+      const res = await saveStationNoteTemplates(next);
+      setTemplates(res.stationNoteTemplates);
+      return res;
+    } finally {
+      setSavingTemplates(false);
+    }
+  };
+
+  const handleAddTemplate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdmin) return;
+    const label = newTplLabel.trim();
+    if (!label) {
+      toast.error("Enter a template label");
+      return;
+    }
+    if (templates.some((t) => t.label.toLowerCase() === label.toLowerCase())) {
+      toast.error("A template with this label already exists");
+      return;
+    }
+    const text = newTplText.trim() ? newTplText : `${label}: `;
+    const slug =
+      label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "tpl";
+    const next: StationNoteQuickTemplate[] = [
+      ...templates,
+      {
+        id: `${slug}-${Date.now()}`,
+        label,
+        text,
+      },
+    ];
+    try {
+      await persistTemplates(next);
+      setNewTplLabel("");
+      setNewTplText("");
+      toast.success(`Template "${label}" added`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to save template");
+    }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    if (!isAdmin) return;
+    const target = templates.find((t) => t.id === id);
+    const next = templates.filter((t) => t.id !== id);
+    try {
+      await persistTemplates(next);
+      toast.success(
+        target ? `Removed "${target.label}"` : "Template removed"
+      );
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to remove template");
+    }
+  };
+
+  const handleResetTemplates = async () => {
+    if (!isAdmin) return;
+    try {
+      await persistTemplates(DEFAULT_QUICK_TEMPLATES);
+      toast.success("Quick templates reset to defaults");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to reset templates");
+    }
   };
 
   if (authLoading) {
@@ -1128,21 +1293,43 @@ export default function ShiftMessagesView() {
 
               {/* Quick operational templates */}
               <div>
-                <span className="block text-xs font-medium text-secondary mb-1.5">
-                  Quick Templates
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_TEMPLATES.map((tpl) => (
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-xs font-medium text-secondary">
+                    Quick Templates
+                  </span>
+                  {isAdmin && (
                     <button
-                      key={tpl.label}
                       type="button"
-                      onClick={() => applyTemplate(tpl.text)}
-                      className="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-orange-200/80 dark:border-amber-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-secondary hover:text-app hover:border-orange-400/60 dark:hover:border-amber-400/50 transition-colors whitespace-nowrap"
+                      onClick={() => {
+                        setNewTplLabel("");
+                        setNewTplText("");
+                        setTemplateModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-orange-300/80 dark:border-amber-500/35 bg-white/90 dark:bg-[#0f1726]/85 text-orange-700 dark:text-amber-300 hover:bg-orange-50 dark:hover:bg-amber-950/50 transition-colors whitespace-nowrap"
                     >
-                      + {tpl.label}
+                      <Plus className="w-3 h-3 shrink-0" />
+                      Add Template
                     </button>
-                  ))}
+                  )}
                 </div>
+                {templates.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {templates.map((tpl) => (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => applyTemplate(tpl.text)}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-orange-200/80 dark:border-amber-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-secondary hover:text-app hover:border-orange-400/60 dark:hover:border-amber-400/50 transition-colors whitespace-nowrap"
+                      >
+                        + {tpl.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted">
+                    No quick templates configured.
+                  </p>
+                )}
               </div>
 
               {/* Message textarea */}
@@ -1154,6 +1341,7 @@ export default function ShiftMessagesView() {
                   Operational Message
                 </label>
                 <textarea
+                  ref={draftRef}
                   id="station-note-draft"
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
@@ -1213,6 +1401,191 @@ export default function ShiftMessagesView() {
           </section>
         )}
       </div>
+
+      {/* Admin Quick Template Modal */}
+      <AnimatePresence>
+        {isAdmin && templateModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.16 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-5 bg-black/65 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="station-template-modal-title"
+            onClick={(e) => {
+              if (e.target === e.currentTarget && !savingTemplates) {
+                setTemplateModalOpen(false);
+              }
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="w-full max-w-lg max-h-[min(86dvh,42rem)] flex flex-col rounded-2xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 shadow-2xl overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="px-4 sm:px-5 py-3.5 border-b border-orange-200/80 dark:border-amber-500/20 bg-orange-50/75 dark:bg-amber-950/35 shrink-0 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-orange-700 dark:text-amber-300">
+                    Admin · Quick Templates
+                  </p>
+                  <h2
+                    id="station-template-modal-title"
+                    className="text-base sm:text-lg font-bold text-app tracking-tight mt-0.5"
+                  >
+                    Add &amp; Manage Quick Templates
+                  </h2>
+                  <p className="text-xs text-muted mt-0.5">
+                    Create one-click operational prefixes for the Station Notes composer.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={savingTemplates}
+                  onClick={() => setTemplateModalOpen(false)}
+                  className="p-1.5 rounded-lg text-muted hover:text-app hover:bg-white/70 dark:hover:bg-surface-3 transition-colors shrink-0 disabled:opacity-50"
+                  aria-label="Close template modal"
+                  title="Close (Esc)"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-5">
+                <form onSubmit={handleAddTemplate} className="space-y-3">
+                  <div>
+                    <label
+                      htmlFor="quick-template-label"
+                      className="block text-xs font-medium text-secondary mb-1"
+                    >
+                      Button Label *
+                    </label>
+                    <input
+                      id="quick-template-label"
+                      type="text"
+                      value={newTplLabel}
+                      onChange={(e) => setNewTplLabel(e.target.value)}
+                      maxLength={40}
+                      placeholder="e.g. Feeder Restriction, Relay Flag"
+                      className="w-full rounded-lg border border-orange-200/80 dark:border-amber-500/25 bg-white/90 dark:bg-[#0f1726]/80 px-3 py-2 text-sm text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-orange-500/35 dark:focus:ring-amber-400/35"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="quick-template-text"
+                      className="block text-xs font-medium text-secondary mb-1"
+                    >
+                      Insert Text{" "}
+                      <span className="text-muted font-normal">
+                        (optional — defaults to &ldquo;{newTplLabel.trim() || "Label"}: &rdquo;)
+                      </span>
+                    </label>
+                    <textarea
+                      id="quick-template-text"
+                      value={newTplText}
+                      onChange={(e) => setNewTplText(e.target.value)}
+                      rows={3}
+                      maxLength={300}
+                      placeholder={
+                        newTplLabel.trim()
+                          ? `${newTplLabel.trim()}: `
+                          : "Text inserted into the Operational Message box..."
+                      }
+                      className="w-full rounded-lg border border-orange-200/80 dark:border-amber-500/25 bg-white/90 dark:bg-[#0f1726]/80 px-3 py-2 text-sm text-app placeholder:text-muted/80 focus:outline-none focus:ring-2 focus:ring-orange-500/35 dark:focus:ring-amber-400/35 resize-y min-h-[4.75rem]"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={savingTemplates || !newTplLabel.trim()}
+                      className="btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-45 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
+                    >
+                      {savingTemplates ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5" />
+                      )}
+                      Add Template
+                    </button>
+                  </div>
+                </form>
+
+                {/* Active Templates List */}
+                <div className="pt-4 border-t border-orange-200/70 dark:border-amber-500/20 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-secondary">
+                      Active Templates ({templates.length})
+                    </h3>
+                  </div>
+
+                  {templates.length === 0 ? (
+                    <p className="text-xs text-muted py-3 text-center rounded-lg border border-dashed border-orange-200/80 dark:border-amber-500/25">
+                      No templates added yet. Use the form above or reset to defaults.
+                    </p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {templates.map((tpl) => (
+                        <li
+                          key={tpl.id}
+                          className="flex items-start justify-between gap-3 rounded-xl border border-orange-200/80 dark:border-amber-500/25 bg-white/80 dark:bg-[#0f1726]/75 px-3 py-2.5"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-app truncate">
+                              + {tpl.label}
+                            </p>
+                            <p className="text-[11px] text-muted font-mono truncate mt-0.5">
+                              {tpl.text}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            disabled={savingTemplates}
+                            onClick={() => handleDeleteTemplate(tpl.id)}
+                            className="p-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/15 transition-colors shrink-0 disabled:opacity-50"
+                            aria-label={`Remove ${tpl.label} template`}
+                            title={`Remove ${tpl.label}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-4 sm:px-5 py-3 border-t border-orange-200/80 dark:border-amber-500/20 bg-orange-50/60 dark:bg-amber-950/30 shrink-0 flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  disabled={savingTemplates}
+                  onClick={handleResetTemplates}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-orange-200/80 dark:border-amber-500/25 bg-white/85 dark:bg-surface-2 text-secondary hover:text-app hover:bg-orange-50 dark:hover:bg-amber-950/50 transition-colors whitespace-nowrap disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset Defaults
+                </button>
+                <button
+                  type="button"
+                  disabled={savingTemplates}
+                  onClick={() => setTemplateModalOpen(false)}
+                  className="px-4 py-1.5 rounded-lg text-xs font-semibold border border-app bg-surface-2 text-app hover:bg-surface-3 transition-colors whitespace-nowrap disabled:opacity-50"
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
