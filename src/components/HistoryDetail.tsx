@@ -161,7 +161,7 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
               </button>
             ) : (
               <a
-                href={`/manual?edit=${encodeURIComponent(record._id)}`}
+                href={`/manual-input?edit=${encodeURIComponent(record._id)}`}
                 className="w-full inline-flex items-center justify-center h-10 rounded-xl btn-primary text-xs font-semibold tracking-wide shadow-md active:scale-[0.98] transition-all"
               >
                 Edit this record

@@ -5,7 +5,6 @@ import {
   DEFAULT_NIGHT_START,
   DEFAULT_NIGHT_END,
   RESIDENTIAL_IDS,
-  STABLE_IDS,
   approximateFajrHour,
 } from "@/lib/restTimeGenerate";
 import { FEEDERS } from "@/lib/constants";
@@ -15,44 +14,14 @@ export const maxDuration = 60;
 
 function resolveProvider() {
   const groqKey = process.env.GROQ_API_KEY || process.env.GROQ_KEY || "";
-  const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY || "";
+  if (!groqKey) return null;
 
-  if (groqKey) {
-    return {
-      name: "groq" as const,
-      apiKey: groqKey,
-      url: "https://api.groq.com/openai/v1/chat/completions",
-      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
-    };
-  }
-  if (xaiKey) {
-    return {
-      name: "xai" as const,
-      apiKey: xaiKey,
-      url: "https://api.x.ai/v1/chat/completions",
-      model: process.env.XAI_MODEL || "grok-2-latest",
-    };
-  }
-  return null;
-}
-
-function localFallback(body: {
-  dayKey: string;
-  slots: Record<string, unknown>;
-  startSlot?: string;
-  endSlot?: string;
-}) {
-  const result = generateRestTimeData({
-    dayKey: body.dayKey,
-    slots: body.slots as any,
-    startSlot: body.startSlot || DEFAULT_NIGHT_START,
-    endSlot: body.endSlot || DEFAULT_NIGHT_END,
-  });
-  return NextResponse.json({
-    success: true,
-    data: result,
-    meta: { source: "local", engine: result?.meta?.engine || "local-v2" },
-  });
+  return {
+    name: "groq" as const,
+    apiKey: groqKey,
+    url: "https://api.groq.com/openai/v1/chat/completions",
+    model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  };
 }
 
 function buildSystemPrompt(fajrH: number, friday: boolean) {

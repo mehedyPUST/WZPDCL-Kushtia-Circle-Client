@@ -702,7 +702,7 @@ export default function HistoryList({
                                   onClick={() => {
                                     if (typeof onEdit === "function") onEdit(r);
                                     else if (typeof onView === "function") onView(r);
-                                    else window.location.href = `/manual?edit=${encodeURIComponent(r._id)}`;
+                                    else window.location.href = `/manual-input?edit=${encodeURIComponent(r._id)}`;
                                   }}
                                   className="min-w-[2.6rem] min-h-[30px] sm:min-h-0 px-2.5 py-1 rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white text-[10px] font-semibold shadow-sm active:scale-95 transition-all whitespace-nowrap"
                                 >

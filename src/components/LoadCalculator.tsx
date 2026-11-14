@@ -499,18 +499,6 @@ export default function LoadCalculator({
     }
   };
 
-  const handleCalculateAndSave = async () => {
-    if (!validateVoltages()) return;
-    setCalculated(true);
-    setIsSaving(true);
-    const payload = buildCalculationResult(amps, busVoltages, ringActive);
-    try {
-      await persistPayload(payload, "Calculation saved to database.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   /** Calculate & save stamped to nearest hour slot (incl. 18:30 / 19:30) */
   const handleCalculateAndSaveHour = async () => {
     if (!validateVoltages()) return;
