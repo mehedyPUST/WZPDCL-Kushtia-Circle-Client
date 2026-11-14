@@ -1,5 +1,10 @@
 import { dhakaNowParts, shiftFromHour, type ShiftId } from "@/lib/dutyShifts";
-import type { AuthAdmin } from "@/lib/serverAuth";
+export interface AuthAdmin {
+  id?: string;
+  _id?: string;
+  username?: string;
+  displayName?: string;
+}
 
 export const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
 

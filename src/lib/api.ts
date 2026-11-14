@@ -1,10 +1,12 @@
 // frontend/lib/api.js
 import { getStoredToken, setStoredSession, clearStoredSession } from "./auth";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
 
-function url(path) {
-  if (!API_BASE) return path;
+function url(path: string) {
+  if (!API_BASE) {
+    throw new Error("NEXT_PUBLIC_API_URL is not configured. Set it to the deployed Express API URL.");
+  }
   return `${API_BASE}${path}`;
 }
 
@@ -45,7 +47,7 @@ function networkError(err) {
     err.message?.includes("NetworkError") ||
     err.name === "TypeError"
   ) {
-    const baseUrl = API_BASE || "(same origin)";
+    const baseUrl = API_BASE || "(NEXT_PUBLIC_API_URL missing)";
     return new Error(
       `Cannot reach API at ${baseUrl}. ` +
         `If the site is deployed, this is usually a CORS issue: set FRONTEND_URL on the API project to your frontend URL and redeploy.`
@@ -470,15 +472,10 @@ export async function fetchMaxLoad(
  */
 /**
  * Settings endpoints — try several paths so ring preference works whether
- * the app talks to Next API, Express /api/settings, or /api/calculations/settings.
+ * Settings are owned by the Express backend.
  */
 function settingsUrls() {
-  const rel = ["/api/settings", "/api/calculations/settings"];
-  const paths = [...rel];
-  if (API_BASE) {
-    for (const r of rel) paths.push(`${API_BASE}${r}`);
-  }
-  return [...new Set(paths)];
+  return [url("/api/settings")];
 }
 
 /**
@@ -1074,5 +1071,20 @@ export async function saveMonthlyEnergySheet(payload) {
   if (!res.ok || !data.success) {
     throw new Error(data.message || "Failed to save monthly energy sheet");
   }
+  return data;
+}
+
+
+/** Backend health probe (the frontend has no API routes of its own). */
+export async function fetchApiHealth() {
+  const res = await fetch(url(`/api/health?t=${Date.now()}`), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+  return parseJson(res);
+}
+
+/** Generate night-log data through the Express backend. */
+export async function generateNightLog(payload: { dayKey: string; slots: Record<string, unknown>; startSlot: string; endSlot: string }) {
+  const res = await fetchWithCredentials(url("/api/night-log/generate"), { method: "POST", body: JSON.stringify(payload) });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) throw new Error(data.message || "Night-log generation failed");
   return data;
 }

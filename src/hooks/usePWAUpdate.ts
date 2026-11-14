@@ -1,5 +1,7 @@
 "use client";
 
+import { fetchApiHealth } from "@/lib/api";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -82,25 +84,7 @@ export function usePWAUpdate() {
         }
 
         try {
-          const res = await fetch(`/api/health?t=${Date.now()}`, {
-            cache: "no-store",
-            headers: {
-              "Cache-Control": "no-cache",
-            },
-          });
-          if (res.ok) {
-            const data = (await res.json()) as { buildId?: string };
-            if (data?.buildId) {
-              setLatestBuildId(data.buildId);
-              if (
-                CURRENT_BUILD_ID !== "dev" &&
-                data.buildId !== "dev" &&
-                data.buildId !== CURRENT_BUILD_ID
-              ) {
-                hasNewBuild = true;
-              }
-            }
-          }
+          await fetchApiHealth();
         } catch {
           // Ignore network probe error if health endpoint is unreachable
         }

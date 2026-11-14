@@ -27,6 +27,7 @@ import {
   saveCalculation,
   updateCalculation,
   fetchSettings,
+  generateNightLog,
 } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import LoginModal from "./LoginModal";
@@ -552,18 +553,13 @@ export default function NightLogView() {
       }
       setAiBusy(true);
       try {
-        const apiRes = await fetch("/api/night-log/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            dayKey: day,
-            slots: input,
-            startSlot: nightStart,
-            endSlot: nightEnd,
-          }),
+        const json = await generateNightLog({
+          dayKey: day,
+          slots: input,
+          startSlot: nightStart,
+          endSlot: nightEnd,
         });
-        const json = await apiRes.json().catch(() => ({}));
-        if (apiRes.ok && json?.success && json?.data?.slots) {
+        if (json?.success && json?.data?.slots) {
           const src = json.meta?.source || json.data?.meta?.source || "ai";
           if (src === "local") {
             toast("AI unavailable — used local logic", { icon: "ℹ️" });
