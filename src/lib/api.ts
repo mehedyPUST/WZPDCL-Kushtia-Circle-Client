@@ -4,10 +4,7 @@ import { getStoredToken, setStoredSession, clearStoredSession } from "./auth";
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
 
 function url(path: string) {
-  if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_API_URL is not configured. Set it to the deployed Express API URL.");
-  }
-  return `${API_BASE}${path}`;
+  return API_BASE ? `${API_BASE}${path}` : path;
 }
 
 async function parseJson(res) {

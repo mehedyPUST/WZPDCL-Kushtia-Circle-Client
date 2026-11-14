@@ -647,7 +647,7 @@ export default function DutyLoginNotesModal() {
                   </p>
                 </div>
               ) : (
-                <ul className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
+                <ul className="p-3.5 sm:p-4 space-y-4 bg-white/60 dark:bg-[#09101d]/60">
                   {visibleMessages.map((m, idx) => {
                     const pending = m.status === "pending";
                     const p = (m.priority || "normal").toLowerCase();
@@ -662,18 +662,18 @@ export default function DutyLoginNotesModal() {
 
                     const rowTone = isCritical
                       ? isEven
-                        ? "bg-rose-50/90 dark:bg-rose-500/[0.11]"
-                        : "bg-rose-100/70 dark:bg-rose-950/45"
+                        ? "bg-gradient-to-br from-rose-50/95 via-white to-rose-50/45 border-rose-300 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-rose-950/25 dark:border-rose-500/45"
+                        : "bg-gradient-to-br from-rose-100/75 via-white to-rose-50/50 border-rose-300 dark:from-rose-950/65 dark:via-[#0f1726] dark:to-rose-950/35 dark:border-rose-500/50"
                       : isHigh
                         ? isEven
-                          ? "bg-amber-50/90 dark:bg-amber-500/[0.09]"
-                          : "bg-orange-50/90 dark:bg-amber-950/40"
+                          ? "bg-gradient-to-br from-amber-50/95 via-white to-amber-50/45 border-amber-300 dark:from-amber-950/45 dark:via-[#0f1726] dark:to-amber-950/25 dark:border-amber-500/40"
+                          : "bg-gradient-to-br from-orange-50/95 via-white to-orange-50/45 border-orange-300 dark:from-orange-950/40 dark:via-[#0f1726] dark:to-amber-950/25 dark:border-orange-500/40"
                         : isEven
-                          ? "bg-emerald-50/75 dark:bg-teal-950/35"
-                          : "bg-blue-50/75 dark:bg-sky-950/30";
+                          ? "bg-gradient-to-br from-emerald-50/85 via-white to-teal-50/45 border-emerald-200 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-teal-950/25 dark:border-teal-500/30"
+                          : "bg-gradient-to-br from-blue-50/85 via-white to-sky-50/45 border-blue-200 dark:from-sky-950/40 dark:via-[#0f1726] dark:to-sky-950/25 dark:border-sky-500/30";
 
                     return (
-                      <li key={m.id} className={`p-4 sm:px-5 space-y-2.5 ${rowTone}`}>
+                      <li key={m.id} className={`rounded-xl border p-4 shadow-xs space-y-2.5 ${rowTone}`}>
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm font-semibold text-app">

@@ -774,7 +774,7 @@ export default function ShiftMessagesView() {
               )}
             </div>
           ) : (
-            <ul className="divide-y divide-emerald-200/60 dark:divide-teal-500/15">
+            <ul className="p-4 sm:p-5 space-y-5 sm:space-y-6 bg-white/60 dark:bg-[#09101d]/60">
               {visible.map((m, idx) => {
                 const pending = m.status === "pending";
                 const notePriority = (m.priority || "normal").toLowerCase();
@@ -789,20 +789,20 @@ export default function ShiftMessagesView() {
 
                 const rowColorClass = isCritical
                   ? isEven
-                    ? "bg-rose-50/90 hover:bg-rose-100/80 dark:bg-rose-500/[0.11] dark:hover:bg-rose-500/[0.16] ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
-                    : "bg-rose-100/70 hover:bg-rose-100/95 dark:bg-rose-950/45 dark:hover:bg-rose-950/60 ring-1 ring-inset ring-rose-300 dark:ring-rose-500/35"
+                    ? "bg-gradient-to-br from-rose-50/95 via-white to-rose-50/45 border-rose-300 hover:border-rose-400 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-rose-950/25 dark:border-rose-500/45"
+                    : "bg-gradient-to-br from-rose-100/75 via-white to-rose-50/50 border-rose-300 hover:border-rose-400 dark:from-rose-950/65 dark:via-[#0f1726] dark:to-rose-950/35 dark:border-rose-500/50"
                   : isHigh
                     ? isEven
-                      ? "bg-amber-50/90 hover:bg-amber-100/75 dark:bg-amber-500/[0.09] dark:hover:bg-amber-500/[0.15] ring-1 ring-inset ring-amber-300 dark:ring-amber-500/30"
-                      : "bg-orange-50/90 hover:bg-orange-100/75 dark:bg-amber-950/40 dark:hover:bg-amber-950/55 ring-1 ring-inset ring-orange-300 dark:ring-amber-500/30"
+                      ? "bg-gradient-to-br from-amber-50/95 via-white to-amber-50/45 border-amber-300 hover:border-amber-400 dark:from-amber-950/45 dark:via-[#0f1726] dark:to-amber-950/25 dark:border-amber-500/40"
+                      : "bg-gradient-to-br from-orange-50/95 via-white to-orange-50/45 border-orange-300 hover:border-orange-400 dark:from-orange-950/40 dark:via-[#0f1726] dark:to-amber-950/25 dark:border-orange-500/40"
                     : isEven
-                      ? "bg-emerald-50/75 hover:bg-emerald-100/60 dark:bg-teal-950/35 dark:hover:bg-teal-950/50"
-                      : "bg-blue-50/75 hover:bg-blue-100/60 dark:bg-sky-950/30 dark:hover:bg-sky-950/45";
+                      ? "bg-gradient-to-br from-emerald-50/85 via-white to-teal-50/45 border-emerald-200 hover:border-emerald-300 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-teal-950/25 dark:border-teal-500/30 dark:hover:border-teal-400/50"
+                      : "bg-gradient-to-br from-blue-50/85 via-white to-sky-50/45 border-blue-200 hover:border-blue-300 dark:from-sky-950/40 dark:via-[#0f1726] dark:to-sky-950/25 dark:border-sky-500/30 dark:hover:border-sky-400/50";
 
                 return (
                   <li
                     key={m.id}
-                    className={`p-4 sm:p-5 transition-colors ${rowColorClass}`}
+                    className={`rounded-xl border p-4 sm:p-5 shadow-xs transition-colors ${rowColorClass}`}
                   >
                     {/* Top Author + Routing Row (unboxed metadata with separators) */}
                     <div className="flex flex-wrap items-start justify-between gap-2.5">
