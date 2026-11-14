@@ -305,7 +305,7 @@ export default function DutyLoginNotesModal() {
     };
     const onNotesUpdated = () => {
       if (open && isAuthenticated) {
-        refreshNotes().catch(() => {});
+        refreshNotes().catch(() => { });
       }
     };
     window.addEventListener("wzpdcl:duty-login", onDutyLogin);
@@ -488,13 +488,12 @@ export default function DutyLoginNotesModal() {
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted mb-1">
                   <span className="inline-flex items-center gap-1.5 font-semibold text-app">
                     <BellRing
-                      className={`w-3.5 h-3.5 shrink-0 ${
-                        stats.criticalPending > 0
+                      className={`w-3.5 h-3.5 shrink-0 ${stats.criticalPending > 0
                           ? "text-rose-600 dark:text-rose-400"
                           : stats.pendingTotal > 0
                             ? "text-orange-600 dark:text-amber-300"
                             : "text-emerald-700 dark:text-teal-300"
-                      }`}
+                        }`}
                     />
                     Duty Handover Briefing
                   </span>
@@ -517,7 +516,7 @@ export default function DutyLoginNotesModal() {
                   id="duty-login-notes-title"
                   className="text-base sm:text-lg font-bold text-app tracking-tight"
                 >
-                  Station Notes for Incoming Duty Officer
+                  Station Notes for Incoming Shift-SBA
                 </h2>
 
                 <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-secondary tabular-nums">
@@ -581,11 +580,10 @@ export default function DutyLoginNotesModal() {
                   role="tab"
                   aria-selected={filterMode === "actionable"}
                   onClick={() => setFilterMode("actionable")}
-                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                    filterMode === "actionable"
+                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${filterMode === "actionable"
                       ? "bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
                       : "text-muted hover:text-app border border-transparent"
-                  }`}
+                    }`}
                 >
                   Action Required
                   <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-85">
@@ -597,11 +595,10 @@ export default function DutyLoginNotesModal() {
                   role="tab"
                   aria-selected={filterMode === "all"}
                   onClick={() => setFilterMode("all")}
-                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                    filterMode === "all"
+                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${filterMode === "all"
                       ? "bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
                       : "text-muted hover:text-app border border-transparent"
-                  }`}
+                    }`}
                 >
                   All Recent
                   <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-85">
