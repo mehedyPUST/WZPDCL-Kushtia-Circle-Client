@@ -115,7 +115,7 @@ export default function ShiftCutoffModal({
                   New Shift Started . Please Login with Your Own User ID &amp; Password
                 </p>
                 <p className="text-xs text-muted mt-1.5 leading-relaxed">
-                  The previous shift operator session was closed automatically at the scheduled substation handover boundary to keep calculation logs and station notes attributed to the active officer.
+                  The previous shift operator session was closed automatically at the scheduled substation handover boundary to keep calculation logs and station notes attributed to the active SBA.
                 </p>
               </div>
 

@@ -125,7 +125,7 @@ export default function LoginPage() {
               33/11 kV Power Transmission &amp; Control
             </p>
             <p className="mt-2.5 text-xs text-zinc-600 dark:text-slate-300/85 leading-relaxed max-w-[19rem]">
-              Authorized operations portal for control-room duty officers,
+              Authorized operations portal for control-room duty SBAs,
               hourly power calculations, and circle load coordination.
             </p>
           </div>
@@ -150,7 +150,7 @@ export default function LoginPage() {
               },
               {
                 icon: ShieldCheck,
-                text: "Role-based access: Viewer · Duty Officer · Admin",
+                text: "Role-based access: Viewer · Duty SBA · Admin",
                 tone: "emerald",
               },
             ].map(({ icon: Icon, text, tone }, i) => {
@@ -158,14 +158,14 @@ export default function LoginPage() {
                 tone === "orange"
                   ? "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
                   : tone === "blue"
-                  ? "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
-                  : "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25";
+                    ? "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+                    : "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25";
               const iconBox =
                 tone === "orange"
                   ? "bg-orange-100/80 border-orange-200 text-orange-600 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
                   : tone === "blue"
-                  ? "bg-blue-100/80 border-blue-200 text-blue-600 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
-                  : "bg-emerald-100/80 border-emerald-200 text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
+                    ? "bg-blue-100/80 border-blue-200 text-blue-600 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
+                    : "bg-emerald-100/80 border-emerald-200 text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
               return (
                 <div
                   key={i}

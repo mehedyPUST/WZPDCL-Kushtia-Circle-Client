@@ -77,10 +77,10 @@ const PRIORITY_OPTIONS: {
   label: string;
   hint: string;
 }[] = [
-  { id: "normal", label: "Normal", hint: "Routine shift handover note" },
-  { id: "high", label: "High", hint: "Important feeder or operational instruction" },
-  { id: "critical", label: "Critical", hint: "Urgent fault, protection trip, or grid directive" },
-];
+    { id: "normal", label: "Normal", hint: "Routine shift handover note" },
+    { id: "high", label: "High", hint: "Important feeder or operational instruction" },
+    { id: "critical", label: "Critical", hint: "Urgent fault, protection trip, or grid directive" },
+  ];
 
 const SHIFT_ORDER: ShiftId[] = ["A", "B", "C"];
 
@@ -711,34 +711,31 @@ export default function ShiftMessagesView() {
         </div>
 
         <div
-          className={`rounded-xl border bg-gradient-to-br px-3.5 py-2.5 shadow-sm ${
-            counts.pendingUrgent > 0
+          className={`rounded-xl border bg-gradient-to-br px-3.5 py-2.5 shadow-sm ${counts.pendingUrgent > 0
               ? "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
               : pendingCount > 0
                 ? "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
                 : "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25"
-          }`}
+            }`}
         >
           <p
-            className={`text-[11px] font-semibold leading-tight ${
-              counts.pendingUrgent > 0
+            className={`text-[11px] font-semibold leading-tight ${counts.pendingUrgent > 0
                 ? "text-rose-700 dark:text-rose-300"
                 : pendingCount > 0
                   ? "text-orange-600 dark:text-amber-300"
                   : "text-emerald-700 dark:text-emerald-300"
-            }`}
+              }`}
           >
             Pending Handovers
           </p>
           <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
             <p
-              className={`text-base sm:text-lg font-bold font-mono tabular-nums tracking-tight leading-tight ${
-                counts.pendingUrgent > 0
+              className={`text-base sm:text-lg font-bold font-mono tabular-nums tracking-tight leading-tight ${counts.pendingUrgent > 0
                   ? "text-rose-600 dark:text-rose-400"
                   : pendingCount > 0
                     ? "text-amber-600 dark:text-amber-300"
                     : "text-emerald-600 dark:text-emerald-300"
-              }`}
+                }`}
             >
               {pendingCount}
             </p>
@@ -758,9 +755,8 @@ export default function ShiftMessagesView() {
         {/* Handover Log Feed (Left — H3 + T3 Teal Palette) */}
         <section
           aria-label="Station handover log"
-          className={`${
-            canPost ? "lg:col-span-7" : "lg:col-span-12"
-          } rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm`}
+          className={`${canPost ? "lg:col-span-7" : "lg:col-span-12"
+            } rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm`}
         >
           {/* Log Header + Filter Controls */}
           <div className="px-4 sm:px-5 py-3.5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 space-y-3">
@@ -804,11 +800,10 @@ export default function ShiftMessagesView() {
                         role="tab"
                         aria-selected={active}
                         onClick={() => setFilter(tab.id)}
-                        className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                          active
+                        className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${active
                             ? "bg-emerald-50 text-emerald-800 shadow-sm border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40"
                             : "text-muted hover:text-app border border-transparent"
-                        }`}
+                          }`}
                       >
                         {tab.label}
                         <span className="ml-1.5 font-mono tabular-nums text-[11px] opacity-80">
@@ -863,11 +858,10 @@ export default function ShiftMessagesView() {
                   setPriorityFilter((cur) => (cur === "all" ? "urgent" : "all"))
                 }
                 aria-pressed={priorityFilter === "urgent"}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap shrink-0 ${
-                  priorityFilter === "urgent"
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors whitespace-nowrap shrink-0 ${priorityFilter === "urgent"
                     ? "border-rose-500/50 bg-rose-50 text-rose-800 dark:bg-rose-500/15 dark:text-rose-200"
                     : "border-emerald-200/80 dark:border-teal-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-secondary hover:text-app hover:bg-emerald-50/70 dark:hover:bg-teal-950/50"
-                }`}
+                  }`}
                 title="Show only High and Critical priority notes"
               >
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
@@ -1057,7 +1051,7 @@ export default function ShiftMessagesView() {
                                     </span>
                                   )}
                                   <span className="text-app font-medium">
-                                    {r.displayName || r.username || "Officer"}
+                                    {r.displayName || r.username || "SBA"}
                                   </span>
                                   {r.shift && (
                                     <span className="text-muted">
@@ -1079,7 +1073,7 @@ export default function ShiftMessagesView() {
                       </div>
                     ) : null}
 
-                    {/* Officer Read Receipt & Handover Actions */}
+                    {/* SBA Read Receipt & Handover Actions */}
                     <div className="mt-3.5 flex flex-wrap items-center gap-2">
                       {pending && canHandleNotes && (
                         <button
@@ -1238,11 +1232,10 @@ export default function ShiftMessagesView() {
                         key={opt.id}
                         type="button"
                         onClick={() => setPriority(opt.id)}
-                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                          active
+                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${active
                             ? activeStyle
                             : "text-secondary hover:text-app hover:bg-orange-50/70 dark:hover:bg-amber-950/40 border border-transparent"
-                        }`}
+                          }`}
                       >
                         {opt.id === "critical" ? (
                           <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
@@ -1277,11 +1270,10 @@ export default function ShiftMessagesView() {
                         key={sid}
                         type="button"
                         onClick={() => setSelectedTargetShift(sid)}
-                        className={`px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
-                          active
+                        className={`px-2.5 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${active
                             ? "btn-primary shadow-sm"
                             : "text-secondary hover:text-app hover:bg-orange-50/70 dark:hover:bg-amber-950/40"
-                        }`}
+                          }`}
                       >
                         {shiftLabel(sid)}
                         {isNext && !active ? " · Next" : ""}

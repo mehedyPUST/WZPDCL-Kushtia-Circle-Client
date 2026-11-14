@@ -92,7 +92,7 @@ export function serializeStationNote(doc: any) {
     readAt: r?.readAt || null,
   }));
 
-  // Ensure legacy acknowledged records without readReceipts still show the acknowledging officer as a reader
+  // Ensure legacy acknowledged records without readReceipts still show the acknowledging SBA as a reader
   if (
     readReceipts.length === 0 &&
     doc.acknowledgedByDisplayName &&

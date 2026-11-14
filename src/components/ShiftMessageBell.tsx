@@ -280,337 +280,336 @@ export default function ShiftMessageBell() {
   if (!isAuthenticated) return null;
 
   const panel = open ? (
-        <div
-          ref={panelRef}
-          role="dialog"
-          aria-label="Station Notes"
-          className="fixed w-[min(22.5rem,calc(100vw-1rem))] max-h-[min(30rem,75vh)] flex flex-col rounded-xl border border-app shadow-2xl overflow-hidden bg-elevated"
-          style={{
-            top: panelPos.top,
-            right: panelPos.right,
-            zIndex: 99999,
-          }}
-        >
-          <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-app bg-surface-2 shrink-0">
-            <div className="min-w-0">
-              <div className="text-[13px] font-semibold text-app">
-                Station Notes
-              </div>
-              <div className="text-[11px] text-muted truncate">
-                Now: {shiftLabel(currentShift)} · Next: {shiftLabel(nextShift)}
-              </div>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
-              {canPost && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setComposeOpen((v) => !v);
-                    setForwardId(null);
-                  }}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold text-accent hover:bg-accent/15 border border-accent/25 transition"
-                  title="Leave a note for the next shift"
-                >
-                  <MessageSquarePlus className="w-3.5 h-3.5" />
-                  New
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="p-1 rounded-md text-muted hover:text-app hover:bg-surface-3"
-                aria-label="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+    <div
+      ref={panelRef}
+      role="dialog"
+      aria-label="Station Notes"
+      className="fixed w-[min(22.5rem,calc(100vw-1rem))] max-h-[min(30rem,75vh)] flex flex-col rounded-xl border border-app shadow-2xl overflow-hidden bg-elevated"
+      style={{
+        top: panelPos.top,
+        right: panelPos.right,
+        zIndex: 99999,
+      }}
+    >
+      <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-app bg-surface-2 shrink-0">
+        <div className="min-w-0">
+          <div className="text-[13px] font-semibold text-app">
+            Station Notes
           </div>
-
-          {composeOpen && canPost && (
-            <div className="px-3 py-2.5 border-b border-app bg-surface-2/80 space-y-2 shrink-0">
-              <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-surface border border-app">
-                {(
-                  [
-                    { id: "normal", label: "Normal" },
-                    { id: "high", label: "High" },
-                    { id: "critical", label: "Critical" },
-                  ] as const
-                ).map((opt) => {
-                  const active = priority === opt.id;
-                  const cls = active
-                    ? opt.id === "critical"
-                      ? "bg-rose-600 text-white"
-                      : opt.id === "high"
-                        ? "bg-amber-100 text-amber-950 dark:bg-amber-500/25 dark:text-amber-200"
-                        : "bg-surface-2 text-app shadow-xs"
-                    : "text-muted hover:text-app";
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setPriority(opt.id)}
-                      className={`py-1 rounded-md text-[11px] font-semibold transition ${cls}`}
-                    >
-                      {opt.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                rows={3}
-                maxLength={2000}
-                placeholder={`Note for ${shiftLabel(nextShift)}…`}
-                className="w-full rounded-lg border border-app bg-surface px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
-                autoFocus
-              />
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] text-muted tabular-nums">
-                  {draft.length}/2000
-                </span>
-                <button
-                  type="button"
-                  disabled={sending || !draft.trim()}
-                  onClick={handleSend}
-                  className="btn-primary inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold disabled:opacity-50 transition"
-                >
-                  {sending ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Send className="w-3.5 h-3.5" />
-                  )}
-                  Send to next shift
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
-            {loading && messages.length === 0 ? (
-              <div className="flex items-center justify-center gap-2 py-10 text-muted text-[12px]">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Loading…
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="py-10 px-4 text-center text-[12px] text-muted">
-                No station notes yet.
-                {canPost && (
-                  <div className="mt-1">
-                    Use <strong className="text-app">New</strong> to leave a
-                    message for the next shift.
-                  </div>
-                )}
-              </div>
-            ) : (
-              <ul className="divide-y divide-app">
-                {messages.map((m) => {
-                  const pending = m.status === "pending";
-                  const p = (m.priority || "normal").toLowerCase();
-                  const isCritical = p === "critical";
-                  const isHigh = p === "high";
-                  const isActing = actingId === m.id;
-                  const receipts = m.readReceipts || [];
-                  const userHasRead = hasCurrentUserRead(m);
-                  const rowBg = isCritical
-                    ? "bg-rose-50 dark:bg-rose-500/15"
-                    : isHigh
-                      ? "bg-amber-50 dark:bg-amber-500/12"
-                      : pending
-                        ? "bg-surface-2/60"
-                        : "bg-transparent";
-                  return (
-                    <li
-                      key={m.id}
-                      className={`px-3 py-2.5 ${rowBg}`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <div className="min-w-0">
-                          <div className="text-[12px] font-semibold text-app truncate flex items-center gap-1.5">
-                            {isCritical && (
-                              <AlertOctagon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-                            )}
-                            {isHigh && (
-                              <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                            )}
-                            <span className="truncate">
-                              {m.createdByDisplayName ||
-                                m.createdByUsername ||
-                                "Operator"}
-                            </span>
-                            {m.fromShift ? (
-                              <span className="text-[10px] font-medium text-muted shrink-0">
-                                · {shiftLabel(m.fromShift)}
-                              </span>
-                            ) : null}
-                          </div>
-                          <div className="text-[10px] text-muted">
-                            {formatWhen(m.createdAt)}
-                            {m.targetShift
-                              ? ` → ${shiftLabel(m.targetShift)}`
-                              : ""}
-                            {isCritical
-                              ? " · Critical"
-                              : isHigh
-                                ? " · High"
-                                : ""}
-                          </div>
-                        </div>
-                        <span
-                          className={`shrink-0 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${
-                            pending
-                              ? "bg-amber-100 text-amber-900 border-amber-400 dark:bg-amber-500/20 dark:text-amber-100 dark:border-amber-500/40"
-                              : m.status === "forwarded"
-                                ? "bg-sky-100 text-sky-900 border-sky-400 dark:bg-sky-500/15 dark:text-sky-100 dark:border-sky-500/35"
-                                : "bg-emerald-100 text-emerald-900 border-emerald-400 dark:bg-emerald-500/15 dark:text-emerald-100 dark:border-emerald-500/35"
-                          }`}
-                        >
-                          {pending
-                            ? "Pending"
-                            : m.status === "forwarded"
-                              ? "Forwarded"
-                              : "Acked"}
-                        </span>
-                      </div>
-                      <p className="text-[12px] text-app whitespace-pre-wrap break-words leading-relaxed">
-                        {m.content}
-                      </p>
-                      {m.forwardNote && (
-                        <div className="mt-1.5 rounded-md border border-app bg-surface-2 px-2 py-1 text-[11px] text-secondary">
-                          <span className="font-semibold text-app">Forward remark: </span>
-                          {m.forwardNote}
-                        </div>
-                      )}
-                      {!pending && m.acknowledgedByDisplayName && (
-                        <div className="mt-1 text-[10px] text-muted">
-                          {m.status === "forwarded" ? "Forwarded" : "Acked"} by{" "}
-                          {m.acknowledgedByDisplayName}
-                          {m.acknowledgedAt
-                            ? ` · ${formatWhen(m.acknowledgedAt)}`
-                            : ""}
-                        </div>
-                      )}
-                      {receipts.length > 0 && (
-                        <div className="mt-1 flex items-center gap-1 text-[10px] text-muted">
-                          <CheckCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                          <span className="truncate">
-                            Read by{" "}
-                            {receipts
-                              .map((r) => r.displayName || r.username || "Officer")
-                              .join(", ")}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        {pending && (
-                          <button
-                            type="button"
-                            disabled={isActing}
-                            onClick={() => handleAck(m.id)}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-emerald-600/40 text-emerald-900 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-100 dark:bg-emerald-500/15 dark:hover:bg-emerald-500/25 disabled:opacity-50"
-                          >
-                            {isActing && actingAction === "ack" ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <Check className="w-3 h-3" />
-                            )}
-                            Acknowledge
-                          </button>
-                        )}
-                        {!userHasRead ? (
-                          <button
-                            type="button"
-                            disabled={isActing}
-                            onClick={() => handleMarkRead(m.id)}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-app text-secondary hover:text-app bg-surface-2 hover:bg-surface-3 disabled:opacity-50"
-                          >
-                            {isActing && actingAction === "read" ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <CheckCheck className="w-3 h-3 text-accent" />
-                            )}
-                            Confirm Read
-                          </button>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 px-1">
-                            <CheckCheck className="w-3 h-3" />
-                            Read
-                          </span>
-                        )}
-                        {pending && (
-                          <button
-                            type="button"
-                            disabled={isActing}
-                            onClick={() => {
-                              setForwardId((cur) =>
-                                cur === m.id ? null : m.id
-                              );
-                              setForwardNote("");
-                            }}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-sky-600/40 text-sky-900 bg-sky-50 hover:bg-sky-100 dark:text-sky-100 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 disabled:opacity-50"
-                          >
-                            <Forward className="w-3 h-3" />
-                            Forward
-                          </button>
-                        )}
-                      </div>
-
-                      {forwardId === m.id && (
-                        <div className="mt-2 space-y-1.5 rounded-lg border border-app bg-surface-2 p-2">
-                          <input
-                            type="text"
-                            value={forwardNote}
-                            onChange={(e) => setForwardNote(e.target.value)}
-                            maxLength={500}
-                            placeholder="Optional note for next shift…"
-                            className="w-full rounded-md border border-app bg-surface px-2 py-1.5 text-[11px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
-                          />
-                          <div className="flex justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setForwardId(null);
-                                setForwardNote("");
-                              }}
-                              className="px-2 py-1 text-[11px] text-muted hover:text-app"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="button"
-                              disabled={isActing}
-                              onClick={() => handleForward(m.id)}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
-                            >
-                              {isActing ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <Forward className="w-3 h-3" />
-                              )}
-                              Forward to next
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-
-          <div className="border-t border-app px-3 py-2 bg-surface-2 shrink-0">
-            <Link
-              href="/station-notes"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-accent hover:underline py-1"
-            >
-              Open full station notes page
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+          <div className="text-[11px] text-muted truncate">
+            Now: {shiftLabel(currentShift)} · Next: {shiftLabel(nextShift)}
           </div>
         </div>
+        <div className="flex items-center gap-1 shrink-0">
+          {canPost && (
+            <button
+              type="button"
+              onClick={() => {
+                setComposeOpen((v) => !v);
+                setForwardId(null);
+              }}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold text-accent hover:bg-accent/15 border border-accent/25 transition"
+              title="Leave a note for the next shift"
+            >
+              <MessageSquarePlus className="w-3.5 h-3.5" />
+              New
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="p-1 rounded-md text-muted hover:text-app hover:bg-surface-3"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {composeOpen && canPost && (
+        <div className="px-3 py-2.5 border-b border-app bg-surface-2/80 space-y-2 shrink-0">
+          <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-surface border border-app">
+            {(
+              [
+                { id: "normal", label: "Normal" },
+                { id: "high", label: "High" },
+                { id: "critical", label: "Critical" },
+              ] as const
+            ).map((opt) => {
+              const active = priority === opt.id;
+              const cls = active
+                ? opt.id === "critical"
+                  ? "bg-rose-600 text-white"
+                  : opt.id === "high"
+                    ? "bg-amber-100 text-amber-950 dark:bg-amber-500/25 dark:text-amber-200"
+                    : "bg-surface-2 text-app shadow-xs"
+                : "text-muted hover:text-app";
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setPriority(opt.id)}
+                  className={`py-1 rounded-md text-[11px] font-semibold transition ${cls}`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={3}
+            maxLength={2000}
+            placeholder={`Note for ${shiftLabel(nextShift)}…`}
+            className="w-full rounded-lg border border-app bg-surface px-2.5 py-2 text-[12px] text-app placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
+            autoFocus
+          />
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] text-muted tabular-nums">
+              {draft.length}/2000
+            </span>
+            <button
+              type="button"
+              disabled={sending || !draft.trim()}
+              onClick={handleSend}
+              className="btn-primary inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold disabled:opacity-50 transition"
+            >
+              {sending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Send className="w-3.5 h-3.5" />
+              )}
+              Send to next shift
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
+        {loading && messages.length === 0 ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-muted text-[12px]">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Loading…
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="py-10 px-4 text-center text-[12px] text-muted">
+            No station notes yet.
+            {canPost && (
+              <div className="mt-1">
+                Use <strong className="text-app">New</strong> to leave a
+                message for the next shift.
+              </div>
+            )}
+          </div>
+        ) : (
+          <ul className="divide-y divide-app">
+            {messages.map((m) => {
+              const pending = m.status === "pending";
+              const p = (m.priority || "normal").toLowerCase();
+              const isCritical = p === "critical";
+              const isHigh = p === "high";
+              const isActing = actingId === m.id;
+              const receipts = m.readReceipts || [];
+              const userHasRead = hasCurrentUserRead(m);
+              const rowBg = isCritical
+                ? "bg-rose-50 dark:bg-rose-500/15"
+                : isHigh
+                  ? "bg-amber-50 dark:bg-amber-500/12"
+                  : pending
+                    ? "bg-surface-2/60"
+                    : "bg-transparent";
+              return (
+                <li
+                  key={m.id}
+                  className={`px-3 py-2.5 ${rowBg}`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="min-w-0">
+                      <div className="text-[12px] font-semibold text-app truncate flex items-center gap-1.5">
+                        {isCritical && (
+                          <AlertOctagon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+                        )}
+                        {isHigh && (
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                        )}
+                        <span className="truncate">
+                          {m.createdByDisplayName ||
+                            m.createdByUsername ||
+                            "Operator"}
+                        </span>
+                        {m.fromShift ? (
+                          <span className="text-[10px] font-medium text-muted shrink-0">
+                            · {shiftLabel(m.fromShift)}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="text-[10px] text-muted">
+                        {formatWhen(m.createdAt)}
+                        {m.targetShift
+                          ? ` → ${shiftLabel(m.targetShift)}`
+                          : ""}
+                        {isCritical
+                          ? " · Critical"
+                          : isHigh
+                            ? " · High"
+                            : ""}
+                      </div>
+                    </div>
+                    <span
+                      className={`shrink-0 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${pending
+                          ? "bg-amber-100 text-amber-900 border-amber-400 dark:bg-amber-500/20 dark:text-amber-100 dark:border-amber-500/40"
+                          : m.status === "forwarded"
+                            ? "bg-sky-100 text-sky-900 border-sky-400 dark:bg-sky-500/15 dark:text-sky-100 dark:border-sky-500/35"
+                            : "bg-emerald-100 text-emerald-900 border-emerald-400 dark:bg-emerald-500/15 dark:text-emerald-100 dark:border-emerald-500/35"
+                        }`}
+                    >
+                      {pending
+                        ? "Pending"
+                        : m.status === "forwarded"
+                          ? "Forwarded"
+                          : "Acked"}
+                    </span>
+                  </div>
+                  <p className="text-[12px] text-app whitespace-pre-wrap break-words leading-relaxed">
+                    {m.content}
+                  </p>
+                  {m.forwardNote && (
+                    <div className="mt-1.5 rounded-md border border-app bg-surface-2 px-2 py-1 text-[11px] text-secondary">
+                      <span className="font-semibold text-app">Forward remark: </span>
+                      {m.forwardNote}
+                    </div>
+                  )}
+                  {!pending && m.acknowledgedByDisplayName && (
+                    <div className="mt-1 text-[10px] text-muted">
+                      {m.status === "forwarded" ? "Forwarded" : "Acked"} by{" "}
+                      {m.acknowledgedByDisplayName}
+                      {m.acknowledgedAt
+                        ? ` · ${formatWhen(m.acknowledgedAt)}`
+                        : ""}
+                    </div>
+                  )}
+                  {receipts.length > 0 && (
+                    <div className="mt-1 flex items-center gap-1 text-[10px] text-muted">
+                      <CheckCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span className="truncate">
+                        Read by{" "}
+                        {receipts
+                          .map((r) => r.displayName || r.username || "SBA")
+                          .join(", ")}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {pending && (
+                      <button
+                        type="button"
+                        disabled={isActing}
+                        onClick={() => handleAck(m.id)}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-emerald-600/40 text-emerald-900 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-100 dark:bg-emerald-500/15 dark:hover:bg-emerald-500/25 disabled:opacity-50"
+                      >
+                        {isActing && actingAction === "ack" ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Check className="w-3 h-3" />
+                        )}
+                        Acknowledge
+                      </button>
+                    )}
+                    {!userHasRead ? (
+                      <button
+                        type="button"
+                        disabled={isActing}
+                        onClick={() => handleMarkRead(m.id)}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-app text-secondary hover:text-app bg-surface-2 hover:bg-surface-3 disabled:opacity-50"
+                      >
+                        {isActing && actingAction === "read" ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <CheckCheck className="w-3 h-3 text-accent" />
+                        )}
+                        Confirm Read
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 px-1">
+                        <CheckCheck className="w-3 h-3" />
+                        Read
+                      </span>
+                    )}
+                    {pending && (
+                      <button
+                        type="button"
+                        disabled={isActing}
+                        onClick={() => {
+                          setForwardId((cur) =>
+                            cur === m.id ? null : m.id
+                          );
+                          setForwardNote("");
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold border border-sky-600/40 text-sky-900 bg-sky-50 hover:bg-sky-100 dark:text-sky-100 dark:bg-sky-500/15 dark:hover:bg-sky-500/25 disabled:opacity-50"
+                      >
+                        <Forward className="w-3 h-3" />
+                        Forward
+                      </button>
+                    )}
+                  </div>
+
+                  {forwardId === m.id && (
+                    <div className="mt-2 space-y-1.5 rounded-lg border border-app bg-surface-2 p-2">
+                      <input
+                        type="text"
+                        value={forwardNote}
+                        onChange={(e) => setForwardNote(e.target.value)}
+                        maxLength={500}
+                        placeholder="Optional note for next shift…"
+                        className="w-full rounded-md border border-app bg-surface px-2 py-1.5 text-[11px] text-app placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
+                      />
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setForwardId(null);
+                            setForwardNote("");
+                          }}
+                          className="px-2 py-1 text-[11px] text-muted hover:text-app"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isActing}
+                          onClick={() => handleForward(m.id)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
+                        >
+                          {isActing ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Forward className="w-3 h-3" />
+                          )}
+                          Forward to next
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <div className="border-t border-app px-3 py-2 bg-surface-2 shrink-0">
+        <Link
+          href="/station-notes"
+          onClick={() => setOpen(false)}
+          className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-accent hover:underline py-1"
+        >
+          Open full station notes page
+          <ExternalLink className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+    </div>
   ) : null;
 
   const hasCriticalPending = messages.some(
@@ -627,13 +626,12 @@ export default function ShiftMessageBell() {
             setOpen((v) => !v);
             if (!open) load();
           }}
-          className={`relative inline-flex items-center justify-center w-9 h-9 rounded-lg border shadow-sm transition-all ${
-            hasCriticalPending
+          className={`relative inline-flex items-center justify-center w-9 h-9 rounded-lg border shadow-sm transition-all ${hasCriticalPending
               ? "border-rose-600 bg-rose-100 text-rose-900 dark:border-rose-500/50 dark:bg-rose-500/20 dark:text-rose-200 hover:bg-rose-200/90 dark:hover:bg-rose-500/30"
               : pendingCount > 0
                 ? "border-amber-600 bg-amber-100 text-amber-900 dark:border-amber-500/50 dark:bg-amber-500/15 dark:text-amber-200 hover:bg-amber-200/90 dark:hover:bg-amber-500/25"
                 : "border-zinc-300 bg-white text-zinc-800 hover:text-zinc-950 hover:border-accent/50 hover:bg-zinc-50 dark:border-[var(--app-border-strong)] dark:bg-surface-2 dark:text-secondary dark:hover:text-app dark:hover:border-accent/40 dark:hover:bg-surface-3"
-          }`}
+            }`}
           title={
             hasCriticalPending
               ? `${pendingCount} pending station note${pendingCount === 1 ? "" : "s"} (includes Critical)`
