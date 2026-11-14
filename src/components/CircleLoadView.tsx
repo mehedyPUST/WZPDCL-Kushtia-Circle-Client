@@ -192,10 +192,10 @@ function StationTable({
                       {s.editLocked
                         ? `locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`
                         : isBottail
-                          ? mode === "main"
-                            ? "auto"
-                            : isAdmin
-                              ? "admin"
+                          ? isAdmin && can
+                            ? "admin edit"
+                            : mode === "main"
+                              ? "auto"
                               : "auto"
                           : can
                             ? "edit"
@@ -203,7 +203,7 @@ function StationTable({
                     </div>
                   </td>
                   <td className="px-1.5 py-1.5 border-b border-r border-app align-middle">
-                    {can && !(isBottail && mode === "main") ? (
+                    {can && (!(isBottail && mode === "main") || isAdmin) ? (
                       <input
                         className={inputCls}
                         value={d[consKey] ?? ""}
@@ -458,11 +458,9 @@ function StationCards({
                     {s.editLocked
                       ? `Locked ${Math.max(1, Math.ceil((s.lockRemainingSec || 0) / 60))}m`
                       : isBottail
-                        ? mode === "main"
-                          ? "Auto from calculator"
-                          : isAdmin
-                            ? "Admin edit"
-                            : "Auto"
+                        ? isAdmin && can
+                          ? "Admin edit"
+                          : "Auto from calculator"
                         : can
                           ? "Editable"
                           : "View only"}
@@ -484,7 +482,7 @@ function StationCards({
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-accent text-center">
                     Cons.
                   </label>
-                  {can && !(isBottail && mode === "main") ? (
+                  {can && (!(isBottail && mode === "main") || isAdmin) ? (
                     <input
                       className="w-full h-11 px-1.5 rounded-lg border border-app bg-surface-2 text-center font-mono text-sm font-bold tabular-nums text-app focus:outline-none focus:ring-2 focus:ring-[var(--app-focus-ring)] focus:border-accent"
                       value={d[consKey] ?? ""}
@@ -619,6 +617,7 @@ export default function CircleLoadView() {
   const [savingId, setSavingId] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
   const [needPbs, setNeedPbs] = useState(false);
+  const [adminEditMode, setAdminEditMode] = useState(false);
   const [viewMode, setViewMode] = useState<"cards" | "table">("table");
 
   useEffect(() => {
@@ -654,16 +653,8 @@ export default function CircleLoadView() {
       const res = await fetchCircleSheet({ day, slot });
       setData(res.data);
       const next = {};
-      let anyPbs = false;
       (res.data?.stations || []).forEach((s) => {
         const e = s.entry || {};
-        if (
-          e.pbsLoad != null ||
-          e.pbsAllotment != null ||
-          e.pbsLoadshed != null
-        ) {
-          anyPbs = true;
-        }
         next[s.id] = {
           actualLoad: e.actualLoad ?? "",
           pgcbAllotment: e.pgcbAllotment ?? "",
@@ -675,7 +666,6 @@ export default function CircleLoadView() {
         };
       });
       setDrafts(next);
-      if (anyPbs) setNeedPbs(true);
     } catch (err) {
       toast.error(err.message || "Failed to load");
       setData(null);
@@ -754,7 +744,12 @@ export default function CircleLoadView() {
     }
   };
 
-  const stations = data?.stations || [];
+  const stations = (data?.stations || []).map((station) =>
+    isAdmin
+      ? { ...station, canEdit: adminEditMode, canEditBase: adminEditMode, editLocked: false, lockRemainingSec: 0 }
+      : station
+  );
+  const effectiveEditable = isAdmin && adminEditMode ? true : !!data?.editable;
   const isActive = !!data?.active;
   const isRelaxed = !!data?.isRelaxed;
 
@@ -896,6 +891,17 @@ export default function CircleLoadView() {
                 <span>Table</span>
               </button>
             </div>
+            {isAdmin && (
+              <label className="inline-flex flex-1 sm:flex-none items-center justify-center gap-1.5 cursor-pointer select-none text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-lg px-2.5 h-8 sm:h-9 uppercase tracking-wide hover:border-emerald-500 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={adminEditMode}
+                  onChange={(e) => setAdminEditMode(e.target.checked)}
+                  className="rounded-md border-app accent-emerald-600 focus:ring-emerald-500/30"
+                />
+                Edit all circles
+              </label>
+            )}
             <label className="inline-flex flex-1 sm:flex-none items-center justify-center gap-1.5 cursor-pointer select-none text-[10px] font-semibold text-secondary bg-surface-2 border border-app rounded-lg px-2.5 h-8 sm:h-9 uppercase tracking-wide hover:border-app-strong transition-colors">
               <input
                 type="checkbox"
@@ -931,7 +937,7 @@ export default function CircleLoadView() {
               mode="main"
               onSubmit={handleSave}
               savingId={savingId}
-              editable={!!data?.editable}
+              editable={effectiveEditable}
               isAdmin={isAdmin}
               totalLabel="Circle total"
             />
@@ -946,7 +952,7 @@ export default function CircleLoadView() {
                   mode="pbs"
                   onSubmit={handleSave}
                   savingId={savingId}
-                  editable={!!data?.editable}
+                  editable={effectiveEditable}
                   isAdmin={isAdmin}
                   totalLabel="PBS total"
                 />
@@ -962,7 +968,7 @@ export default function CircleLoadView() {
               mode="main"
               onSubmit={handleSave}
               savingId={savingId}
-              editable={!!data?.editable}
+              editable={effectiveEditable}
               isAdmin={isAdmin}
               totalLabel="Circle total"
             />
@@ -978,7 +984,7 @@ export default function CircleLoadView() {
                   mode="pbs"
                   onSubmit={handleSave}
                   savingId={savingId}
-                  editable={!!data?.editable}
+                  editable={effectiveEditable}
                   isAdmin={isAdmin}
                   totalLabel="PBS total"
                 />
