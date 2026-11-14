@@ -76,10 +76,10 @@ export default function DashboardAccountPanel({
   return (
     <div className="space-y-4">
       {/* Account & Role Summary Strip */}
-      <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-zinc-200 dark:border-app/70">
+      <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35">
           <div>
-            <h2 className="text-base font-semibold text-zinc-800 dark:text-white tracking-tight font-display">
+            <h2 className="text-base font-semibold text-emerald-700 dark:text-teal-200 tracking-tight font-display">
               Operator Credentials &amp; Access Scope
             </h2>
             <p className="text-xs text-zinc-600 dark:text-slate-400 mt-0.5">
@@ -89,14 +89,14 @@ export default function DashboardAccountPanel({
           <button
             type="button"
             onClick={onLogout}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-app text-zinc-700 dark:text-slate-200 hover:border-rose-300 hover:text-rose-700 hover:bg-rose-50 dark:hover:border-rose-500/40 dark:hover:text-rose-300 dark:hover:bg-rose-950/30 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-emerald-200/80 dark:border-teal-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-zinc-700 dark:text-slate-200 hover:border-rose-300 hover:text-rose-700 hover:bg-rose-50 dark:hover:border-rose-500/40 dark:hover:text-rose-300 dark:hover:bg-rose-950/30 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign out of console
           </button>
         </div>
 
-        <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 text-sm">
+        <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-5 text-sm">
           <div>
             <dt className="text-xs font-medium text-zinc-500 dark:text-slate-400">
               Username
@@ -151,17 +151,18 @@ export default function DashboardAccountPanel({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <form
           onSubmit={onSaveProfile}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4 shadow-xs dark:shadow-[var(--app-shadow)]"
+          className="rounded-xl border bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 overflow-hidden flex flex-col justify-between shadow-sm"
         >
-          <div className="space-y-3">
-            <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
-              <h3 className="text-base font-semibold text-zinc-800 dark:text-white font-display">
+          <div>
+            <div className="px-4 sm:px-5 py-3.5 border-b border-emerald-200/80 dark:border-emerald-500/20 bg-emerald-50/70 dark:bg-emerald-950/35">
+              <h3 className="text-base font-semibold text-emerald-700 dark:text-emerald-200 font-display">
                 Profile Details
               </h3>
               <p className="text-xs text-zinc-600 dark:text-slate-400 mt-0.5">
                 Display name appears on saved hourly sheets and shift audit logs.
               </p>
             </div>
+            <div className="p-4 sm:p-5 space-y-3">
 
             <div>
               <label
@@ -219,9 +220,10 @@ export default function DashboardAccountPanel({
                 />
               </div>
             </div>
+            </div>
           </div>
 
-          <div className="flex items-center justify-end pt-2 border-t border-zinc-100 dark:border-app/50">
+          <div className="flex items-center justify-end px-4 sm:px-5 py-3 border-t border-emerald-200/60 dark:border-emerald-500/15 bg-emerald-50/30 dark:bg-emerald-950/15">
             <button
               type="submit"
               disabled={savingProfile}
@@ -235,17 +237,18 @@ export default function DashboardAccountPanel({
 
         <form
           onSubmit={onChangePassword}
-          className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between space-y-4 shadow-xs dark:shadow-[var(--app-shadow)]"
+          className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 overflow-hidden flex flex-col justify-between shadow-sm"
         >
-          <div className="space-y-3">
-            <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
-              <h3 className="text-base font-semibold text-zinc-800 dark:text-white font-display">
+          <div>
+            <div className="px-4 sm:px-5 py-3.5 border-b border-orange-200/80 dark:border-amber-500/20 bg-orange-50/75 dark:bg-amber-950/35">
+              <h3 className="text-base font-semibold text-orange-600 dark:text-amber-200 font-display">
                 Password &amp; Security
               </h3>
               <p className="text-xs text-zinc-600 dark:text-slate-400 mt-0.5">
                 Minimum 8 characters. Active session remains signed in after updating.
               </p>
             </div>
+            <div className="p-4 sm:p-5 space-y-3">
 
             <div>
               <label
@@ -370,9 +373,10 @@ export default function DashboardAccountPanel({
                 Confirmation matches
               </span>
             </div>
+            </div>
           </div>
 
-          <div className="flex items-center justify-end pt-2 border-t border-zinc-100 dark:border-app/50">
+          <div className="flex items-center justify-end px-4 sm:px-5 py-3 border-t border-orange-200/60 dark:border-amber-500/15 bg-orange-50/30 dark:bg-amber-950/15">
             <button
               type="submit"
               disabled={savingPassword}

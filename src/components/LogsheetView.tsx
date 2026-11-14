@@ -264,8 +264,8 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
   };
 
   return (
-    <div className="h-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-elevated/75 border-b border-app">
+    <div className="h-full flex flex-col min-h-0 bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20">
         <label
           htmlFor="logsheet-day"
           className="text-[11px] font-semibold uppercase tracking-wider text-muted"
@@ -379,7 +379,7 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
         ) : viewLayout === "cards" ? (
           <div className="p-2.5 sm:p-3 space-y-2.5">
             {filledCount > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app bg-elevated px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-blue-200 dark:border-sky-500/25 bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] px-3 py-2 shadow-sm">
                 <div className="flex items-center gap-3 text-xs font-mono tabular-nums">
                   <div>
                     <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-muted block">
@@ -431,11 +431,11 @@ export default function LogsheetView({ refreshKey = 0, unitMode = "mw" }) {
                   return (
                     <div
                       key={`card-${row.time}`}
-                      className={`rounded-xl border p-3 transition-colors ${
+                      className={`rounded-xl border p-3 transition-colors shadow-sm ${
                         row.isSpecial
-                          ? "border-amber-300 dark:border-amber-500/40 bg-amber-50/70 dark:bg-amber-950/20"
+                          ? "border-orange-200 dark:border-amber-500/30 bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726]"
                           : has
-                            ? "border-app bg-surface"
+                            ? "border-emerald-200 dark:border-teal-500/25 bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726]"
                             : "border-app/60 bg-surface-2/40 opacity-75"
                       }`}
                     >

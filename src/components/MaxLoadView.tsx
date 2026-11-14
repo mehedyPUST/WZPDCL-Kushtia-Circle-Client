@@ -531,7 +531,7 @@ export default function MaxLoadView() {
         </div>
 
         {/* ── Filter Bar: Horizon Presets, Month/Year, Ring Filter & Rank Depth ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl bg-surface-2/60 border border-app">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-sm">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] font-semibold text-faint uppercase tracking-wider px-2 mr-0.5 hidden sm:inline">
               Period:
@@ -714,9 +714,9 @@ export default function MaxLoadView() {
 
       {/* ── Empty State ── */}
       {!loading && !error && sampleCount === 0 && (
-        <div className="rounded-2xl border border-app bg-surface-2/50 p-12 text-center">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-surface-3/80 border border-app flex items-center justify-center text-muted">
-            <Zap className="w-6 h-6 text-emerald-400" />
+        <div className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-12 text-center shadow-sm">
+          <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-emerald-100/80 dark:bg-teal-950/60 border border-emerald-200 dark:border-teal-500/30 flex items-center justify-center text-emerald-700 dark:text-teal-300">
+            <Zap className="w-6 h-6" />
           </div>
           <h2 className="text-base font-semibold text-app">
             No peak records for {periodLabel || "this period"}
@@ -822,10 +822,10 @@ export default function MaxLoadView() {
           </div>
 
           {/* ── Rank #1 Feeder Peak Comparison Chart ── */}
-          <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-5">
+          <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-4 sm:p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div>
-                <h2 className="text-sm sm:text-base font-semibold text-app tracking-tight">
+                <h2 className="text-sm sm:text-base font-semibold text-blue-700 dark:text-sky-200 tracking-tight">
                   Rank #1 Peak MW Comparison by Feeder
                 </h2>
                 <p className="text-xs text-muted mt-0.5">
@@ -929,13 +929,13 @@ export default function MaxLoadView() {
           </div>
 
           {/* ── Detailed Multi-Rank Feeder Peak Ledger Table ── */}
-          <div className="rounded-xl bg-surface-2/60 border border-app overflow-hidden shadow-xl">
-            <div className="px-4 py-3 bg-elevated/60 border-b border-app flex flex-wrap items-center justify-between gap-2">
+          <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
-                <h2 className="text-sm font-semibold text-app tracking-tight">
+                <h2 className="text-sm font-semibold text-emerald-700 dark:text-teal-200 tracking-tight">
                   Feeder Peak Ranking Schedule (Top {topN})
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-surface-2 text-secondary border border-app">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-white/80 dark:bg-[#0f1726]/70 text-secondary border border-emerald-200/80 dark:border-teal-500/25">
                   {periodLabel || "Current Period"}
                 </span>
               </div>

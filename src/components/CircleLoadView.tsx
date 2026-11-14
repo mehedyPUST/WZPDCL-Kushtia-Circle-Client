@@ -416,14 +416,18 @@ function StationCards({
           const ls = numOr0(d[lsKey]);
           const demand = cons + ls;
 
+          const cardTone = isBottail
+            ? "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+            : locked
+              ? "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
+              : can
+                ? "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25"
+                : "from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25";
+
           return (
             <div
               key={`${mode}-card-${s.id}`}
-              className={`rounded-xl border p-3 shadow-xs space-y-2.5 ${
-                isBottail
-                  ? "bg-blue-50/70 dark:bg-blue-950/30 border-blue-200 dark:border-blue-500/30"
-                  : "bg-surface border-app"
-              }`}
+              className={`rounded-xl border bg-gradient-to-br p-3 shadow-sm space-y-2.5 ${cardTone}`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -548,8 +552,10 @@ function StationCards({
       </div>
 
       <div
-        className={`rounded-xl border-2 border-app-strong p-3 ${
-          isPbs ? "bg-sky-50 dark:bg-sky-950/50" : "bg-elevated"
+        className={`rounded-xl border bg-gradient-to-br p-3 shadow-sm ${
+          isPbs
+            ? "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+            : "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25"
         }`}
       >
         <div className="text-[11px] font-extrabold uppercase tracking-wider text-app mb-2">
@@ -738,10 +744,10 @@ export default function CircleLoadView() {
   const isRelaxed = !!data?.isRelaxed;
 
   return (
-    <div className="h-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
+    <div className="h-full flex flex-col min-h-0 rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm">
       <SubstationClockStrip />
 
-      <div className="flex-shrink-0 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-elevated/75 border-b border-app space-y-2.5">
+      <div className="flex-shrink-0 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20 space-y-2.5">
         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2 min-w-0">
             <span className="w-10 shrink-0 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted">

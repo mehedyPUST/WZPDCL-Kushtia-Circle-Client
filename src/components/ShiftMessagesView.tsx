@@ -8,9 +8,11 @@ import {
   Check,
   CheckCheck,
   CheckCircle2,
+  ClipboardList,
   Clock3,
   Flag,
   Forward,
+  Info,
   Loader2,
   MessageSquare,
   RefreshCw,
@@ -417,16 +419,19 @@ export default function ShiftMessagesView() {
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full max-w-md mx-auto mt-16 px-4">
-        <div className="rounded-xl border border-app bg-surface p-6 text-center shadow-sm">
-          <div className="w-11 h-11 rounded-xl bg-surface-2 border border-app flex items-center justify-center mx-auto mb-3 text-muted">
+      <div className="w-full max-w-lg mx-auto mt-14 px-4">
+        <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-6 text-center shadow-sm">
+          <div className="w-11 h-11 rounded-xl bg-emerald-100/80 dark:bg-teal-950/60 border border-emerald-200 dark:border-teal-500/30 flex items-center justify-center mx-auto mb-3 text-emerald-700 dark:text-teal-300">
             <MessageSquare className="w-5 h-5" />
           </div>
-          <h1 className="text-lg font-semibold text-app tracking-tight">
-            Station Handover Notes
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-teal-300 mb-1">
+            WZPDCL Substation 33/11 kV · Shift Handover
+          </p>
+          <h1 className="text-lg font-bold text-app tracking-tight">
+            Station Notes &amp; Shift Handover
           </h1>
-          <p className="text-sm text-muted mt-1.5 leading-relaxed">
-            Sign in with your operator account to read, acknowledge, or record shift handover notes.
+          <p className="text-sm text-muted mt-2 leading-relaxed">
+            Sign in with your operator account to read incoming shift directives, confirm read receipts, acknowledge completed items, or post handover notes for the next shift.
           </p>
           <Link
             href="/login"
@@ -441,13 +446,52 @@ export default function ShiftMessagesView() {
 
   return (
     <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-3 sm:py-4 space-y-4">
+      {/* Instructional Page Heading & Shift Handover Guide */}
+      <header className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 px-4 sm:px-5 py-3.5 sm:py-4 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-100/80 text-emerald-800 border border-emerald-200 dark:bg-teal-950/80 dark:text-teal-300 dark:border-teal-500/30">
+                <ClipboardList className="w-3 h-3" />
+                WZPDCL Substation 33/11 kV
+              </span>
+              <span className="text-muted text-xs">·</span>
+              <span className="text-muted text-xs font-mono font-medium">
+                Shift Handover Protocol
+              </span>
+            </div>
+            <h1 className="text-lg sm:text-2xl font-bold text-app tracking-tight">
+              Station Notes &amp; Shift Handover
+            </h1>
+            <p className="text-xs sm:text-sm text-muted mt-1 max-w-3xl leading-relaxed">
+              Coordinate feeder restrictions, relay flags, voltage observations, and Kushtia Circle directives across Duty Shifts A, B, and C.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-[11px] shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/80 dark:bg-[#0f1726]/70 border border-emerald-200/80 dark:border-teal-500/25 text-secondary font-medium">
+              <Info className="w-3.5 h-3.5 text-emerald-600 dark:text-teal-300 shrink-0" />
+              1. Compose &amp; flag priority
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/80 dark:bg-[#0f1726]/70 border border-blue-200/80 dark:border-sky-500/25 text-secondary font-medium">
+              <CheckCheck className="w-3.5 h-3.5 text-blue-600 dark:text-sky-300 shrink-0" />
+              2. Confirm read &amp; acknowledge
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/80 dark:bg-[#0f1726]/70 border border-orange-200/80 dark:border-amber-500/25 text-secondary font-medium">
+              <Forward className="w-3.5 h-3.5 text-orange-600 dark:text-amber-300 shrink-0" />
+              3. Forward unresolved items
+            </span>
+          </div>
+        </div>
+      </header>
+
       {/* 4-Column Compact Shift Context Strip */}
       <section
         aria-label="Shift handover summary"
         className="grid grid-cols-2 lg:grid-cols-4 gap-3"
       >
-        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
-          <p className="text-[11px] font-medium text-muted leading-tight">
+        <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 px-3.5 py-2.5 shadow-sm">
+          <p className="text-[11px] font-semibold text-blue-700 dark:text-sky-300 leading-tight">
             Current Shift
           </p>
           <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
@@ -460,8 +504,8 @@ export default function ShiftMessagesView() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
-          <p className="text-[11px] font-medium text-muted leading-tight">
+        <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 px-3.5 py-2.5 shadow-sm">
+          <p className="text-[11px] font-semibold text-emerald-700 dark:text-teal-300 leading-tight">
             Incoming Shift
           </p>
           <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
@@ -474,8 +518,8 @@ export default function ShiftMessagesView() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
-          <p className="text-[11px] font-medium text-muted leading-tight">
+        <div className="rounded-xl border bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 px-3.5 py-2.5 shadow-sm">
+          <p className="text-[11px] font-semibold text-purple-700 dark:text-purple-300 leading-tight">
             Operational Duty Day
           </p>
           <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">
@@ -488,8 +532,24 @@ export default function ShiftMessagesView() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-app bg-surface px-3.5 py-2.5">
-          <p className="text-[11px] font-medium text-muted leading-tight">
+        <div
+          className={`rounded-xl border bg-gradient-to-br px-3.5 py-2.5 shadow-sm ${
+            counts.pendingUrgent > 0
+              ? "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
+              : pendingCount > 0
+                ? "from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
+                : "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25"
+          }`}
+        >
+          <p
+            className={`text-[11px] font-semibold leading-tight ${
+              counts.pendingUrgent > 0
+                ? "text-rose-700 dark:text-rose-300"
+                : pendingCount > 0
+                  ? "text-orange-600 dark:text-amber-300"
+                  : "text-emerald-700 dark:text-emerald-300"
+            }`}
+          >
             Pending Handovers
           </p>
           <div className="mt-1 flex items-baseline justify-between gap-2 flex-wrap">

@@ -43,36 +43,39 @@ const dayCache = new Map();
 function StationMini({ title, tone, cons, ls, demand, allot }) {
   const tones = {
     blue: {
-      bar: "bg-blue-600",
-      head: "text-blue-700 dark:text-blue-300",
-      demand: "text-blue-800 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-950/60 font-bold",
+      card: "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25",
+      headBar: "border-b border-blue-200/80 dark:border-sky-500/20 bg-blue-50/60 dark:bg-sky-950/35",
+      head: "text-blue-700 dark:text-sky-200",
+      demand: "text-blue-800 dark:text-sky-200 bg-blue-100/70 dark:bg-sky-950/60 font-bold",
     },
     teal: {
-      bar: "bg-blue-600",
-      head: "text-blue-700 dark:text-blue-300",
-      demand: "text-blue-800 dark:text-blue-200 bg-blue-100/70 dark:bg-blue-950/60 font-bold",
+      card: "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25",
+      headBar: "border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35",
+      head: "text-emerald-700 dark:text-teal-200",
+      demand: "text-emerald-800 dark:text-teal-200 bg-emerald-100/70 dark:bg-teal-950/60 font-bold",
     },
     amber: {
-      bar: "bg-amber-500",
-      head: "text-amber-800 dark:text-amber-300",
-      demand: "text-amber-800 dark:text-amber-200 bg-amber-100/70 dark:bg-amber-950/60 font-bold",
+      card: "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25",
+      headBar: "border-b border-orange-200/80 dark:border-amber-500/20 bg-orange-50/75 dark:bg-amber-950/35",
+      head: "text-orange-700 dark:text-amber-200",
+      demand: "text-orange-800 dark:text-amber-200 bg-orange-100/70 dark:bg-amber-950/60 font-bold",
     },
     slate: {
-      bar: "bg-surface-3",
-      head: "text-secondary",
+      card: "bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25",
+      headBar: "border-b border-emerald-200/80 dark:border-emerald-500/20 bg-emerald-50/70 dark:bg-emerald-950/35",
+      head: "text-emerald-700 dark:text-emerald-200",
       demand: "text-emerald-800 dark:text-emerald-200 bg-emerald-100/70 dark:bg-emerald-950/60 font-bold",
     },
   };
   const t = tones[tone] || tones.slate;
   return (
-    <div className="rounded-xl border border-app bg-surface-2/60 overflow-hidden">
-      <div className={`h-0.5 ${t.bar}`} />
-      <div className="px-2.5 py-1.5 border-b border-app">
+    <div className={`rounded-xl border bg-gradient-to-br ${t.card} overflow-hidden shadow-2xs`}>
+      <div className={`px-2.5 py-1.5 ${t.headBar}`}>
         <p className={`text-[10px] font-bold uppercase tracking-wider ${t.head}`}>
           {title}
         </p>
       </div>
-      <div className="grid grid-cols-4 gap-px bg-white/5">
+      <div className="grid grid-cols-4 divide-x divide-app/60">
         {[
           { label: "Consumption", value: cons },
           { label: "LS", value: ls },
@@ -81,7 +84,7 @@ function StationMini({ title, tone, cons, ls, demand, allot }) {
         ].map((c) => (
           <div
             key={c.label}
-            className={`px-1 py-1.5 text-center ${c.strong ? t.demand : "bg-surface-2/60" }`}
+            className={`px-1 py-1.5 text-center ${c.strong ? t.demand : "bg-transparent" }`}
           >
             <p className="text-[8px] font-semibold uppercase text-muted tracking-wide">
               {c.label}
@@ -111,12 +114,12 @@ const MobileSlotCard = memo(function MobileSlotCard({
   return (
     <article
       data-slot={row.hourSlot}
-      className={`rounded-2xl border shadow-sm overflow-hidden transition-all ${
+      className={`rounded-2xl border bg-gradient-to-br shadow-sm overflow-hidden transition-all ${
         isCurrentSlot
-          ? "border-emerald-500/80 ring-2 ring-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20"
+          ? "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-400 ring-2 ring-emerald-500/40 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/40"
           : row.isPreviousDay
-            ? "border-violet-300 dark:border-violet-500/30 bg-violet-50/50 dark:bg-violet-950/40"
-            : "border-app bg-surface-2/60"
+            ? "from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25"
+            : "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25"
       }`}
     >
       <div className="flex items-center justify-between px-3 py-2 border-b border-app">
@@ -372,9 +375,9 @@ export default function KushtiaDistrictLoadView() {
   }, [slots]);
 
   return (
-    <div className="h-full w-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/20">
+    <div className="h-full w-full flex flex-col min-h-0 rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm">
       {/* ── Fixed Header Section ── */}
-      <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2 border-b border-app bg-elevated/80 backdrop-blur-sm">
+      <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2.5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 backdrop-blur-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent">
@@ -483,18 +486,24 @@ export default function KushtiaDistrictLoadView() {
               label: "Peak demand",
               value: summary.peakDemand,
               slot: summary.peakDemandSlot,
-              accent: "text-accent",
+              card: "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25",
+              title: "text-emerald-700 dark:text-emerald-300",
+              accent: "text-emerald-700 dark:text-emerald-200",
             },
             {
               label: "Peak consumption",
               value: summary.peakConsumption,
               slot: summary.peakConsumptionSlot,
-              accent: "text-teal-700 dark:text-teal-300",
+              card: "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25",
+              title: "text-emerald-700 dark:text-teal-300",
+              accent: "text-emerald-700 dark:text-teal-200",
             },
             {
               label: "Max LS",
               value: summary.maxLoadshed,
               slot: summary.maxLoadshedSlot,
+              card: "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25",
+              title: "text-rose-700 dark:text-rose-300",
               accent: "text-rose-700 dark:text-rose-300",
             },
             {
@@ -502,14 +511,16 @@ export default function KushtiaDistrictLoadView() {
               value: null,
               text: "Bottail · Bheramara",
               slot: `${boundary} window`,
-              accent: "text-secondary",
+              card: "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25",
+              title: "text-blue-700 dark:text-sky-300",
+              accent: "text-blue-800 dark:text-sky-200",
             },
           ].map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-app bg-surface-2/90 px-2.5 py-1.5 shadow-sm"
+              className={`rounded-xl border bg-gradient-to-br ${s.card} px-2.5 py-2 shadow-sm`}
             >
-              <p className="text-[9px] font-bold uppercase tracking-wider text-muted">
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${s.title}`}>
                 {s.label}
               </p>
               <p

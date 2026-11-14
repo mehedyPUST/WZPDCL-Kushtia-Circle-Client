@@ -322,12 +322,18 @@ export default function HistoryList({
   return (
     <>
       <aside
-        className={`${pageMode ? "w-full h-full flex flex-col bg-surface-2 shadow-xl shrink-0 overflow-hidden rounded-xl border border-app" : "w-full sm:w-[440px] xl:w-[480px] h-full flex flex-col bg-surface-2 border-r border-app shadow-2xl shrink-0 overflow-hidden rounded-none md:rounded-2xl md:border md:border-app" }`}
+        className={`${pageMode ? "w-full h-full flex flex-col bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-xl shrink-0 overflow-hidden rounded-xl" : "w-full sm:w-[440px] xl:w-[480px] h-full flex flex-col bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-r border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-2xl shrink-0 overflow-hidden rounded-none md:rounded-2xl md:border" }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3.5 py-2.5 bg-elevated border-b border-app text-app shrink-0">
+        <div
+          className={`flex items-center justify-between px-3.5 py-2.5 text-app shrink-0 ${
+            isTrash
+              ? "bg-rose-50/70 dark:bg-rose-950/35 border-b border-rose-200/80 dark:border-rose-500/20"
+              : "bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20"
+          }`}
+        >
           <h2
-            className={`text-xs md:text-sm font-semibold tracking-tight ${isTrash ? "text-rose-400" : "text-accent" }`}
+            className={`text-xs md:text-sm font-semibold tracking-tight ${isTrash ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-teal-200" }`}
           >
             {isTrash ? "Trash" : "Saved History"}
           </h2>

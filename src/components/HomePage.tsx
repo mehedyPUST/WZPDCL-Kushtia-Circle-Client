@@ -19,7 +19,57 @@ import {
 import { FEEDERS } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 
-const FEATURES = [
+const MODULE_TONES = {
+  teal: {
+    card: "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 hover:border-emerald-400 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 dark:hover:border-teal-400/50",
+    icon: "bg-emerald-100/80 text-emerald-700 border-emerald-200 dark:bg-teal-950/70 dark:text-teal-300 dark:border-teal-500/30",
+    accent: "text-emerald-700 dark:text-teal-300",
+    divider: "border-emerald-200/70 dark:border-teal-500/20",
+  },
+  sky: {
+    card: "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 hover:border-blue-400 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 dark:hover:border-sky-400/50",
+    icon: "bg-blue-100/80 text-blue-700 border-blue-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-500/30",
+    accent: "text-blue-700 dark:text-sky-300",
+    divider: "border-blue-200/70 dark:border-sky-500/20",
+  },
+  amber: {
+    card: "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 hover:border-orange-400 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 dark:hover:border-amber-400/50",
+    icon: "bg-orange-100/80 text-orange-700 border-orange-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-500/30",
+    accent: "text-orange-700 dark:text-amber-300",
+    divider: "border-orange-200/70 dark:border-amber-500/20",
+  },
+  emerald: {
+    card: "bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 hover:border-emerald-400 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 dark:hover:border-emerald-400/50",
+    icon: "bg-emerald-100/80 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30",
+    accent: "text-emerald-700 dark:text-emerald-300",
+    divider: "border-emerald-200/70 dark:border-emerald-500/20",
+  },
+  purple: {
+    card: "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 hover:border-purple-400 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 dark:hover:border-purple-400/50",
+    icon: "bg-purple-100/80 text-purple-700 border-purple-200 dark:bg-purple-950/70 dark:text-purple-300 dark:border-purple-500/30",
+    accent: "text-purple-700 dark:text-purple-300",
+    divider: "border-purple-200/70 dark:border-purple-500/20",
+  },
+  rose: {
+    card: "bg-gradient-to-br from-rose-50/90 via-white to-rose-50/40 border-rose-200 hover:border-rose-400 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25 dark:hover:border-rose-400/50",
+    icon: "bg-rose-100/80 text-rose-700 border-rose-200 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-500/30",
+    accent: "text-rose-700 dark:text-rose-300",
+    divider: "border-rose-200/70 dark:border-rose-500/20",
+  },
+} as const;
+
+type ModuleTone = keyof typeof MODULE_TONES;
+
+const FEATURES: {
+  href: string;
+  title: string;
+  desc: string;
+  step: string;
+  icon: typeof Calculator;
+  authOnly?: boolean;
+  highlight: string;
+  tone: ModuleTone;
+}[] = [
   {
     href: "/dashboard",
     title: "My Dashboard",
@@ -28,6 +78,7 @@ const FEATURES = [
     icon: Activity,
     authOnly: true,
     highlight: "Personal activity hub",
+    tone: "teal",
   },
   {
     href: "/calculator",
@@ -36,6 +87,7 @@ const FEATURES = [
     step: "01",
     icon: Calculator,
     highlight: "Real-time MW calculation",
+    tone: "emerald",
   },
   {
     href: "/kushtia-district-load",
@@ -44,6 +96,7 @@ const FEATURES = [
     step: "02",
     icon: MapPin,
     highlight: "Daily District Demand & LS",
+    tone: "sky",
   },
   {
     href: "/circle-load",
@@ -52,6 +105,7 @@ const FEATURES = [
     step: "03",
     icon: CircleDot,
     highlight: "Grid Circle Substation Sheet",
+    tone: "teal",
   },
   {
     href: "/loadshed",
@@ -60,6 +114,7 @@ const FEATURES = [
     step: "04",
     icon: Zap,
     highlight: "Proportional shed planner",
+    tone: "rose",
   },
   {
     href: "/manual-input",
@@ -69,6 +124,7 @@ const FEATURES = [
     icon: ClipboardEdit,
     authOnly: true,
     highlight: "Bi-directional slot fill",
+    tone: "amber",
   },
   {
     href: "/history",
@@ -77,6 +133,7 @@ const FEATURES = [
     step: "06",
     icon: History,
     highlight: "Search & soft-delete",
+    tone: "purple",
   },
   {
     href: "/max-load",
@@ -85,6 +142,7 @@ const FEATURES = [
     step: "07",
     icon: TrendingUp,
     highlight: "5-Peak monthly ranking",
+    tone: "amber",
   },
   {
     href: "/statistics",
@@ -93,6 +151,7 @@ const FEATURES = [
     step: "08",
     icon: BarChart3,
     highlight: "Substation analytics",
+    tone: "sky",
   },
 ];
 
@@ -257,14 +316,15 @@ export default function HomePage() {
         >
           {modules.map((f) => {
             const Icon = f.icon;
+            const tone = MODULE_TONES[f.tone];
             return (
               <motion.div key={f.href} variants={cardVariants}>
                 <Link
                   href={f.href}
-                  className="module-card group"
+                  className={`module-card group !bg-none !bg-gradient-to-br ${tone.card}`}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <span className="module-card-icon group-hover:scale-105 transition-transform">
+                    <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl border group-hover:scale-105 transition-transform ${tone.icon}`}>
                       <Icon className="w-5 h-5" />
                     </span>
                     <span className="text-[11px] font-mono font-bold text-faint">
@@ -272,7 +332,7 @@ export default function HomePage() {
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-app group-hover:text-accent transition-colors tracking-tight">
+                  <h3 className="text-base font-bold text-app transition-colors tracking-tight">
                     {f.title}
                   </h3>
 
@@ -280,11 +340,11 @@ export default function HomePage() {
                     {f.desc}
                   </p>
 
-                  <div className="mt-5 pt-3 border-t border-app flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-mono text-accent/80">
+                  <div className={`mt-5 pt-3 border-t ${tone.divider} flex items-center justify-between text-xs`}>
+                    <span className={`text-[11px] font-mono font-semibold ${tone.accent}`}>
                       {f.highlight}
                     </span>
-                    <span className="font-semibold text-accent inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    <span className={`font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform ${tone.accent}`}>
                       Open <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>

@@ -241,16 +241,16 @@ export default function UserDashboard() {
   if (authLoading || (!isAuthenticated && loading)) {
     return (
       <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
-        <div className="h-24 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-app animate-pulse" />
+        <div className="h-24 rounded-xl bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-28 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-app animate-pulse"
+              className="h-28 rounded-xl bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse"
             />
           ))}
         </div>
-        <div className="h-80 rounded-xl bg-white dark:bg-surface border border-zinc-200 dark:border-app animate-pulse" />
+        <div className="h-80 rounded-xl bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 animate-pulse" />
       </div>
     );
   }
@@ -314,10 +314,10 @@ export default function UserDashboard() {
   return (
     <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-4">
       {/* Executive Header */}
-      <header className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
+      <header className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 dark:bg-emerald-500/14 dark:border-emerald-400/35 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-emerald-100/80 border border-emerald-200 text-emerald-700 dark:bg-teal-950/70 dark:border-teal-500/35 dark:text-teal-300 flex items-center justify-center shrink-0">
               <span className="text-xl sm:text-2xl font-bold font-mono">
                 {initial}
               </span>
@@ -357,7 +357,7 @@ export default function UserDashboard() {
               type="button"
               onClick={() => loadMine(true)}
               disabled={refreshing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-zinc-200 dark:border-app bg-white dark:bg-surface-2 text-zinc-700 dark:text-slate-200 hover:bg-zinc-50 dark:hover:bg-surface-3 transition-colors whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-emerald-200/80 dark:border-teal-500/25 bg-white/80 dark:bg-[#0f1726]/75 text-emerald-800 dark:text-teal-200 hover:bg-emerald-50 dark:hover:bg-teal-950/60 transition-colors whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
@@ -375,11 +375,11 @@ export default function UserDashboard() {
         </div>
 
         {/* Workspace Tab Bar + Dhaka Operational Date */}
-        <div className="mt-4 pt-3.5 border-t border-zinc-200 dark:border-app/70 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-4 pt-3.5 border-t border-emerald-200/70 dark:border-teal-500/20 flex flex-wrap items-center justify-between gap-3">
           <div
             role="tablist"
             aria-label="Dashboard sections"
-            className="inline-flex items-center gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-surface-2 border border-zinc-200 dark:border-app"
+            className="inline-flex items-center gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-emerald-200/80 dark:border-teal-500/25"
           >
             <button
               type="button"
@@ -388,8 +388,8 @@ export default function UserDashboard() {
               onClick={() => setTab("overview")}
               className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 tab === "overview"
-                  ? "bg-white dark:bg-emerald-500 text-zinc-800 dark:text-[#031d16] shadow-xs"
-                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
+                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
               }`}
             >
               Overview
@@ -401,8 +401,8 @@ export default function UserDashboard() {
               onClick={() => setTab("account")}
               className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 tab === "account"
-                  ? "bg-white dark:bg-emerald-500 text-zinc-800 dark:text-[#031d16] shadow-xs"
-                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
+                  : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
               }`}
             >
               Account &amp; Security
@@ -452,12 +452,12 @@ export default function UserDashboard() {
             aria-label="Key operator metrics"
             className="grid grid-cols-2 lg:grid-cols-4 gap-4"
           >
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
+            <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-4 sm:p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                <p className="text-xs font-semibold text-blue-700 dark:text-sky-300">
                   My Total Logs
                 </p>
-                <span className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 text-blue-600 dark:bg-sky-500/12 dark:border-sky-400/25 dark:text-sky-400 inline-flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-blue-100/80 border border-blue-200 text-blue-600 dark:bg-sky-500/15 dark:border-sky-400/30 dark:text-sky-300 inline-flex items-center justify-center shrink-0">
                   <FileText className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -469,12 +469,12 @@ export default function UserDashboard() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
+            <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 sm:p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                <p className="text-xs font-semibold text-emerald-700 dark:text-teal-300">
                   Today&apos;s Coverage
                 </p>
-                <span className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/12 dark:border-emerald-400/25 dark:text-emerald-400 inline-flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-emerald-100/80 border border-emerald-200 text-emerald-600 dark:bg-teal-500/15 dark:border-teal-400/30 dark:text-teal-300 inline-flex items-center justify-center shrink-0">
                   <Clock className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -486,7 +486,7 @@ export default function UserDashboard() {
                 </span>
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 h-1.5 rounded-full bg-zinc-100 dark:bg-surface-2 overflow-hidden">
+                <div className="flex-1 h-1.5 rounded-full bg-emerald-100 dark:bg-surface-2 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-[var(--app-accent)] transition-all"
                     style={{ width: `${slotCoveragePct}%` }}
@@ -498,12 +498,12 @@ export default function UserDashboard() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
+            <div className="rounded-xl border bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 p-4 sm:p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                   Latest Recorded Load
                 </p>
-                <span className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/12 dark:border-emerald-400/25 dark:text-emerald-400 inline-flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-emerald-100/80 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/15 dark:border-emerald-400/30 dark:text-emerald-300 inline-flex items-center justify-center shrink-0">
                   <Activity className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -518,12 +518,12 @@ export default function UserDashboard() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-4 sm:p-5 shadow-xs dark:shadow-[var(--app-shadow)] dark:hover:border-app-strong transition-colors">
+            <div className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-4 sm:p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-zinc-600 dark:text-slate-300">
+                <p className="text-xs font-semibold text-orange-600 dark:text-amber-300">
                   Recent Peak Load
                 </p>
-                <span className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 text-orange-500 dark:bg-amber-500/12 dark:border-amber-400/25 dark:text-amber-400 inline-flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-orange-100/80 border border-orange-200 text-orange-500 dark:bg-amber-500/15 dark:border-amber-400/30 dark:text-amber-300 inline-flex items-center justify-center shrink-0">
                   <BarChart3 className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -542,12 +542,12 @@ export default function UserDashboard() {
             {/* Left 8 Columns: Personal Activity Ledger */}
             <section
               aria-label="Personal activity log"
-              className="lg:col-span-8 rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface overflow-hidden shadow-xs dark:shadow-[var(--app-shadow)]"
+              className="lg:col-span-8 rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm"
             >
-              <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-app/70 space-y-3">
+              <div className="p-4 sm:p-5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-base font-semibold text-zinc-800 dark:text-white font-display">
+                    <h2 className="text-base font-semibold text-emerald-700 dark:text-teal-200 font-display">
                       Recent Activity Ledger
                     </h2>
                     <p className="text-xs text-zinc-600 dark:text-slate-400 mt-0.5">
@@ -556,7 +556,7 @@ export default function UserDashboard() {
                   </div>
                   <Link
                     href="/history"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline whitespace-nowrap shrink-0"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-teal-300 hover:underline whitespace-nowrap shrink-0"
                   >
                     Full history <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -567,7 +567,7 @@ export default function UserDashboard() {
                   <div
                     role="group"
                     aria-label="Filter activity"
-                    className="inline-flex items-center gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-surface-2 border border-zinc-200 dark:border-app self-start"
+                    className="inline-flex items-center gap-1 p-1 rounded-lg bg-white/80 dark:bg-[#0f1726]/75 border border-emerald-200/80 dark:border-teal-500/25 self-start"
                   >
                     {(
                       [
@@ -586,8 +586,8 @@ export default function UserDashboard() {
                               ? "bg-orange-500 dark:bg-amber-500 text-white dark:text-[#1c1002] shadow-xs"
                               : opt.id === "today"
                                 ? "bg-blue-500 dark:bg-sky-500 text-white dark:text-[#041827] shadow-xs"
-                                : "bg-white dark:bg-emerald-500 text-zinc-800 dark:text-[#031d16] shadow-xs"
-                            : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white"
+                                : "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/25 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
+                            : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
                         }`}
                       >
                         {opt.label}
@@ -603,7 +603,7 @@ export default function UserDashboard() {
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Filter slot, note, or MW…"
                       aria-label="Filter recent activity"
-                      className="w-full h-9 rounded-lg border border-zinc-200 dark:border-app bg-zinc-50 dark:bg-surface-2 pl-8 pr-3 text-xs text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-emerald-500/25 focus:border-emerald-600 dark:focus:border-emerald-400"
+                      className="w-full h-9 rounded-lg border border-emerald-200/80 dark:border-teal-500/25 bg-white/85 dark:bg-[#0f1726]/75 pl-8 pr-3 text-xs text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:focus:ring-teal-400/30 focus:border-emerald-600 dark:focus:border-teal-400"
                     />
                   </div>
                 </div>
@@ -766,10 +766,10 @@ export default function UserDashboard() {
             {/* Right 4 Columns: Recent Load Trend + Operational Workflows */}
             <aside className="lg:col-span-4 space-y-5">
               {/* Mini Recent Trend Strip */}
-              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
-                <div className="flex items-center justify-between gap-2 pb-3 border-b border-zinc-200 dark:border-app/70">
+              <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 overflow-hidden shadow-sm">
+                <div className="px-5 py-3.5 flex items-center justify-between gap-2 border-b border-blue-200/80 dark:border-sky-500/20 bg-blue-50/60 dark:bg-sky-950/35">
                   <div>
-                    <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
+                    <h2 className="text-sm font-semibold text-blue-700 dark:text-sky-200 font-display">
                       Recent Load Profile
                     </h2>
                     <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
@@ -788,62 +788,64 @@ export default function UserDashboard() {
                   </div>
                 </div>
 
-                {metrics.recentTrend.length === 0 ? (
-                  <p className="py-8 text-center text-xs text-zinc-500 dark:text-slate-400">
-                    Save readings in Calculator to see your trend bars here.
-                  </p>
-                ) : (
-                  <div className="pt-4 space-y-2.5">
-                    {metrics.recentTrend.map((pt) => {
-                      const loadPct = Math.max(
-                        4,
-                        Math.round((pt.mw / maxTrendMw) * 100)
-                      );
-                      const lsPct =
-                        pt.lsMw > 0
-                          ? Math.max(3, Math.round((pt.lsMw / maxTrendMw) * 100))
-                          : 0;
-                      return (
-                        <div key={pt.id} className="space-y-1">
-                          <div className="flex items-center justify-between text-xs font-mono tabular-nums">
-                            <span className="font-semibold text-zinc-700 dark:text-slate-200">
-                              {pt.label}
-                            </span>
-                            <span className="text-zinc-600 dark:text-slate-300">
-                              <strong className="text-emerald-700 dark:text-emerald-400">
-                                {pt.mw.toFixed(1)}
-                              </strong>
-                              {pt.lsMw > 0 ? (
-                                <span className="text-orange-600 dark:text-amber-300 ml-1.5">
-                                  +{pt.lsMw.toFixed(1)} LS
-                                </span>
-                              ) : null}{" "}
-                              MW
-                            </span>
-                          </div>
-                          <div className="h-2 rounded-full bg-zinc-100 dark:bg-surface-2 overflow-hidden flex">
-                            <div
-                              className="h-full bg-[var(--app-accent)]"
-                              style={{ width: `${loadPct}%` }}
-                            />
-                            {lsPct > 0 ? (
+                <div className="p-5 pt-4">
+                  {metrics.recentTrend.length === 0 ? (
+                    <p className="py-8 text-center text-xs text-zinc-500 dark:text-slate-400">
+                      Save readings in Calculator to see your trend bars here.
+                    </p>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {metrics.recentTrend.map((pt) => {
+                        const loadPct = Math.max(
+                          4,
+                          Math.round((pt.mw / maxTrendMw) * 100)
+                        );
+                        const lsPct =
+                          pt.lsMw > 0
+                            ? Math.max(3, Math.round((pt.lsMw / maxTrendMw) * 100))
+                            : 0;
+                        return (
+                          <div key={pt.id} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs font-mono tabular-nums">
+                              <span className="font-semibold text-zinc-700 dark:text-slate-200">
+                                {pt.label}
+                              </span>
+                              <span className="text-zinc-600 dark:text-slate-300">
+                                <strong className="text-emerald-700 dark:text-emerald-400">
+                                  {pt.mw.toFixed(1)}
+                                </strong>
+                                {pt.lsMw > 0 ? (
+                                  <span className="text-orange-600 dark:text-amber-300 ml-1.5">
+                                    +{pt.lsMw.toFixed(1)} LS
+                                  </span>
+                                ) : null}{" "}
+                                MW
+                              </span>
+                            </div>
+                            <div className="h-2 rounded-full bg-blue-100/80 dark:bg-surface-2 overflow-hidden flex">
                               <div
-                                className="h-full bg-orange-500 dark:bg-amber-400"
-                                style={{ width: `${lsPct}%` }}
+                                className="h-full bg-[var(--app-accent)]"
+                                style={{ width: `${loadPct}%` }}
                               />
-                            ) : null}
+                              {lsPct > 0 ? (
+                                <div
+                                  className="h-full bg-orange-500 dark:bg-amber-400"
+                                  style={{ width: `${lsPct}%` }}
+                                />
+                              ) : null}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Focused Station Workflows */}
-              <div className="rounded-xl border border-zinc-200 dark:border-app bg-white dark:bg-surface p-5 shadow-xs dark:shadow-[var(--app-shadow)]">
-                <div className="pb-3 border-b border-zinc-200 dark:border-app/70">
-                  <h2 className="text-sm font-semibold text-zinc-800 dark:text-white font-display">
+              <div className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 overflow-hidden shadow-sm">
+                <div className="px-5 py-3.5 border-b border-orange-200/80 dark:border-amber-500/20 bg-orange-50/75 dark:bg-amber-950/35">
+                  <h2 className="text-sm font-semibold text-orange-600 dark:text-amber-200 font-display">
                     Station Operations
                   </h2>
                   <p className="text-xs text-zinc-500 dark:text-slate-400 mt-0.5">
@@ -853,7 +855,7 @@ export default function UserDashboard() {
 
                 <nav
                   aria-label="Station workflows"
-                  className="divide-y divide-zinc-100 dark:divide-[var(--app-border)]"
+                  className="px-5 py-2 divide-y divide-orange-200/60 dark:divide-amber-500/15"
                 >
                   {workflowLinks.map((item) => {
                     const Icon = item.icon;
@@ -861,14 +863,14 @@ export default function UserDashboard() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="group flex items-center justify-between gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-surface-2/60 -mx-2 px-2 rounded-lg transition-colors"
+                        className="group flex items-center justify-between gap-3 py-3 hover:bg-orange-50/70 dark:hover:bg-amber-950/35 -mx-2 px-2 rounded-lg transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-surface-2 border border-zinc-200 dark:border-app inline-flex items-center justify-center shrink-0 group-hover:border-emerald-300 dark:group-hover:border-emerald-500/35 transition-colors">
-                            <Icon className="w-4 h-4 text-blue-500 dark:text-emerald-400" />
+                          <span className="w-8 h-8 rounded-lg bg-white/85 dark:bg-[#0f1726]/75 border border-orange-200/80 dark:border-amber-500/25 inline-flex items-center justify-center shrink-0 group-hover:border-orange-400/60 dark:group-hover:border-amber-400/50 transition-colors">
+                            <Icon className="w-4 h-4 text-orange-600 dark:text-amber-300" />
                           </span>
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-zinc-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors truncate">
+                            <p className="text-xs font-semibold text-zinc-800 dark:text-white group-hover:text-orange-700 dark:group-hover:text-amber-200 transition-colors truncate">
                               {item.label}
                             </p>
                             <p className="text-[11px] text-zinc-500 dark:text-slate-400 truncate">
@@ -876,7 +878,7 @@ export default function UserDashboard() {
                             </p>
                           </div>
                         </div>
-                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 dark:text-slate-500 group-hover:text-orange-600 dark:group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all shrink-0" />
                       </Link>
                     );
                   })}

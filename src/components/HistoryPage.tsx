@@ -209,7 +209,7 @@ export default function HistoryPage() {
               className={`${editingRecord ? "hidden md:flex md:mr-3" : "hidden xl:flex xl:mr-3"} h-full min-w-0 flex-1 basis-0 flex-col ${editingRecord ? "" : "pointer-events-none" }`}
             >
               {editingRecord ? (
-                <div className="h-full min-h-0 flex flex-col rounded-xl border border-app bg-surface overflow-hidden shadow-xl">
+                <div className="h-full min-h-0 flex flex-col rounded-xl border border-emerald-200 dark:border-teal-500/25 bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] overflow-hidden shadow-xl">
                   <HistoryCalculatorEdit
                     key={editingRecord._id}
                     record={editingRecord}
@@ -226,7 +226,7 @@ export default function HistoryPage() {
                   />
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-app-strong bg-surface-2/40 text-muted text-xs px-4 text-center">
+                <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-orange-300/80 dark:border-amber-500/30 bg-gradient-to-br from-orange-50/75 via-white to-orange-50/30 dark:from-amber-950/35 dark:via-[#0f1726] dark:to-[#0f1726] text-muted text-xs px-4 text-center">
                   Select Edit on a record to modify feeder readings
                 </div>
               )}
@@ -234,7 +234,7 @@ export default function HistoryPage() {
 
             {/* Mobile edit overlay */}
             {editingRecord && (
-              <div className="md:hidden absolute inset-0 z-30 flex flex-col bg-surface rounded-xl overflow-hidden shadow-2xl border border-app">
+              <div className="md:hidden absolute inset-0 z-30 flex flex-col bg-gradient-to-br from-emerald-50/90 via-white to-blue-50/40 dark:from-teal-950/60 dark:via-[#0f1726] dark:to-[#0f1726] rounded-xl overflow-hidden shadow-2xl border border-emerald-200 dark:border-teal-500/25">
                 <HistoryCalculatorEdit
                   key={`m-${editingRecord._id}`}
                   record={editingRecord}
@@ -274,7 +274,7 @@ export default function HistoryPage() {
                   />
                 </>
               ) : (
-                <div className="hidden md:flex h-full w-full items-center justify-center rounded-xl border border-dashed border-app-strong bg-surface-2/40 text-muted text-sm px-4 text-center">
+                <div className="hidden md:flex h-full w-full items-center justify-center rounded-xl border border-dashed border-blue-300/80 dark:border-sky-500/30 bg-gradient-to-br from-blue-50/75 via-white to-blue-50/30 dark:from-sky-950/35 dark:via-[#0f1726] dark:to-[#0f1726] text-muted text-sm px-4 text-center">
                   Click View to open details
                 </div>
               )}

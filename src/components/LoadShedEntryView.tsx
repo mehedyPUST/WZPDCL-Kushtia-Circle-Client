@@ -363,9 +363,9 @@ export default function LoadShedEntryView() {
   const protectedSet = useMemo(() => new Set(LS_PROTECTED_IDS), []);
 
   return (
-    <div className="h-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
+    <div className="h-full flex flex-col min-h-0 bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 rounded-2xl overflow-hidden shadow-sm">
       {/* Toolbar */}
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-elevated/75 border-b border-app">
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20">
         <label className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-muted">
           Day
         </label>
@@ -447,10 +447,10 @@ export default function LoadShedEntryView() {
         </div>
       </div>
 
-      <p className="flex-shrink-0 px-3 sm:px-4 py-1.5 text-[11px] text-muted leading-snug border-b border-app bg-elevated/50">
-        <strong className="text-amber-300">Allot</strong> = grid allotment (empty = unlimited).{" "}
-        <strong className="text-purple-300">Demand</strong> = Total + LS.{" "}
-        <strong className="text-accent">Total (Consumption)</strong> = running load. Enter <strong className="text-rose-300">LS MW</strong> per
+      <p className="flex-shrink-0 px-3 sm:px-4 py-1.5 text-[11px] text-muted leading-snug border-b border-emerald-200/70 dark:border-teal-500/20 bg-emerald-50/35 dark:bg-teal-950/20">
+        <strong className="text-orange-700 dark:text-amber-300">Allot</strong> = grid allotment (empty = unlimited).{" "}
+        <strong className="text-purple-700 dark:text-purple-300">Demand</strong> = Total + LS.{" "}
+        <strong className="text-emerald-700 dark:text-emerald-300">Total (Consumption)</strong> = running load. Enter <strong className="text-rose-700 dark:text-rose-300">LS MW</strong> per
         feeder after unlocking a row. All feeders including BRB &amp; MRS can be shed.
       </p>
 

@@ -17,12 +17,12 @@ function Field({
 }) {
   const cardCls =
     tone === "amber"
-      ? "bg-orange-50/90 dark:bg-amber-950/35 border-orange-200 dark:border-amber-500/30 hover:border-orange-400 dark:hover:border-amber-500/60"
+      ? "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-orange-200 dark:border-amber-500/25 hover:border-orange-400 dark:hover:border-amber-500/55"
       : tone === "purple"
-        ? "bg-purple-500/10 dark:bg-purple-950/25 border-purple-500/30 hover:border-purple-500/60"
+        ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-purple-200 dark:border-purple-500/25 hover:border-purple-400 dark:hover:border-purple-500/55"
         : tone === "sky"
-          ? "bg-blue-50/90 dark:bg-sky-950/25 border-blue-200 dark:border-sky-500/30 hover:border-blue-400 dark:hover:border-sky-500/60"
-          : "bg-surface-2 border-app hover:border-accent";
+          ? "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-blue-200 dark:border-sky-500/25 hover:border-blue-400 dark:hover:border-sky-500/55"
+          : "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-emerald-200 dark:border-teal-500/25 hover:border-emerald-400 dark:hover:border-teal-500/55";
 
   const labelCls =
     tone === "amber"

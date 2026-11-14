@@ -42,7 +42,7 @@ export default function SlotConflictModal({
         if (e.target === e.currentTarget && !loading) onKeepPrevious?.();
       }}
     >
-      <div className="w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-app overflow-hidden relative">
+      <div className="w-full max-w-md bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 rounded-2xl shadow-2xl overflow-hidden relative">
         <button
           type="button"
           disabled={loading}
@@ -96,7 +96,7 @@ export default function SlotConflictModal({
           </div>
         </div>
 
-        <div className="px-5 py-4 flex flex-col gap-2 bg-surface-2 border-t border-app">
+        <div className="px-5 py-4 flex flex-col gap-2 bg-orange-50/75 dark:bg-amber-950/35 border-t border-orange-200/80 dark:border-amber-500/20">
           <button
             type="button"
             disabled={loading}

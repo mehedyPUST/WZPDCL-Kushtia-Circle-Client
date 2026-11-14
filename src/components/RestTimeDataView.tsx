@@ -706,9 +706,9 @@ export default function RestTimeDataView() {
   const colStyleFit = { width: colPct, minWidth: COL_WIDTH };
 
   return (
-    <div className="h-full flex flex-col min-h-0 bg-surface-2/60 rounded-2xl border border-app overflow-hidden shadow-xl shadow-black/40">
+    <div className="h-full flex flex-col min-h-0 bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 rounded-2xl overflow-hidden shadow-sm">
       {/* Toolbar — same as Manual Input */}
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-elevated/75 border-b border-app">
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-2.5 sm:px-4 py-2.5 sm:py-3 bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20">
         <label className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-muted shrink-0">
           Day
         </label>

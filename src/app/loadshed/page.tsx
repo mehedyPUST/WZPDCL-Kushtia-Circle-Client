@@ -21,7 +21,7 @@ function LoadShedInner() {
   if (!isAuthenticated) {
     return (
       <div className="flex-1 min-h-0 max-w-lg mx-auto w-full px-4 py-16 text-center">
-        <div className="rounded-2xl border border-app bg-surface p-8 shadow-[var(--app-shadow)]">
+        <div className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-8 shadow-sm">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent mb-3">
             Restricted
           </p>

@@ -418,8 +418,8 @@ export default function AdminPanel() {
     return (
       <div className="page-frame">
         <div className="max-w-md mx-auto w-full py-16 text-center">
-          <div className="rounded-2xl border border-app-strong bg-surface-2 p-8 shadow-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent mb-3">
+          <div className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-8 shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-teal-300 mb-3">
               Restricted
             </p>
             <h1 className="text-xl font-semibold text-app">Admin Panel</h1>
@@ -463,8 +463,8 @@ export default function AdminPanel() {
   if (!canManage) {
     return (
       <div className="page-frame">
-        <div className="page-panel p-8 text-center">
-          <h1 className="text-lg font-semibold text-app">Access denied</h1>
+        <div className="rounded-2xl border bg-gradient-to-br from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25 p-8 text-center shadow-sm">
+          <h1 className="text-lg font-semibold text-rose-700 dark:text-rose-200">Access denied</h1>
           <p className="mt-2 text-sm text-muted">
             Signed in as <strong className="text-secondary">{admin?.username}</strong> (
             {ROLE_LABEL[admin?.role] || admin?.role}). Admin role is required.
@@ -494,8 +494,8 @@ export default function AdminPanel() {
         </a>
       </div>
 
-      <div className="page-panel flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="shrink-0 flex gap-1 p-1.5 sm:p-2 border-b border-app bg-elevated/90">
+      <div className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="shrink-0 flex gap-1 p-1.5 sm:p-2 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35">
           {[
             { id: "users", label: "Users" },
             { id: "settings", label: "Settings" },
@@ -573,12 +573,12 @@ export default function AdminPanel() {
             {showCreateUser && (
               <form
                 onSubmit={handleCreate}
-                className="rounded-xl border border-accent bg-surface-2 p-4 shadow-xl shadow-black/40 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
+                className="rounded-xl border bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 p-4 shadow-sm space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
               >
-                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-app">
+                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-emerald-200/80 dark:border-emerald-500/20">
                   <div>
-                    <h2 className="text-sm font-semibold text-app tracking-tight flex items-center gap-1.5">
-                      <UserPlus className="w-4 h-4 text-accent" />
+                    <h2 className="text-sm font-semibold text-emerald-700 dark:text-emerald-200 tracking-tight flex items-center gap-1.5">
+                      <UserPlus className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
                       Create New Account
                     </h2>
                     <p className="text-[11px] text-muted mt-0.5">
@@ -845,7 +845,11 @@ export default function AdminPanel() {
                 return (
                   <div
                     key={`m-${u.id}`}
-                    className="rounded-xl border border-app bg-surface-2 p-3 space-y-2.5"
+                    className={`rounded-xl border bg-gradient-to-br p-3 space-y-2.5 shadow-sm ${
+                      active
+                        ? "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25"
+                        : "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
+                    }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -924,7 +928,11 @@ export default function AdminPanel() {
 
         {tab === "settings" && (
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 sm:p-5 space-y-4 w-full max-w-none">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="rounded-xl border bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 p-4 shadow-sm">
+              <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-200 mb-3">
+                Substation &amp; Voltage Defaults
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 ["stationName", "Station name", "text"],
                 ["stationOrg", "Organization", "text"],
@@ -966,9 +974,10 @@ export default function AdminPanel() {
                   <option value="with">Include ring data</option>
                 </select>
               </label>
+              </div>
             </div>
-            <div className="col-span-full border-t border-app pt-4 mt-1">
-              <p className="text-xs font-semibold text-secondary mb-1.5">
+            <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-4 shadow-sm">
+              <p className="text-xs font-semibold text-blue-700 dark:text-sky-200 mb-1.5">
                 Circle load · relaxed slots
               </p>
               <p className="text-[11px] text-muted mb-3 leading-relaxed">
@@ -1023,8 +1032,8 @@ export default function AdminPanel() {
                 </label>
               </div>
             </div>
-            <div className="col-span-full border-t border-app pt-4 mt-1">
-              <p className="text-xs font-semibold text-secondary mb-1.5">
+            <div className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-4 shadow-sm">
+              <p className="text-xs font-semibold text-orange-700 dark:text-amber-200 mb-1.5">
                 Night Logs · generation window
               </p>
               <p className="text-[11px] text-muted mb-3 leading-relaxed">

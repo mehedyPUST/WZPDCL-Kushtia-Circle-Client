@@ -754,11 +754,13 @@ export default function LoadCalculator({
             }}
             className={
               embedded
-                ? `calc-shell w-full h-full max-h-full bg-surface rounded-none shadow-none overflow-hidden flex flex-col border-0 ${
+                ? `calc-shell w-full h-full max-h-full bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-[#0f1726] rounded-none shadow-none overflow-hidden flex flex-col border-0 ${
                     mode === "loadShed" ? "calc-shell--ls" : ""
                   }`
-                : `calc-shell w-full h-full max-h-full bg-surface rounded-none md:rounded-xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col border-0 md:border md:border-app ${
-                    mode === "loadShed" ? "calc-shell--ls md:border-amber-500/40" : ""
+                : `calc-shell w-full h-full max-h-full bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-[#0f1726] rounded-none md:rounded-xl shadow-2xl shadow-black/25 dark:shadow-black/50 overflow-hidden flex flex-col border-0 md:border ${
+                    mode === "loadShed"
+                      ? "calc-shell--ls md:border-orange-300 dark:md:border-amber-500/40"
+                      : "md:border-emerald-200 dark:md:border-teal-500/25"
                   }`
             }
           >
@@ -772,7 +774,7 @@ export default function LoadCalculator({
             {isLandscape ? (
               <>
                 {/* Desktop & Tablet landscape unified command header */}
-                <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] flex-shrink-0 bg-elevated text-app border-b border-app py-2.5 px-4 lg:px-5 items-center gap-3">
+                <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] flex-shrink-0 bg-emerald-50/60 dark:bg-teal-950/35 text-app border-b border-emerald-200/80 dark:border-teal-500/20 py-2.5 px-4 lg:px-5 items-center gap-3">
                   <div className="flex items-center gap-2.5 min-w-0 justify-self-start">
                     {!embedded && (
                       <button
@@ -831,7 +833,7 @@ export default function LoadCalculator({
               </>
             ) : (
               <>
-                <div className="hidden md:flex flex-shrink-0 bg-elevated text-app text-center border-b border-app py-2.5 px-3 items-center justify-center relative">
+                <div className="hidden md:flex flex-shrink-0 bg-emerald-50/60 dark:bg-teal-950/35 text-app text-center border-b border-emerald-200/80 dark:border-teal-500/20 py-2.5 px-3 items-center justify-center relative">
                   {!embedded && (
                     <button
                       type="button"

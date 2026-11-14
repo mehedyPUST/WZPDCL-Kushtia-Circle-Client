@@ -34,8 +34,8 @@ export default function LoadResultsPanel({
   if (isLandscape) {
     return (
       <section className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
-        <div className="bg-surface-2 text-app rounded-lg flex items-center justify-between gap-3 border border-app px-3.5 sm:px-4 h-11 min-w-0 sm:min-w-[10.5rem]">
-          <span className="text-[11px] font-bold tracking-wide uppercase text-secondary whitespace-nowrap">
+        <div className="bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] text-app rounded-lg flex items-center justify-between gap-3 border border-emerald-200 dark:border-teal-500/25 px-3.5 sm:px-4 h-11 min-w-0 sm:min-w-[10.5rem] shadow-xs">
+          <span className="text-[11px] font-bold tracking-wide uppercase text-emerald-700 dark:text-teal-300 whitespace-nowrap">
             H3+T3
           </span>
           <motion.span
@@ -97,11 +97,11 @@ export default function LoadResultsPanel({
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className="bg-surface-2 dark:bg-gradient-to-br dark:from-surface-2 dark:to-surface text-app rounded-xl flex items-center justify-between shadow-xs border border-app min-w-0"
+        className="bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] text-app rounded-xl flex items-center justify-between shadow-xs border border-emerald-200 dark:border-teal-500/25 min-w-0"
         style={{ height: "var(--calc-badge-h)", paddingLeft: "0.5rem", paddingRight: "0.5rem" }}
       >
         <span
-          className="font-bold tracking-wide uppercase text-secondary truncate"
+          className="font-bold tracking-wide uppercase text-emerald-700 dark:text-teal-300 truncate"
           style={{ fontSize: "var(--calc-badge-label)" }}
         >
           H3+T3

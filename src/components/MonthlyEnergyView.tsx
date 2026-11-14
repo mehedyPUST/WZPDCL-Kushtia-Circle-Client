@@ -1027,7 +1027,7 @@ export default function MonthlyEnergyView() {
   return (
     <div className="w-full min-w-0 max-w-none px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-5">
       {/* Executive Header */}
-      <header className="rounded-xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
+      <header className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="min-w-0">
             <nav
@@ -1243,7 +1243,7 @@ export default function MonthlyEnergyView() {
       )}
 
       {/* High-Density Engineering Data Table */}
-      <div className="rounded-xl border border-app bg-surface shadow-sm overflow-hidden">
+      <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-sm overflow-hidden">
         <div ref={tableScrollRef} className="overflow-auto max-h-[70vh]">
           <table className="w-full border-separate border-spacing-0 text-xs min-w-[1140px]">
             <thead className="sticky top-0 z-20">
@@ -1898,11 +1898,11 @@ export default function MonthlyEnergyView() {
       </div>
 
       {/* Monthly Remarks */}
-      <section className="rounded-xl border border-app bg-surface p-4 sm:p-5 space-y-2.5 shadow-sm">
+      <section className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-4 sm:p-5 space-y-2.5 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <label
             htmlFor="monthly-energy-notes"
-            className="text-xs font-semibold text-app"
+            className="text-xs font-semibold text-orange-700 dark:text-amber-200"
           >
             Monthly Remarks &amp; Metering Notes
           </label>

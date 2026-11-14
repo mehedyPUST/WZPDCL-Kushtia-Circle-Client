@@ -65,7 +65,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-app p-4">
-        <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-surface border border-slate-200 dark:border-[var(--app-border-strong)] space-y-4 shadow-xl">
+        <div className="w-full max-w-md p-8 rounded-3xl bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 space-y-4 shadow-xl">
           <SkeletonShimmer className="h-10 w-10 mx-auto rounded-full" />
           <SkeletonShimmer className="h-6 w-36 mx-auto rounded-lg" />
           <SkeletonShimmer className="h-4 w-48 mx-auto rounded-md" />
@@ -81,9 +81,9 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex-1 bg-zinc-50 dark:bg-app flex items-center justify-center p-3 sm:p-6 lg:p-8">
-      <div className="w-full max-w-[56rem] bg-white dark:bg-surface rounded-3xl shadow-xl border border-zinc-200 dark:border-[var(--app-border-strong)] overflow-hidden flex flex-col md:flex-row transition-all">
+      <div className="w-full max-w-[56rem] bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-[#0f1726] dark:via-[#0f1726] dark:to-[#0f1726] rounded-3xl shadow-xl border border-emerald-200 dark:border-teal-500/25 overflow-hidden flex flex-col md:flex-row transition-all">
         {/* Left Presentation Panel */}
-        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-8 md:p-9 flex flex-col justify-between overflow-hidden">
+        <aside className="relative md:w-[44%] shrink-0 bg-gradient-to-br from-emerald-50/90 via-white to-blue-50/50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-emerald-200/80 dark:border-white/10 p-6 sm:p-8 md:p-9 flex flex-col justify-between overflow-hidden">
           {/* Subtle Ambient Lighting */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-emerald-500/15 blur-3xl" />
@@ -154,16 +154,22 @@ export default function LoginPage() {
                 tone: "emerald",
               },
             ].map(({ icon: Icon, text, tone }, i) => {
+              const badgeCard =
+                tone === "orange"
+                  ? "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
+                  : tone === "blue"
+                  ? "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+                  : "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25";
               const iconBox =
                 tone === "orange"
-                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
+                  ? "bg-orange-100/80 border-orange-200 text-orange-600 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
                   : tone === "blue"
-                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
+                  ? "bg-blue-100/80 border-blue-200 text-blue-600 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
+                  : "bg-emerald-100/80 border-emerald-200 text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-2.5 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10 shadow-xs text-xs font-semibold text-zinc-800 dark:text-slate-100"
+                  className={`flex items-center gap-3 p-2.5 rounded-xl border shadow-xs text-xs font-semibold text-zinc-800 dark:text-slate-100 ${badgeCard}`}
                 >
                   <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${iconBox}`}>
                     <Icon className="w-3.5 h-3.5" />
@@ -182,7 +188,7 @@ export default function LoginPage() {
         </aside>
 
         {/* Right Form Panel */}
-        <div className="flex-1 flex flex-col justify-center min-h-0 bg-white dark:bg-surface p-6 sm:p-9 md:p-10">
+        <div className="flex-1 flex flex-col justify-center min-h-0 bg-white/80 dark:bg-[#0f1726]/70 p-6 sm:p-9 md:p-10">
           <div className="w-full max-w-md mx-auto">
             {/* Header Kicker & Title */}
             <div className="mb-6">

@@ -14,12 +14,12 @@ function Metric({
   landscape?: boolean;
 }) {
   const tones = {
-    neutral: "bg-surface-2 dark:bg-surface-3/80 border-app text-app",
-    slate: "bg-purple-500/10 dark:bg-purple-950/50 border-purple-500/30 text-purple-800 dark:text-purple-200",
-    danger: "bg-rose-500/10 dark:bg-rose-950/70 border-rose-500/30 text-rose-800 dark:text-rose-200",
-    ok: "bg-emerald-500/10 dark:bg-emerald-950/70 border-emerald-500/35 text-emerald-800 dark:text-emerald-200",
-    warn: "bg-amber-500/10 dark:bg-amber-950/70 border-amber-500/30 text-amber-800 dark:text-amber-200",
-    accent: "bg-sky-500/10 dark:bg-sky-950/60 border-sky-500/30 text-sky-800 dark:text-sky-200",
+    neutral: "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-emerald-200 dark:border-teal-500/25 text-app",
+    slate: "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-purple-200 dark:border-purple-500/25 text-purple-800 dark:text-purple-200",
+    danger: "bg-gradient-to-br from-rose-50/90 via-white to-rose-50/40 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-rose-200 dark:border-rose-500/25 text-rose-800 dark:text-rose-200",
+    ok: "bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] border-emerald-200 dark:border-emerald-500/25 text-emerald-800 dark:text-emerald-200",
+    warn: "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-orange-200 dark:border-amber-500/25 text-orange-800 dark:text-amber-200",
+    accent: "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] border-blue-200 dark:border-sky-500/25 text-blue-800 dark:text-sky-200",
   };
   return (
     <div

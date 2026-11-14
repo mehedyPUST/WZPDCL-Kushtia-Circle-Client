@@ -654,7 +654,7 @@ export default function StatisticsView() {
         </div>
 
         {/* ── Filter Bar: Time Horizons & Ring Toggle ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl bg-surface-2/60 border border-app">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-sm">
           {/* Preset Buttons */}
           <div className="flex flex-wrap items-center gap-1">
             <span className="text-[11px] font-semibold text-app uppercase tracking-wider px-2 mr-1 hidden sm:inline">
@@ -761,8 +761,8 @@ export default function StatisticsView() {
 
       {/* ── Empty State ── */}
       {!loading && !error && analytics.empty && (
-        <div className="rounded-2xl border border-app bg-surface-2/40 p-12 text-center">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-surface-3 flex items-center justify-center text-muted">
+        <div className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-12 text-center shadow-sm">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-100/80 dark:bg-teal-950/60 border border-emerald-200 dark:border-teal-500/30 flex items-center justify-center text-emerald-700 dark:text-teal-300">
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
@@ -793,21 +793,21 @@ export default function StatisticsView() {
       {!loading && !error && !analytics.empty && (
         <>
           {/* ── Automated Engineering Intelligence Bar ── */}
-          <div className="rounded-xl bg-white dark:bg-gradient-to-r dark:from-[#0f1726] dark:via-[#152033] dark:to-[#0d2420] border border-emerald-200 dark:border-emerald-500/25 p-4 mb-6 shadow-xs dark:shadow-lg dark:shadow-black/25">
+          <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 mb-6 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <span className="inline-block h-2 w-2 rounded-sm bg-emerald-600 dark:bg-emerald-400" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              <span className="inline-block h-2 w-2 rounded-sm bg-emerald-600 dark:bg-teal-400" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-teal-200">
                 Operational Engineering Diagnostics & Summary
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               {/* Insight 1: Peak Demand Event */}
-              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg border bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 shadow-2xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between text-muted mb-1">
-                    <span className="font-semibold text-[11px]">System Peak Demand</span>
-                    <span className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 font-mono text-[10px] border border-purple-200 dark:border-transparent">
+                    <span className="font-semibold text-[11px] text-purple-700 dark:text-purple-300">System Peak Demand</span>
+                    <span className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 font-mono text-[10px] border border-purple-200 dark:border-purple-500/30">
                       {analytics.peakDemandRecord?.slot || "—"}
                     </span>
                   </div>
@@ -828,11 +828,19 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 2: Load Shedding & Curtailment */}
-              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div
+                className={`p-3 rounded-lg border bg-gradient-to-br shadow-2xs flex flex-col justify-between ${
+                  analytics.peakLs > 0
+                    ? "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
+                    : "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25"
+                }`}
+              >
                 <div>
                   <div className="flex items-center justify-between text-muted mb-1">
-                    <span className="font-semibold text-[11px]">Load Shedding Status</span>
-                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${analytics.peakLs > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-transparent" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" }`}>
+                    <span className={`font-semibold text-[11px] ${analytics.peakLs > 0 ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+                      Load Shedding Status
+                    </span>
+                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${analytics.peakLs > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30" }`}>
                       {analytics.peakLs > 0 ? `${analytics.hoursWithLS} slots with LS` : "Zero LS"}
                     </span>
                   </div>
@@ -853,11 +861,11 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 3: 33/11 kV Transformer Balance */}
-              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 shadow-2xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between text-muted mb-1">
-                    <span className="font-semibold text-[11px]">Bus 1 vs Bus 2 Loading</span>
-                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-transparent" : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-transparent" }`}>
+                    <span className="font-semibold text-[11px] text-orange-700 dark:text-amber-300">Bus 1 vs Bus 2 Loading</span>
+                    <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30" : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30" }`}>
                       {Math.abs(analytics.bus1SharePct - analytics.bus2SharePct) <= 10 ? "Balanced" : "Asymmetric"}
                     </span>
                   </div>
@@ -876,11 +884,11 @@ export default function StatisticsView() {
               </div>
 
               {/* Insight 4: 33 kV Voltage Profile */}
-              <div className="p-3 rounded-lg bg-surface-2 border border-app shadow-2xs dark:shadow-none flex flex-col justify-between">
+              <div className="p-3 rounded-lg border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 shadow-2xs flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between text-muted mb-1">
-                    <span className="font-semibold text-[11px]">33 kV Incoming Voltage</span>
-                    <span className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-mono text-[10px] border border-sky-200 dark:border-transparent">
+                    <span className="font-semibold text-[11px] text-blue-700 dark:text-sky-300">33 kV Incoming Voltage</span>
+                    <span className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-mono text-[10px] border border-sky-200 dark:border-sky-500/30">
                       Nominal: 33.0 kV
                     </span>
                   </div>
@@ -973,10 +981,10 @@ export default function StatisticsView() {
 
           {/* ── TAB 1: 24-HOUR DIURNAL LOAD & ALLOTMENT CURVE ── */}
           {activeTab === "diurnal" && (
-            <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6 mb-6">
+            <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 sm:p-6 mb-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
+                  <h2 className="text-sm sm:text-base font-semibold text-emerald-700 dark:text-teal-200 tracking-tight">
                     24-Hour Diurnal Load Profile & Grid Allotment
                   </h2>
                   <p className="text-xs text-muted mt-0.5">
@@ -1089,31 +1097,39 @@ export default function StatisticsView() {
               </div>
 
               {/* Slot Data Cards Ribbon */}
-              <div className="mt-4 pt-4 border-t border-app grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
-                  <span className="text-muted block text-[11px]">Evening Peak Slot (19:00/20:00)</span>
+              <div className="mt-4 pt-4 border-t border-emerald-200/70 dark:border-teal-500/20 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 p-2.5 rounded-lg border shadow-2xs">
+                  <span className="text-purple-700 dark:text-purple-300 font-semibold block text-[11px]">Evening Peak Slot (19:00/20:00)</span>
                   <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "19:00" || d.slot === "20:00")?.demand || 0)} MW
                   </span>
                   <span className="text-muted text-[10px] block mt-0.5">Maximum residential & commercial load</span>
                 </div>
-                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
-                  <span className="text-muted block text-[11px]">Day Peak Slot (13:00/14:00)</span>
+                <div className="bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-2.5 rounded-lg border shadow-2xs">
+                  <span className="text-blue-700 dark:text-sky-300 font-semibold block text-[11px]">Day Peak Slot (13:00/14:00)</span>
                   <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "13:00" || d.slot === "14:00")?.demand || 0)} MW
                   </span>
                   <span className="text-muted text-[10px] block mt-0.5">Industrial & commercial operations</span>
                 </div>
-                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
-                  <span className="text-muted block text-[11px]">Night Base Load (03:00)</span>
+                <div className="bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-2.5 rounded-lg border shadow-2xs">
+                  <span className="text-emerald-700 dark:text-teal-300 font-semibold block text-[11px]">Night Base Load (03:00)</span>
                   <span className="text-app dark:text-white font-bold font-mono text-sm">
                     {formatMW(analytics.diurnalData.find((d) => d.slot === "03:00")?.supplied || 0)} MW
                   </span>
                   <span className="text-muted text-[10px] block mt-0.5">Minimum nighttime grid draw</span>
                 </div>
-                <div className="bg-surface dark:bg-surface-3/40 p-2.5 rounded-lg border border-app">
-                  <span className="text-muted block text-[11px]">Peak Load Shed Slot</span>
-                  <span className="text-rose-600 dark:text-rose-400 font-bold font-mono text-sm">
+                <div
+                  className={`bg-gradient-to-br p-2.5 rounded-lg border shadow-2xs ${
+                    analytics.peakLs > 0
+                      ? "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
+                      : "from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25"
+                  }`}
+                >
+                  <span className={`font-semibold block text-[11px] ${analytics.peakLs > 0 ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+                    Peak Load Shed Slot
+                  </span>
+                  <span className={`font-bold font-mono text-sm ${analytics.peakLs > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-300"}`}>
                     {formatMW(analytics.peakLs)} MW
                   </span>
                   <span className="text-muted text-[10px] block mt-0.5">
@@ -1134,14 +1150,20 @@ export default function StatisticsView() {
                   return (
                     <div
                       key={shift.key}
-                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-xs ${isEvening ? "bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/30" : isDay ? "bg-gradient-to-br from-sky-50/80 via-white to-sky-50/30 border-sky-200 dark:from-sky-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/30" : "bg-surface border-app" }`}
+                      className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between shadow-sm bg-gradient-to-br ${
+                        isEvening
+                          ? "from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25"
+                          : isDay
+                            ? "from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+                            : "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25"
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-400" : isDay ? "text-sky-700 dark:text-sky-400" : "text-muted" }`}>
+                          <span className={`text-[11px] font-bold uppercase tracking-wider ${isEvening ? "text-purple-700 dark:text-purple-300" : isDay ? "text-blue-700 dark:text-sky-300" : "text-emerald-700 dark:text-teal-300" }`}>
                             {shift.name}
                           </span>
-                          <span className="text-[11px] font-mono text-muted bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-transparent px-2 py-0.5 rounded">
+                          <span className="text-[11px] font-mono text-muted bg-white/80 dark:bg-white/5 border border-app px-2 py-0.5 rounded">
                             {shift.time}
                           </span>
                         </div>
@@ -1187,8 +1209,8 @@ export default function StatisticsView() {
               </div>
 
               {/* Shift Comparison Bar Chart */}
-              <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
-                <h3 className="text-sm font-semibold text-app dark:text-white tracking-tight mb-1">
+              <div className="rounded-xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-4 sm:p-6 shadow-sm">
+                <h3 className="text-sm font-semibold text-orange-700 dark:text-amber-200 tracking-tight mb-1">
                   Shift Load & Curtailment Comparison
                 </h3>
                 <p className="text-xs text-muted mb-4">
@@ -1216,10 +1238,10 @@ export default function StatisticsView() {
           {activeTab === "feeders" && (
             <div className="space-y-6 mb-6">
               {/* Feeder Bar Chart */}
-              <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
+              <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-4 sm:p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                   <div>
-                    <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
+                    <h2 className="text-sm sm:text-base font-semibold text-blue-700 dark:text-sky-200 tracking-tight">
                       Feeder Average & Peak Power Dispatch
                     </h2>
                     <p className="text-xs text-muted mt-0.5">
@@ -1265,9 +1287,9 @@ export default function StatisticsView() {
               </div>
 
               {/* Feeder Detailed Ledger */}
-              <div className="rounded-xl bg-surface-2/60 border border-app overflow-hidden">
-                <div className="p-4 sm:p-5 border-b border-app flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-app dark:text-white">
+              <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 overflow-hidden shadow-sm">
+                <div className="p-4 sm:p-5 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-emerald-700 dark:text-teal-200">
                     Feeder Technical Ledger & Load Shed Audit
                   </h3>
                   <span className="text-xs text-muted font-mono">
@@ -1368,10 +1390,10 @@ export default function StatisticsView() {
           {activeTab === "bus" && (
             <div className="space-y-6 mb-6">
               {/* Bus Voltage Fluctuation Chart */}
-              <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6">
+              <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 sm:p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <div>
-                    <h2 className="text-sm sm:text-base font-semibold text-app dark:text-white tracking-tight">
+                    <h2 className="text-sm sm:text-base font-semibold text-emerald-700 dark:text-teal-200 tracking-tight">
                       33 kV Bus Voltage Stability Profile
                     </h2>
                     <p className="text-xs text-muted mt-0.5">
@@ -1433,16 +1455,16 @@ export default function StatisticsView() {
               {/* Bus Transformer Loading Comparison */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Bus 1 Card */}
-                <div className="rounded-xl bg-surface border border-blue-200 dark:border-sky-500/20 p-5 shadow-xs">
+                <div className="rounded-xl border bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-5 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-sky-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-sky-300">
                       BUS-1 Incomer & Transformers
                     </span>
                     <span className="text-xs font-mono font-bold text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-sky-950 px-2 py-0.5 rounded border border-blue-200 dark:border-sky-800/40">
                       {analytics.bus1SharePct}% of Station Load
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 py-3 border-y border-app text-xs font-mono">
+                  <div className="grid grid-cols-3 gap-2 py-3 border-y border-blue-200/70 dark:border-sky-500/20 text-xs font-mono">
                     <div>
                       <span className="text-muted block text-[10px]">Average kV</span>
                       <span className="text-base font-bold text-app">{formatKV(analytics.bus1AvgVolt)} kV</span>
@@ -1460,7 +1482,7 @@ export default function StatisticsView() {
                     <span className="font-semibold text-secondary block mb-1">Connected Feeders:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FEEDERS.filter((f) => f.bus === 1).map((f) => (
-                        <span key={f.id} className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-surface-3 text-zinc-700 dark:text-secondary text-[11px] border border-zinc-200 dark:border-transparent">
+                        <span key={f.id} className="px-2 py-0.5 rounded bg-white/80 dark:bg-surface-3 text-zinc-700 dark:text-secondary text-[11px] border border-blue-200/80 dark:border-sky-500/20">
                           {f.name}
                         </span>
                       ))}
@@ -1469,12 +1491,12 @@ export default function StatisticsView() {
                 </div>
 
                 {/* Bus 2 Card */}
-                <div className="rounded-xl bg-surface border border-orange-200 dark:border-purple-500/20 p-5 shadow-xs">
+                <div className="rounded-xl border bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 p-5 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-purple-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
                       BUS-2 Incomer & Transformers
                     </span>
-                    <span className="text-xs font-mono font-bold text-orange-700 dark:text-purple-300 bg-orange-50 dark:bg-purple-950 px-2 py-0.5 rounded border border-orange-200 dark:border-purple-800/40">
+                    <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/40">
                       {analytics.bus2SharePct}% of Station Load
                     </span>
                   </div>
@@ -1509,10 +1531,10 @@ export default function StatisticsView() {
 
           {/* ── TAB 5: DAILY HISTORICAL TREND (Purely MW) ── */}
           {activeTab === "daily" && (
-            <div className="rounded-xl bg-surface-2/60 border border-app p-4 sm:p-6 mb-6">
+            <div className="rounded-xl border bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 p-4 sm:p-6 mb-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-app tracking-tight">
+                  <h2 className="text-sm sm:text-base font-semibold text-purple-700 dark:text-purple-200 tracking-tight">
                     Daily Peak & Average Demand Trend
                   </h2>
                   <p className="text-xs text-muted mt-0.5">
@@ -1595,25 +1617,25 @@ export default function StatisticsView() {
           )}
 
           {/* ── Engineering Context & Formula References ── */}
-          <div className="rounded-xl bg-surface-2/40 border border-app dark:border-white/5 p-4 text-xs text-muted space-y-2">
-            <p className="font-semibold text-secondary">
+          <div className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-4 text-xs text-muted space-y-2.5 shadow-sm">
+            <p className="font-semibold text-emerald-700 dark:text-teal-200">
               Technical Calculation Methodology (WZPDCL Standards):
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] leading-relaxed">
-              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold block mb-1">True Demand (MW)</span>
+              <div className="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 dark:from-emerald-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 p-2.5 rounded-lg border shadow-2xs">
+                <span className="text-emerald-700 dark:text-emerald-300 font-bold block mb-1">True Demand (MW)</span>
                 <code>Demand = Supplied (Total) + Load Shed (LS)</code>. Represents uncurtailed consumer demand.
               </div>
-              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
-                <span className="text-blue-600 dark:text-sky-400 font-bold block mb-1">Station Mean Load (MW)</span>
+              <div className="bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 p-2.5 rounded-lg border shadow-2xs">
+                <span className="text-blue-700 dark:text-sky-300 font-bold block mb-1">Station Mean Load (MW)</span>
                 <code>Mean Load = Σ (Sample MW) ÷ Total Samples</code>. Represents average power delivery.
               </div>
-              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
-                <span className="text-orange-600 dark:text-amber-400 font-bold block mb-1">Load Factor (%)</span>
+              <div className="bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-2.5 rounded-lg border shadow-2xs">
+                <span className="text-orange-600 dark:text-amber-300 font-bold block mb-1">Load Factor (%)</span>
                 <code>LF = (Mean Load ÷ Peak Load) × 100</code>. Reflects station capacity efficiency.
               </div>
-              <div className="bg-surface dark:bg-elevated/40 p-2.5 rounded border border-app dark:border-white/5">
-                <span className="text-zinc-800 dark:text-purple-400 font-bold block mb-1">Power Formula</span>
+              <div className="bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/45 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 p-2.5 rounded-lg border shadow-2xs">
+                <span className="text-purple-700 dark:text-purple-300 font-bold block mb-1">Power Formula</span>
                 <code>MW = (√3 × V_kV × 0.9 PF × I_A) ÷ 1000</code>.
               </div>
             </div>

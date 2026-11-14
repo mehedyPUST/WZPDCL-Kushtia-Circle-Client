@@ -61,9 +61,9 @@ const SHIFT_SOFT_CLASS: Record<ShiftId, string> = {
 };
 
 const SHIFT_CARD_ACCENT: Record<ShiftId, string> = {
-  A: "border-l-4 border-l-blue-500",
-  B: "border-l-4 border-l-orange-500",
-  C: "border-l-4 border-l-[#059669] dark:border-l-emerald-400",
+  A: "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 border-l-4 border-l-blue-500 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25 dark:border-l-sky-400",
+  B: "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 border-l-4 border-l-orange-500 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 dark:border-l-amber-400",
+  C: "bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-200 border-l-4 border-l-[#059669] dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-emerald-500/25 dark:border-l-emerald-400",
 };
 
 function ShiftTag({ shift }: { shift: ShiftId }) {
@@ -298,7 +298,7 @@ export default function DutyRosterView() {
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-app bg-surface p-5 shadow-[var(--app-shadow)]"
+        className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 p-5 shadow-sm"
       >
         <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
           <div className="flex items-start gap-3.5 min-w-0">
@@ -355,7 +355,7 @@ export default function DutyRosterView() {
           {SHIFT_IDS.map((s) => (
             <div
               key={s}
-              className={`rounded-xl border border-app bg-surface-2/50 px-3 py-2 flex items-center justify-between gap-2 ${SHIFT_CARD_ACCENT[s]}`}
+              className={`rounded-xl border px-3 py-2 flex items-center justify-between gap-2 shadow-2xs ${SHIFT_CARD_ACCENT[s]}`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <span
@@ -481,7 +481,13 @@ export default function DutyRosterView() {
       {data?.coverage ? (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Shift coverage card */}
-          <div className="rounded-xl border border-app bg-surface p-4 shadow-sm border-l-4 border-l-[#059669] dark:border-l-emerald-400">
+          <div
+            className={`rounded-xl border border-l-4 bg-gradient-to-br p-4 shadow-sm ${
+              (data.coverage.uncoveredShiftSlots ?? 0) > 0
+                ? "from-orange-50/90 via-white to-orange-50/40 border-orange-200 border-l-orange-500 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 dark:border-l-amber-400"
+                : "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 border-l-[#059669] dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 dark:border-l-teal-400"
+            }`}
+          >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
                 Shift Coverage
@@ -531,7 +537,7 @@ export default function DutyRosterView() {
             return (
               <div
                 key={s}
-                className={`rounded-xl border border-app bg-surface p-4 shadow-sm ${SHIFT_CARD_ACCENT[s]}`}
+                className={`rounded-xl border p-4 shadow-sm ${SHIFT_CARD_ACCENT[s]}`}
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <ShiftTag shift={s} />
@@ -558,10 +564,10 @@ export default function DutyRosterView() {
       {/* Matrix + Day Shift Audit Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-4 items-start">
         {/* Date × person matrix */}
-        <section className="rounded-2xl border border-app bg-surface shadow-[var(--app-shadow)] overflow-hidden">
-          <div className="px-4 sm:px-5 py-3 border-b border-app bg-surface-2/70 flex flex-wrap items-center justify-between gap-2">
+        <section className="rounded-2xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-5 py-3 border-b border-emerald-200/80 dark:border-teal-500/20 bg-emerald-50/60 dark:bg-teal-950/35 flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-bold text-zinc-800 dark:text-[var(--app-text)] uppercase tracking-wide">
+              <p className="text-xs font-bold text-emerald-700 dark:text-teal-200 uppercase tracking-wide">
                 Daily Duty Matrix
               </p>
               <p className="text-[11px] text-muted">
@@ -754,10 +760,10 @@ export default function DutyRosterView() {
         </section>
 
         {/* Day Shift Audit Breakdown Panel */}
-        <aside className="rounded-2xl border border-app bg-surface p-4 shadow-[var(--app-shadow)] lg:sticky lg:top-20 space-y-3.5">
+        <aside className="rounded-2xl border bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 p-4 shadow-sm lg:sticky lg:top-20 space-y-3.5">
           {activeDay ? (
             <>
-              <div className="flex items-start justify-between gap-2 pb-3 border-b border-app">
+              <div className="flex items-start justify-between gap-2 pb-3 border-b border-orange-200/80 dark:border-amber-500/20">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-bold text-zinc-800 dark:text-[var(--app-text)] tabular-nums">
@@ -774,7 +780,7 @@ export default function DutyRosterView() {
                 </div>
                 <Link
                   href={`/history?date=${activeDay.ymd}`}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-app text-[#059669] dark:text-emerald-400 hover:bg-surface-2 transition-colors shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-orange-200 dark:border-amber-500/30 bg-white/80 dark:bg-[#0f1726]/70 text-[#059669] dark:text-emerald-400 hover:bg-orange-50 dark:hover:bg-amber-950/50 transition-colors shrink-0"
                 >
                   History
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -795,7 +801,7 @@ export default function DutyRosterView() {
                   return (
                     <div
                       key={sh}
-                      className={`rounded-xl border border-app bg-surface-2/40 p-3 ${SHIFT_CARD_ACCENT[sh]}`}
+                      className={`rounded-xl border p-3 ${SHIFT_CARD_ACCENT[sh]}`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2">
@@ -894,11 +900,11 @@ export default function DutyRosterView() {
 
       {/* Monthly leaderboard */}
       {data?.leaderboard?.length ? (
-        <section className="rounded-2xl border border-app bg-surface p-4 sm:p-5 shadow-sm">
+        <section className="rounded-2xl border bg-gradient-to-br from-purple-50/80 via-white to-purple-50/30 border-purple-200 dark:from-purple-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-purple-500/25 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#059669] dark:text-emerald-400" />
-              <h2 className="text-sm font-bold text-zinc-800 dark:text-[var(--app-text)] uppercase tracking-wider">
+              <Users className="w-4 h-4 text-purple-700 dark:text-purple-300" />
+              <h2 className="text-sm font-bold text-purple-700 dark:text-purple-200 uppercase tracking-wider">
                 Month Leaderboard · Weighted Duty Shifts
               </h2>
             </div>
@@ -917,7 +923,7 @@ export default function DutyRosterView() {
               return (
                 <div
                   key={row.person}
-                  className="rounded-xl border border-app bg-surface-2/40 px-3.5 py-2.5 space-y-1.5"
+                  className="rounded-xl border bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 px-3.5 py-2.5 space-y-1.5 shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
                     <span className="w-7 h-7 rounded-lg bg-[#059669]/10 dark:bg-emerald-500/12 border border-[#059669]/25 dark:border-emerald-400/30 flex items-center justify-center text-xs font-bold text-[#059669] dark:text-emerald-400 font-mono shrink-0">

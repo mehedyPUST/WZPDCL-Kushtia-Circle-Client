@@ -25,9 +25,9 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
   const { date, time } = splitDateTime(record.createdAt || record.calculatedAt);
 
   return (
-    <aside className="w-full h-full flex flex-col bg-surface-2 border border-app shadow-xl overflow-hidden rounded-none md:rounded-xl">
+    <aside className="w-full h-full flex flex-col bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25 shadow-xl overflow-hidden rounded-none md:rounded-xl">
       <div
-        className={`flex items-center gap-2 px-3.5 py-2.5 text-app shrink-0 ${record.isOffline ? "bg-amber-100 dark:bg-amber-950/80 border-b border-amber-300 dark:border-amber-500/30" : "bg-surface-3 border-b border-app" }`}
+        className={`flex items-center gap-2 px-3.5 py-2.5 text-app shrink-0 ${record.isOffline ? "bg-orange-50/85 dark:bg-amber-950/80 border-b border-orange-200 dark:border-amber-500/30" : "bg-emerald-50/60 dark:bg-teal-950/35 border-b border-emerald-200/80 dark:border-teal-500/20" }`}
       >
         <div className="flex-1 min-w-0">
           <p
@@ -51,17 +51,17 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
       </div>
 
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="p-3 grid grid-cols-2 gap-2 bg-surface-2 border-b border-app">
-          <div className="flex items-center justify-between bg-amber-100 dark:bg-amber-950/40 px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-500/35">
-            <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">BUS-2 (kV)</span>
+        <div className="p-3 grid grid-cols-2 gap-2 border-b border-emerald-200/70 dark:border-teal-500/20">
+          <div className="flex items-center justify-between bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] px-3 py-2.5 rounded-xl border border-orange-200 dark:border-amber-500/25">
+            <span className="text-xs font-semibold text-orange-700 dark:text-amber-300">BUS-2 (kV)</span>
             <span className="text-sm font-bold font-mono tabular-nums text-app">
               {record.busVoltages?.bus2 != null
                 ? Number(record.busVoltages.bus2).toFixed(2)
                 : "—"}
             </span>
           </div>
-          <div className="flex items-center justify-between bg-sky-100 dark:bg-sky-950/40 px-3 py-2.5 rounded-xl border border-sky-300 dark:border-sky-500/35">
-            <span className="text-xs font-semibold text-sky-800 dark:text-sky-300">BUS-1 (kV)</span>
+          <div className="flex items-center justify-between bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] px-3 py-2.5 rounded-xl border border-blue-200 dark:border-sky-500/25">
+            <span className="text-xs font-semibold text-blue-700 dark:text-sky-300">BUS-1 (kV)</span>
             <span className="text-sm font-bold font-mono tabular-nums text-app">
               {record.busVoltages?.bus1 != null
                 ? Number(record.busVoltages.bus1).toFixed(2)
@@ -129,16 +129,16 @@ export default function HistoryDetail({ record, onClose, onEdit }) {
           )}
 
         <div className="px-3 pb-4 grid grid-cols-2 gap-2">
-          <div className="bg-cyan-50 dark:bg-cyan-950/40 rounded-xl h-12 flex items-center justify-between px-3 border border-cyan-300 dark:border-cyan-500/35">
-            <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-300">
+          <div className="bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] rounded-xl h-12 flex items-center justify-between px-3 border border-emerald-200 dark:border-teal-500/25">
+            <span className="text-xs font-semibold text-emerald-700 dark:text-teal-300">
               H3+T3
             </span>
-            <span className="text-sm font-bold font-mono tabular-nums text-cyan-800 dark:text-cyan-300">
+            <span className="text-sm font-bold font-mono tabular-nums text-emerald-800 dark:text-teal-200">
               {(Math.round((Number(record.bottail11kV || 0) + Number.EPSILON) * 10) / 10).toFixed(1)}{" "}
               <span className="text-[10px] font-medium text-muted">MW</span>
             </span>
           </div>
-          <div className="bg-emerald-50 dark:bg-emerald-950/45 rounded-xl h-12 flex items-center justify-between px-3 border border-emerald-300 dark:border-emerald-500/35">
+          <div className="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 dark:from-emerald-950/55 dark:via-[#0f1726] dark:to-[#0f1726] rounded-xl h-12 flex items-center justify-between px-3 border border-emerald-200 dark:border-emerald-500/25">
             <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
               Total
             </span>

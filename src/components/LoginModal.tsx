@@ -97,9 +97,9 @@ export default function LoginModal({
         if (e.target === e.currentTarget && !disabled) onClose?.();
       }}
     >
-      <div className="w-full max-w-[54rem] max-h-[min(92dvh,39rem)] bg-white dark:bg-surface rounded-3xl shadow-2xl border border-zinc-200 dark:border-[var(--app-border-strong)] overflow-hidden flex flex-col md:flex-row transition-all relative">
+      <div className="w-full max-w-[54rem] max-h-[min(92dvh,39rem)] bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 dark:from-[#0f1726] dark:via-[#0f1726] dark:to-[#0f1726] rounded-3xl shadow-2xl border border-emerald-200 dark:border-teal-500/25 overflow-hidden flex flex-col md:flex-row transition-all relative">
         {/* Left Presentation Panel */}
-        <aside className="relative md:w-[44%] shrink-0 bg-zinc-50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-zinc-200 dark:border-white/10 p-6 sm:p-7 md:p-8 flex flex-col justify-between overflow-hidden">
+        <aside className="relative md:w-[44%] shrink-0 bg-gradient-to-br from-emerald-50/90 via-white to-blue-50/50 dark:bg-gradient-to-br dark:from-[#080d16] dark:via-[#0f1726] dark:to-[#0c2721] border-b md:border-b-0 md:border-r border-emerald-200/80 dark:border-white/10 p-6 sm:p-7 md:p-8 flex flex-col justify-between overflow-hidden">
           {/* Subtle Ambient Lighting */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-emerald-100/70 dark:bg-emerald-500/15 blur-3xl" />
@@ -153,16 +153,22 @@ export default function LoginModal({
               { icon: Activity, text: "Loadshed planner & allotment", tone: "orange" },
               { icon: FileSpreadsheet, text: "Official logs & night sheets", tone: "blue" },
             ].map(({ icon: Icon, text, tone }, i) => {
+              const badgeCard =
+                tone === "orange"
+                  ? "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200 dark:from-amber-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25"
+                  : tone === "blue"
+                  ? "bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-200 dark:from-sky-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-sky-500/25"
+                  : "bg-gradient-to-br from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25";
               const iconBox =
                 tone === "orange"
-                  ? "bg-orange-50 border-orange-200 text-orange-500 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
+                  ? "bg-orange-100/80 border-orange-200 text-orange-600 dark:bg-amber-500/15 dark:border-amber-400/35 dark:text-amber-300"
                   : tone === "blue"
-                  ? "bg-blue-50 border-blue-200 text-blue-500 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
+                  ? "bg-blue-100/80 border-blue-200 text-blue-600 dark:bg-sky-500/15 dark:border-sky-400/35 dark:text-sky-300"
+                  : "bg-emerald-100/80 border-emerald-200 text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/35 dark:text-emerald-300";
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-2.5 p-2 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10 text-xs font-semibold text-zinc-800 dark:text-slate-100 shadow-xs"
+                  className={`flex items-center gap-2.5 p-2 rounded-xl border text-xs font-semibold text-zinc-800 dark:text-slate-100 shadow-xs ${badgeCard}`}
                 >
                   <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${iconBox}`}>
                     <Icon className="w-3 h-3" />
@@ -180,7 +186,7 @@ export default function LoginModal({
         </aside>
 
         {/* Right Form Panel */}
-        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-surface relative">
+        <div className="flex-1 flex flex-col min-h-0 bg-white/80 dark:bg-[#0f1726]/70 relative">
           {/* Close button */}
           <button
             type="button"

@@ -23,7 +23,13 @@ export default function ConfirmModal({
         if (e.target === e.currentTarget && !loading) onCancel?.();
       }}
     >
-      <div className="w-full max-w-sm bg-surface rounded-2xl shadow-2xl border border-app overflow-hidden">
+      <div
+        className={`w-full max-w-sm rounded-2xl shadow-2xl border overflow-hidden bg-gradient-to-br ${
+          danger
+            ? "from-rose-50/90 via-white to-rose-50/40 border-rose-200 dark:from-rose-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-rose-500/25"
+            : "from-emerald-50/80 via-white to-blue-50/30 border-emerald-200 dark:from-teal-950/50 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-teal-500/25"
+        }`}
+      >
         <div className="px-5 pt-5 pb-3">
           <h3
             id="confirm-title"
@@ -35,7 +41,13 @@ export default function ConfirmModal({
             {message}
           </p>
         </div>
-        <div className="px-5 py-4 flex gap-3 justify-end bg-surface-2 border-t border-app">
+        <div
+          className={`px-5 py-4 flex gap-3 justify-end border-t ${
+            danger
+              ? "bg-rose-50/65 dark:bg-rose-950/35 border-rose-200/80 dark:border-rose-500/20"
+              : "bg-emerald-50/60 dark:bg-teal-950/35 border-emerald-200/80 dark:border-teal-500/20"
+          }`}
+        >
           <button
             type="button"
             disabled={loading}
