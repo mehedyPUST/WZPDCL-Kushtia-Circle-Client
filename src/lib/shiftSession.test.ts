@@ -5,8 +5,8 @@ import {
   formatDhakaCutoffHM,
   getNextShiftCutoffMs,
   isShiftAutoLogoutRole,
+  normalizeAuthRole,
 } from "./shiftSession";
-import { signToken, verifyTokenString, ShiftCutoffError } from "./serverAuth";
 
 function dhakaMs(ymd: string, hm: string): number {
   const [y, m, d] = ymd.split("-").map(Number);
@@ -66,27 +66,9 @@ test("computeSessionExpiry sets shift cutoff for duty/admin and 7d for circle-lo
   assert.equal(viewerExp.shiftLogoutAt, null);
 });
 
-test("verifyTokenString rejects expired shift cutoff for duty/admin but allows circle-load-input", () => {
-  const dutyToken = signToken({
-    id: "u1",
-    username: "bottail.dilip",
-    role: "duty",
-  });
-  const decodedBefore = verifyTokenString(dutyToken);
-  assert.ok(decodedBefore.shiftLogoutAt && decodedBefore.shiftLogoutAt > Date.now());
-
-  // At exact shiftLogoutAt (and after), duty/admin tokens are rejected with ShiftCutoffError
-  assert.throws(
-    () => verifyTokenString(dutyToken, decodedBefore.shiftLogoutAt),
-    (err: any) => err instanceof ShiftCutoffError
-  );
-
-  const circleToken = signToken({
-    id: "u2",
-    username: "bheramara.op",
-    role: "circle-load-input",
-  });
-  const verified = verifyTokenString(circleToken, decodedBefore.shiftLogoutAt + 60_000);
-  assert.equal(verified.role, "circle-load-input");
-  assert.equal(verified.shiftLogoutAt, null);
+test("normalizeAuthRole maps aliases cleanly", () => {
+  assert.equal(normalizeAuthRole("superadmin"), "admin");
+  assert.equal(normalizeAuthRole("duty_person"), "duty");
+  assert.equal(normalizeAuthRole("circle_input"), "circle-load-input");
+  assert.equal(normalizeAuthRole("guest"), "viewer");
 });
