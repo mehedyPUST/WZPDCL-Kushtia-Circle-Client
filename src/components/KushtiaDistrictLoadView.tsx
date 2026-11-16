@@ -325,10 +325,7 @@ export default function KushtiaDistrictLoadView() {
     load();
   }, [load]);
 
-  useEffect(() => {
-    const id = setInterval(() => load(), 30000);
-    return () => clearInterval(id);
-  }, [load]);
+  // No automatic polling — data refreshes only after user inputs / saves.
 
   const slots = useMemo(() => data?.slots || [], [data?.slots]);
   const boundary = data?.boundary || "22:00";

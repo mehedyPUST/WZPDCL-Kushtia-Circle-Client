@@ -678,12 +678,7 @@ export default function CircleLoadView() {
     load();
   }, [load]);
 
-  useEffect(() => {
-    const anyLock = (data?.stations || []).some((s) => s.editLocked);
-    if (!anyLock) return undefined;
-    const id = setInterval(() => load(), 15000);
-    return () => clearInterval(id);
-  }, [data?.stations, load]);
+  // No automatic polling — data refreshes only after user inputs / saves.
 
   const setField = (stationId, key, val) => {
     setDrafts((d) => ({

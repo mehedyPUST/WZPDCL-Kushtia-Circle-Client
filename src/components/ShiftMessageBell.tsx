@@ -139,13 +139,12 @@ export default function ShiftMessageBell() {
   useEffect(() => {
     if (!isAuthenticated) return;
     load();
-    const t = setInterval(load, 45_000);
+    // No automatic polling — refresh only after notes are updated / user actions.
     const onNotesUpdated = () => {
       load();
     };
     window.addEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
     return () => {
-      clearInterval(t);
       window.removeEventListener("wzpdcl:station-notes-updated", onNotesUpdated);
     };
   }, [isAuthenticated, load]);

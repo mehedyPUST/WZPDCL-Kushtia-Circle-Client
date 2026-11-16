@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 const CURRENT_BUILD_ID = process.env.NEXT_PUBLIC_APP_BUILD_ID || "dev";
-const AUTO_CHECK_INTERVAL_MS = 3 * 60 * 1000;
+const AUTO_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6 hours
 
 interface SwReply {
   ok?: boolean;
