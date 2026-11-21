@@ -468,7 +468,7 @@ export default function OvertimeDataPanel({
           onClose={() => setModalMode(null)}
           onSwitchMode={(m) => setModalMode(m)}
           onSave={async () => handleSave()}
-          onDownload={() => window.print()}
+          onDownload={() => printOvertimeSheet()}
           setEmployeeName={setEmployeeName}
           setDesignation={setDesignation}
           setWeeklyHoliday={setWeeklyHoliday}
@@ -945,6 +945,164 @@ function OvertimeSheetModal({
       </div>
     </div>
   );
+}
+
+/**
+ * Opens a clean print window with only the overtime sheet.
+ * Avoids modal overflow / visibility / absolute-position clipping
+ * that commonly cuts the bottom of the PDF in Chrome "Save as PDF".
+ */
+function printOvertimeSheet() {
+  const root = document.getElementById("overtime-print-root");
+  if (!root) {
+    window.print(); // fallback
+    return;
+  }
+
+  // Resolve logo to absolute URL so it loads in the new window
+  const logoImg = root.querySelector("img");
+  const logoSrc = logoImg
+    ? new URL(logoImg.getAttribute("src") || "", window.location.href).href
+    : "";
+
+  const styles = `
+    @page {
+      size: A4 landscape;
+      margin: 6mm 7mm 10mm 7mm;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #000;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      padding: 2mm 3mm 4mm;
+    }
+    .bn {
+      font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", "Kalpurush", sans-serif;
+    }
+    table.ot {
+      border-collapse: collapse;
+      width: 100%;
+      page-break-inside: auto;
+    }
+    table.ot thead {
+      display: table-header-group;
+    }
+    table.ot th,
+    table.ot td {
+      border: 1px solid #000;
+      padding: 4px 3px;
+      vertical-align: middle !important;
+      text-align: center !important;
+      font-size: 11.5px;
+      line-height: 1.25;
+    }
+    table.ot thead th {
+      font-weight: 700;
+      font-size: 11px;
+      background: #fff;
+    }
+    table.ot tbody td {
+      font-size: 12px;
+    }
+    table.ot td.bn {
+      font-size: 12.5px;
+    }
+    table.ot tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+    table.ot tr.ot-spacer td {
+      height: 6px !important;
+      padding: 0 !important;
+      line-height: 0 !important;
+      font-size: 0 !important;
+      border-left: 1px solid #000;
+      border-right: 1px solid #000;
+    }
+    .meta-table td {
+      border: none !important;
+      padding: 2px 6px 2px 0;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    img {
+      max-width: 92px;
+      height: auto;
+    }
+  `;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Overtime Work Form</title>
+        <style>${styles}</style>
+      </head>
+      <body>
+        ${root.outerHTML.replace(
+          /src="[^"]*wzpdcl-form-logo[^"]*"/,
+          `src="${logoSrc}"`
+        )}
+      </body>
+    </html>
+  `;
+
+  const win = window.open("", "_blank", "noopener,noreferrer");
+  if (!win) {
+    // Popup blocked → fall back to normal print
+    window.print();
+    return;
+  }
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+
+  // Wait for images (logo) then print
+  const doPrint = () => {
+    try {
+      win.focus();
+      win.print();
+    } finally {
+      // Close after print dialog finishes (or after a short delay)
+      setTimeout(() => {
+        try {
+          win.close();
+        } catch {
+          /* ignore */
+        }
+      }, 800);
+    }
+  };
+
+  // Give the browser a moment to parse + load the logo
+  const imgs = win.document.images;
+  if (imgs.length === 0) {
+    setTimeout(doPrint, 150);
+  } else {
+    let pending = imgs.length;
+    const done = () => {
+      pending -= 1;
+      if (pending <= 0) setTimeout(doPrint, 80);
+    };
+    Array.from(imgs).forEach((img) => {
+      if (img.complete) done();
+      else {
+        img.onload = done;
+        img.onerror = done;
+      }
+    });
+    // Safety timeout
+    setTimeout(doPrint, 1500);
+  }
 }
 
 /**
