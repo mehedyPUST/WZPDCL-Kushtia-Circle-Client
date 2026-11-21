@@ -950,10 +950,7 @@ function OvertimeSheetModal({
 /**
  * Pixel-faithful overtime sheet matching "Overtime Form M H-2.pdf"
  * Header: circular logo LEFT | titles CENTER | boxed station RIGHT
- * Table: Date | Normal From/To | Worked Beyond From/To | Hours | Purpose | Signatures | C/S SE
- * Weekly holiday → Normal cells merged as "সাপ্তাহিক বিরতি"
- * Extra day → Normal From + To split
- * Each duty row followed by blank spacer row; total row as in form
+ * Table: all cells middle/center aligned; tight top margin for print
  */
 function OfficialOvertimeSheet({
   year,
@@ -977,8 +974,8 @@ function OfficialOvertimeSheet({
       className="bg-white text-black mx-auto print:shadow-none"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
-        maxWidth: 1050,
-        padding: "10px 12px 14px",
+        maxWidth: 1100,
+        padding: "0 8px 10px",
         border: "1px solid #ccc",
       }}
     >
@@ -988,12 +985,19 @@ function OfficialOvertimeSheet({
           #overtime-print-root, #overtime-print-root * { visibility: visible !important; }
           #overtime-print-root {
             position: absolute !important;
-            left: 0; top: 0; width: 100%;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 4mm 4mm !important;
             background: #fff !important;
             border: none !important;
-            padding: 0 !important;
           }
-          @page { size: A4 landscape; margin: 8mm; }
+          /* Pull content to the very top of the printed page */
+          @page {
+            size: A4 landscape;
+            margin: 4mm 6mm 6mm 6mm;
+          }
         }
         #overtime-print-root .bn {
           font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", sans-serif;
@@ -1005,82 +1009,82 @@ function OfficialOvertimeSheet({
         #overtime-print-root table.ot th,
         #overtime-print-root table.ot td {
           border: 1px solid #000;
-          padding: 2px 3px;
-          vertical-align: middle;
-          font-size: 10.5px;
-          line-height: 1.2;
+          padding: 5px 4px;
+          vertical-align: middle !important;
+          text-align: center !important;
+          font-size: 12px;
+          line-height: 1.3;
         }
         #overtime-print-root table.ot thead th {
           font-weight: 700;
-          text-align: center;
+          font-size: 11.5px;
           background: #fff;
         }
         #overtime-print-root table.ot tbody td {
-          text-align: center;
+          font-size: 12.5px;
         }
-        #overtime-print-root table.ot td.purp {
-          text-align: left;
-          padding-left: 5px;
+        #overtime-print-root table.ot td.bn {
+          font-size: 13px;
         }
         #overtime-print-root .meta-table td {
           border: none !important;
-          padding: 0 4px 1px 0;
-          font-size: 12.5px;
+          padding: 2px 6px 2px 0;
+          font-size: 13.5px;
+          vertical-align: middle;
         }
       `}</style>
 
       <div id="overtime-print-root">
-        {/* ===== HEADER (exact PDF arrangement) ===== */}
+        {/* ===== HEADER ===== */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "78px 1fr 130px",
+            gridTemplateColumns: "100px 1fr 140px",
             alignItems: "center",
-            gap: 8,
-            marginBottom: 8,
+            gap: 10,
+            marginTop: 0,
+            marginBottom: 6,
           }}
         >
-          {/* Left: circular WZPDCL logo from official form */}
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             <img
               src="/wzpdcl-form-logo.jpeg"
               alt="WZPDCL"
-              width={70}
-              height={70}
-              style={{ width: 70, height: 70, objectFit: "contain" }}
+              width={92}
+              height={92}
+              style={{ width: 92, height: 92, objectFit: "contain" }}
             />
           </div>
 
-          {/* Center titles */}
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3 }}>
               Office of the Executive Engineer
             </div>
-            <div style={{ fontSize: 12.5, lineHeight: 1.25 }}>
+            <div style={{ fontSize: 13.5, lineHeight: 1.3 }}>
               Sales &amp; Distribution Division- 1
             </div>
             <div
               style={{
-                fontSize: 13.5,
+                fontSize: 14.5,
                 fontWeight: 700,
                 textDecoration: "underline",
-                lineHeight: 1.3,
+                lineHeight: 1.35,
               }}
             >
               WZPDCL, Kushtia
             </div>
           </div>
 
-          {/* Right: boxed station label */}
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
             <div
               style={{
                 border: "1.5px solid #000",
-                padding: "4px 8px",
-                fontSize: 11,
+                padding: "6px 10px",
+                fontSize: 12,
                 fontWeight: 600,
                 whiteSpace: "nowrap",
-                lineHeight: 1.2,
+                lineHeight: 1.25,
+                textAlign: "center",
               }}
             >
               33/11 KV Bottail S/S
@@ -1089,7 +1093,7 @@ function OfficialOvertimeSheet({
         </div>
 
         {/* ===== META ===== */}
-        <table className="meta-table" style={{ marginBottom: 8 }}>
+        <table className="meta-table" style={{ marginBottom: 8, marginTop: 2 }}>
           <tbody>
             <tr>
               <td style={{ fontWeight: 700, whiteSpace: "nowrap" }}>
@@ -1117,7 +1121,7 @@ function OfficialOvertimeSheet({
           </tbody>
         </table>
 
-        {/* ===== MAIN TABLE ===== */}
+        {/* ===== MAIN TABLE — all cells center + middle aligned ===== */}
         <table className="ot">
           <colgroup>
             <col style={{ width: "9%" }} />
@@ -1125,8 +1129,8 @@ function OfficialOvertimeSheet({
             <col style={{ width: "7%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "7%" }} />
-            <col style={{ width: "8%" }} />
-            <col style={{ width: "18%" }} />
+            <col style={{ width: "9%" }} />
+            <col style={{ width: "17%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "6%" }} />
             <col style={{ width: "9%" }} />
@@ -1186,8 +1190,6 @@ function OfficialOvertimeSheet({
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
                       {formatYmdDisplayBn(r.dateYmd)}
                     </td>
-
-                    {/* Weekly holiday: ONE merged Normal cell (as official form) */}
                     {r.isExtra ? (
                       <>
                         <td className="bn" style={{ whiteSpace: "nowrap" }}>
@@ -1204,7 +1206,6 @@ function OfficialOvertimeSheet({
                         সাপ্তাহিক বিরতি
                       </td>
                     )}
-
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
                       {toBengaliDigits(r.dutyFrom)}
                     </td>
@@ -1214,16 +1215,15 @@ function OfficialOvertimeSheet({
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
                       {`${toBengaliDigits(Math.round(r.hours))} ঘণ্টা`}
                     </td>
-                    <td className="bn purp">{r.purpose}</td>
-                    <td style={{ height: 22 }} />
+                    <td className="bn">{r.purpose}</td>
+                    <td style={{ height: 26 }} />
                     <td />
                     <td />
                     <td />
                     <td />
                   </tr>
-                  {/* Blank spacer row under each duty row (matches form) */}
                   <tr>
-                    <td style={{ height: 16, padding: 0 }} />
+                    <td style={{ height: 14, padding: 0 }} />
                     <td style={{ padding: 0 }} />
                     <td style={{ padding: 0 }} />
                     <td style={{ padding: 0 }} />
@@ -1239,8 +1239,6 @@ function OfficialOvertimeSheet({
                 </Fragment>
               ))
             )}
-
-            {/* Total row — মোট in Worked-Beyond To col, hours in Total Hour col */}
             <tr>
               <td />
               <td />
