@@ -1185,6 +1185,7 @@ export async function saveOvertimeSheet(payload: {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
+  excludedDates: string[];
   extraDutyEntries: Array<{
     date: string;
     normalFrom: string;

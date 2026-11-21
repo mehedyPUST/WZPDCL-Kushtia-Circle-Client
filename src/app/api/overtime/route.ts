@@ -53,6 +53,9 @@ function serializeDoc(doc: any): OvertimeSheetRecord {
     clLeaveDates: Array.isArray(doc.clLeaveDates)
       ? doc.clLeaveDates.map((d: any) => String(d))
       : [],
+    excludedDates: Array.isArray(doc.excludedDates)
+      ? doc.excludedDates.map((d: any) => String(d))
+      : [],
     extraDutyEntries: parseExtraEntries(doc.extraDutyEntries),
     dutyShift: normalizeDutyShift(doc.dutyShift ?? "C"),
     purpose: String(doc.purpose || DEFAULT_PURPOSE),
@@ -131,6 +134,7 @@ export async function PUT(request: Request) {
       designation: String(body.designation || "SBA-A").trim() || "SBA-A",
       weeklyHoliday: Math.min(6, Math.max(0, Number(body.weeklyHoliday ?? 0))),
       clLeaveDates: parseYmdList(body.clLeaveDates),
+      excludedDates: parseYmdList(body.excludedDates),
       extraDutyEntries: parseExtraEntries(body.extraDutyEntries),
       dutyShift: normalizeDutyShift(body.dutyShift ?? "C"),
       purpose: String(body.purpose || "").trim() || DEFAULT_PURPOSE,

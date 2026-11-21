@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   Download,
@@ -26,6 +26,7 @@ import {
   formatYmdDisplayBn,
   generateOvertimeRows,
   normalizeDutyShift,
+  MAX_OVERTIME_HOURS,
   totalOvertimeHours,
   toBengaliDigits,
   type DutyShiftId,
@@ -53,6 +54,7 @@ export default function OvertimeDataPanel({
   const [weeklyHoliday, setWeeklyHoliday] = useState(0);
   const [clLeaveDates, setClLeaveDates] = useState<string[]>([]);
   const [extraDutyEntries, setExtraDutyEntries] = useState<ExtraDutyEntry[]>([]);
+  const [excludedDates, setExcludedDates] = useState<string[]>([]);
   const [clInput, setClInput] = useState("");
   const [dutyShift, setDutyShift] = useState<DutyShiftId>("C");
   const [purpose, setPurpose] = useState(
@@ -76,6 +78,9 @@ export default function OvertimeDataPanel({
       );
       setExtraDutyEntries(
         Array.isArray(sheet.extraDutyEntries) ? sheet.extraDutyEntries : []
+      );
+      setExcludedDates(
+        Array.isArray(sheet.excludedDates) ? sheet.excludedDates : []
       );
       setDutyShift(normalizeDutyShift(sheet.dutyShift ?? "C"));
       setPurpose(
@@ -108,15 +113,26 @@ export default function OvertimeDataPanel({
         month,
         weeklyHoliday,
         clLeaveDates,
+        excludedDates,
         extraDutyEntries,
         dutyShift,
         purpose,
       }),
-    [year, month, weeklyHoliday, clLeaveDates, extraDutyEntries, dutyShift, purpose]
+    [year, month, weeklyHoliday, clLeaveDates, excludedDates, extraDutyEntries, dutyShift, purpose]
   );
 
   const totalHours = useMemo(() => totalOvertimeHours(rows), [rows]);
+  const overCap = totalHours > MAX_OVERTIME_HOURS;
   const shiftMeta = DUTY_SHIFTS[dutyShift];
+
+  const excludeDay = (ymd: string) => {
+    setExcludedDates((prev) =>
+      prev.includes(ymd) ? prev : [...prev, ymd].sort()
+    );
+  };
+  const restoreDay = (ymd: string) => {
+    setExcludedDates((prev) => prev.filter((d) => d !== ymd));
+  };
 
   const addClDate = () => {
     const v = clInput.trim();
@@ -184,6 +200,7 @@ export default function OvertimeDataPanel({
     designation: designation.trim() || "SBA-A",
     weeklyHoliday,
     clLeaveDates,
+    excludedDates,
     extraDutyEntries,
     dutyShift,
     purpose,
@@ -318,6 +335,56 @@ export default function OvertimeDataPanel({
               </span>
             </p>
           </div>
+
+          {overCap && (
+            <div className="mx-4 mb-3 mt-3 rounded-lg border border-rose-300 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 px-3 py-2.5 text-xs text-rose-900 dark:text-rose-100">
+              <p className="font-semibold">
+                Overtime exceeds the monthly limit of {MAX_OVERTIME_HOURS} hours
+                (currently {totalHours} h).
+              </p>
+              <p className="mt-1 text-[11px] opacity-90">
+                Remove one or more day rows below so the total is at most{" "}
+                {MAX_OVERTIME_HOURS} hours, then Save.
+              </p>
+              <ul className="mt-2 space-y-1">
+                {rows.map((r) => (
+                  <li
+                    key={r.dateYmd}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-white/70 dark:bg-black/20 px-2 py-1"
+                  >
+                    <span className="font-mono">
+                      {r.dateDisplay} · {r.hours}h ·{" "}
+                      {r.isExtra ? "Extra" : "Holiday"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => excludeDay(r.dateYmd)}
+                      className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 text-[11px] font-semibold"
+                    >
+                      Remove this day
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {excludedDates.length > 0 && !overCap && (
+            <div className="mx-4 mb-3 mt-3 rounded-lg border border-zinc-200 dark:border-slate-600 bg-zinc-50 dark:bg-slate-900/40 px-3 py-2 text-[11px] text-zinc-600 dark:text-slate-300">
+              <span className="font-semibold">Excluded days: </span>
+              {excludedDates.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => restoreDay(d)}
+                  className="inline-flex items-center gap-1 mr-1.5 mt-1 rounded-full border border-zinc-300 dark:border-slate-600 px-2 py-0.5 font-mono hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                  title="Restore this day"
+                >
+                  {d} ×
+                </button>
+              ))}
+            </div>
+          )}
+
           {rows.length === 0 ? (
             <p className="px-5 py-8 text-center text-sm text-zinc-500 dark:text-slate-400">
               No overtime days yet. Click Modify to set weekly holiday / extra days.
@@ -388,6 +455,7 @@ export default function OvertimeDataPanel({
           designation={designation}
           weeklyHoliday={weeklyHoliday}
           clLeaveDates={clLeaveDates}
+          excludedDates={excludedDates}
           extraDutyEntries={extraDutyEntries}
           dutyShift={dutyShift}
           purpose={purpose}
@@ -395,6 +463,7 @@ export default function OvertimeDataPanel({
           extraDraft={extraDraft}
           rows={rows}
           totalHours={totalHours}
+          overCap={overCap}
           saving={saving}
           onClose={() => setModalMode(null)}
           onSwitchMode={(m) => setModalMode(m)}
@@ -412,6 +481,8 @@ export default function OvertimeDataPanel({
           addExtraEntry={addExtraEntry}
           updateExtraEntry={updateExtraEntry}
           removeExtraEntry={removeExtraEntry}
+          excludeDay={excludeDay}
+          restoreDay={restoreDay}
         />
       )}
     </div>
@@ -463,6 +534,10 @@ function OvertimeSheetModal({
   addExtraEntry,
   updateExtraEntry,
   removeExtraEntry,
+  excludedDates,
+  overCap,
+  excludeDay,
+  restoreDay,
 }: {
   mode: "preview" | "modify";
   year: number;
@@ -495,6 +570,10 @@ function OvertimeSheetModal({
   addExtraEntry: () => void;
   updateExtraEntry: (date: string, patch: Partial<ExtraDutyEntry>) => void;
   removeExtraEntry: (date: string) => void;
+  excludedDates: string[];
+  overCap: boolean;
+  excludeDay: (ymd: string) => void;
+  restoreDay: (ymd: string) => void;
 }) {
   const monthLabel = MONTH_LABELS[month - 1];
   const shiftMeta = DUTY_SHIFTS[dutyShift];
@@ -807,6 +886,52 @@ function OvertimeSheetModal({
             </div>
           )}
 
+
+          {overCap && (
+            <div className="print:hidden mb-3 rounded-lg border border-rose-300 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 px-3 py-2.5 text-xs text-rose-900 dark:text-rose-100">
+              <p className="font-semibold">
+                Monthly overtime limit is {MAX_OVERTIME_HOURS} hours — current total is {totalHours} h.
+              </p>
+              <p className="mt-1 text-[11px]">
+                Remove a day row so the sheet stays within {MAX_OVERTIME_HOURS} hours, then Save.
+              </p>
+              <ul className="mt-2 space-y-1">
+                {rows.map((r) => (
+                  <li
+                    key={r.dateYmd}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-white/80 dark:bg-black/20 px-2 py-1"
+                  >
+                    <span className="font-mono text-[11px]">
+                      {r.dateDisplay} · {r.hours}h · {r.isExtra ? "Extra" : "Weekly holiday"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => excludeDay(r.dateYmd)}
+                      className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 text-[11px] font-semibold"
+                    >
+                      Remove this day
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {excludedDates.length > 0 && (
+            <div className="print:hidden mb-3 rounded-lg border border-zinc-200 dark:border-slate-600 bg-zinc-50 dark:bg-slate-900/40 px-3 py-2 text-[11px] text-zinc-600 dark:text-slate-300">
+              <span className="font-semibold">Excluded (click to restore): </span>
+              {excludedDates.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => restoreDay(d)}
+                  className="inline-flex items-center mr-1.5 mt-1 rounded-full border border-zinc-300 dark:border-slate-600 px-2 py-0.5 font-mono hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                >
+                  {d} ×
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Official PDF sheet */}
           <OfficialOvertimeSheet
             year={year}
@@ -822,7 +947,7 @@ function OvertimeSheetModal({
   );
 }
 
-/** Matches the official Overtime Work Form column layout + site logo */
+/** Matches the official Overtime Work Form (DOCX) exactly */
 function OfficialOvertimeSheet({
   year,
   month,
@@ -859,130 +984,117 @@ function OfficialOvertimeSheet({
         #overtime-print-root .bn {
           font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", sans-serif;
         }
+        #overtime-print-root table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        #overtime-print-root th,
+        #overtime-print-root td {
+          border: 1px solid #000;
+          padding: 4px 5px;
+          vertical-align: middle;
+        }
+        #overtime-print-root th {
+          background: #f3f3f3;
+          font-weight: 700;
+          text-align: center;
+        }
       `}</style>
 
       <div id="overtime-print-root">
-        {/* Header with site logo — matches official form */}
-        <div className="relative mb-2">
-          <div className="flex items-start gap-3">
-            <img
-              src="/logo.png"
-              alt="WZPDCL"
-              width={56}
-              height={56}
-              className="w-14 h-14 object-contain shrink-0"
-            />
-            <div className="flex-1 text-center pr-14">
-              <div className="text-[14px] font-bold leading-tight">
-                Office of the Executive Engineer
-              </div>
-              <div className="text-[12px] leading-tight">
-                Sales &amp; Distribution Division- 1
-              </div>
-              <div className="text-[13px] font-bold underline leading-tight">
-                WZPDCL, Kushtia
-              </div>
+        {/* Header — logo + office lines (same order as official form) */}
+        <div className="flex items-start gap-3 mb-3">
+          <img
+            src="/logo.png"
+            alt="WZPDCL"
+            width={58}
+            height={58}
+            className="w-[58px] h-[58px] object-contain shrink-0"
+          />
+          <div className="flex-1 text-center">
+            <div className="text-[14px] font-bold leading-snug">
+              Office of the Executive Engineer
+            </div>
+            <div className="text-[12px] font-semibold leading-snug">
+              33/11 KV Bottail S/S
+            </div>
+            <div className="text-[12px] leading-snug">
+              Sales &amp; Distribution Division- 1
+            </div>
+            <div className="text-[13px] font-bold underline leading-snug">
+              WZPDCL, Kushtia
             </div>
           </div>
-          <div className="absolute right-0 top-0 border border-black px-2 py-0.5 text-[10px] leading-tight">
-            33/11 KV Bottail S/S
-          </div>
+          {/* spacer so title stays centered vs logo */}
+          <div className="w-[58px] shrink-0" aria-hidden />
         </div>
 
-        <div className="text-[12px] mb-2 leading-relaxed">
-          <div>
-            <strong>Overtime Work Form</strong>
-            {" : "}
-            {monthLabel}-{year}
-          </div>
-          <div>
-            <strong>Name of Employee</strong>
-            {" : "}
-            {employeeName || "—"}
-          </div>
-          <div>
-            <strong>Designation</strong>
-            {" : "}
-            {designation || "—"}
-          </div>
-        </div>
+        {/* Meta fields */}
+        <table className="mb-3 text-[12px]" style={{ border: "none", width: "auto" }}>
+          <tbody>
+            <tr>
+              <td style={{ border: "none", padding: "1px 8px 1px 0", fontWeight: 700 }}>
+                Overtime Work Form
+              </td>
+              <td style={{ border: "none", padding: "1px 4px" }}>:</td>
+              <td style={{ border: "none", padding: "1px 4px", fontWeight: 700 }}>
+                {monthLabel}-{year}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ border: "none", padding: "1px 8px 1px 0", fontWeight: 700 }}>
+                Name of Employee
+              </td>
+              <td style={{ border: "none", padding: "1px 4px" }}>:</td>
+              <td style={{ border: "none", padding: "1px 4px", fontWeight: 700 }}>
+                {employeeName || "—"}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ border: "none", padding: "1px 8px 1px 0", fontWeight: 700 }}>
+                Designation
+              </td>
+              <td style={{ border: "none", padding: "1px 4px" }}>:</td>
+              <td style={{ border: "none", padding: "1px 4px", fontWeight: 700 }}>
+                {designation || "—"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-        {/* Exact column structure from provided PDF */}
-        <table className="w-full border-collapse text-[10px]">
+        {/* Main grid — exact columns from official DOCX */}
+        <table className="w-full text-[10.5px]">
           <thead>
             <tr>
-              <th
-                rowSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0] align-middle"
-              >
-                Date
-              </th>
-              <th
-                colSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0]"
-              >
-                Normal Working Hour
-              </th>
-              <th
-                colSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0]"
-              >
-                Worked Beyond Normal Time
-              </th>
-              <th
-                rowSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0] align-middle"
-              >
+              <th rowSpan={2}>Date</th>
+              <th colSpan={2}>Normal Working Hour</th>
+              <th colSpan={2}>Worked Beyond Normal Time</th>
+              <th rowSpan={2}>
                 Total Hour for
                 <br />
                 Extra Working
               </th>
-              <th
-                rowSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0] align-middle"
-              >
-                Purpose of Extra Work
-              </th>
-              <th
-                colSpan={4}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0]"
-              >
-                Signature
-              </th>
-              <th
-                rowSpan={2}
-                className="border border-black px-0.5 py-1 bg-[#f0f0f0] align-middle"
-              >
+              <th rowSpan={2}>Purpose of Extra Work</th>
+              <th colSpan={4}>Signature</th>
+              <th rowSpan={2}>
                 C/S
                 <br />
                 SE
               </th>
             </tr>
             <tr>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                From
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                To
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                From
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                To
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                Employee
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
-                SAE
-              </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
+              <th>From</th>
+              <th>To</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Employee</th>
+              <th>SAE</th>
+              <th>
                 Controlling
                 <br />
                 Officer
               </th>
-              <th className="border border-black px-0.5 py-0.5 bg-[#f0f0f0] font-semibold">
+              <th>
                 Head of
                 <br />
                 Office
@@ -992,72 +1104,67 @@ function OfficialOvertimeSheet({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td
-                  colSpan={12}
-                  className="border border-black px-2 py-6 text-center text-zinc-500"
-                >
+                <td colSpan={12} className="text-center py-6 text-zinc-500">
                   No overtime days
                 </td>
               </tr>
             ) : (
               rows.map((r) => (
-                <tr key={r.dateYmd}>
-                  <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                    {formatYmdDisplayBn(r.dateYmd)}
-                  </td>
-                  {/* Normal Working Hour: From | To — weekly holiday spans both */}
-                  {r.isExtra ? (
-                    <>
-                      <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                        {r.normalFrom && r.normalFrom !== "—"
-                          ? toBengaliDigits(r.normalFrom)
-                          : ""}
-                      </td>
-                      <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                        {r.normalTo ? toBengaliDigits(r.normalTo) : ""}
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="border border-black px-1 py-1.5 text-center bn">
-                        সাপ্তাহিক বিরতি
-                      </td>
-                      <td className="border border-black px-1 py-1.5 text-center bn" />
-                    </>
-                  )}
-                  {/* Worked Beyond Normal Time: From | To */}
-                  <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                    {toBengaliDigits(r.dutyFrom)}
-                  </td>
-                  <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                    {toBengaliDigits(r.dutyTo)}
-                  </td>
-                  <td className="border border-black px-1 py-1.5 text-center bn whitespace-nowrap">
-                    {r.hoursLabelBn}
-                  </td>
-                  <td className="border border-black px-1.5 py-1.5 text-left bn">
-                    {r.purpose}
-                  </td>
-                  {/* Signature blanks */}
-                  <td className="border border-black px-2 py-3" />
-                  <td className="border border-black px-2 py-3" />
-                  <td className="border border-black px-2 py-3" />
-                  <td className="border border-black px-2 py-3" />
-                  <td className="border border-black px-2 py-3" />
-                </tr>
+                <Fragment key={r.dateYmd}>
+                  <tr>
+                    <td className="text-center bn whitespace-nowrap">
+                      {formatYmdDisplayBn(r.dateYmd)}
+                    </td>
+                    {/* Weekly holiday → single label in From, To blank
+                        Extra day → From and To both shown */}
+                    {r.isExtra ? (
+                      <>
+                        <td className="text-center bn whitespace-nowrap">
+                          {r.normalFrom && r.normalFrom !== "—"
+                            ? toBengaliDigits(r.normalFrom)
+                            : ""}
+                        </td>
+                        <td className="text-center bn whitespace-nowrap">
+                          {r.normalTo ? toBengaliDigits(r.normalTo) : ""}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="text-center bn" colSpan={2}>
+                          সাপ্তাহিক বিরতি
+                        </td>
+                      </>
+                    )}
+                    <td className="text-center bn whitespace-nowrap">
+                      {toBengaliDigits(r.dutyFrom)}
+                    </td>
+                    <td className="text-center bn whitespace-nowrap">
+                      {toBengaliDigits(r.dutyTo)}
+                    </td>
+                    <td className="text-center bn whitespace-nowrap">
+                      {r.hoursLabelBn}
+                    </td>
+                    <td className="text-left bn">{r.purpose}</td>
+                    <td style={{ minWidth: 48, height: 28 }} />
+                    <td style={{ minWidth: 40 }} />
+                    <td style={{ minWidth: 56 }} />
+                    <td style={{ minWidth: 48 }} />
+                    <td style={{ minWidth: 36 }} />
+                  </tr>
+                  {/* Blank spacer row like the official form */}
+                  <tr aria-hidden>
+                    <td colSpan={12} style={{ height: 10, borderTop: "none" }} />
+                  </tr>
+                </Fragment>
               ))
             )}
             <tr>
-              <td
-                className="border border-black px-1 py-1.5 text-center font-bold bn"
-                colSpan={5}
-              >
-                মোট
-              </td>
-              <td className="border border-black px-1 py-1.5 text-center font-bold bn">
+              <td colSpan={4} />
+              <td className="text-center font-bold bn">মোট</td>
+              <td className="text-center font-bold bn">
                 {formatDurationBn(totalHours)}
               </td>
-              <td className="border border-black" colSpan={6} />
+              <td colSpan={6} />
             </tr>
           </tbody>
         </table>

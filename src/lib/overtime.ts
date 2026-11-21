@@ -48,6 +48,9 @@ export const DUTY_SHIFTS: Record<
   },
 };
 
+/** Monthly overtime hour cap (Bottail SS policy) */
+export const MAX_OVERTIME_HOURS = 32;
+
 export function normalizeDutyShift(value: unknown): DutyShiftId {
   const s = String(value || "").trim().toUpperCase();
   if (s === "A" || s === "B" || s === "C") return s;
@@ -168,6 +171,8 @@ export interface OvertimeGenerateInput {
   month: number;
   weeklyHoliday: number;
   clLeaveDates: string[];
+  /** Dates deliberately dropped from the sheet (e.g. to stay within 32h) */
+  excludedDates?: string[];
   extraDutyEntries: ExtraDutyEntry[];
   dutyShift: DutyShiftId;
   purpose?: string;
@@ -282,8 +287,14 @@ export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[
     });
   }
 
-  rows.sort((a, b) => a.dateYmd.localeCompare(b.dateYmd));
-  return rows;
+  const excluded = new Set(
+    (input.excludedDates || [])
+      .map((d) => String(d || "").trim())
+      .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+  );
+  const filtered = rows.filter((r) => !excluded.has(r.dateYmd));
+  filtered.sort((a, b) => a.dateYmd.localeCompare(b.dateYmd));
+  return filtered;
 }
 
 export function totalOvertimeHours(rows: OvertimeRow[]): number {
@@ -299,6 +310,7 @@ export interface OvertimeSheetRecord {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
+  excludedDates: string[];
   extraDutyEntries: ExtraDutyEntry[];
   dutyShift: DutyShiftId;
   purpose: string;
@@ -322,6 +334,9 @@ export function defaultOvertimeSheet(
       typeof defaults?.weeklyHoliday === "number" ? defaults.weeklyHoliday : 0,
     clLeaveDates: Array.isArray(defaults?.clLeaveDates)
       ? defaults!.clLeaveDates
+      : [],
+    excludedDates: Array.isArray(defaults?.excludedDates)
+      ? defaults!.excludedDates
       : [],
     extraDutyEntries: Array.isArray(defaults?.extraDutyEntries)
       ? defaults!.extraDutyEntries
