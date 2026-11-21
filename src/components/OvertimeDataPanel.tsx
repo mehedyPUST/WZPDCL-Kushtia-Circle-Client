@@ -1265,8 +1265,9 @@ function printOvertimeSheet(docTitle = "Overtime_Work_Form") {
       font-size: 10.5px;
       background: #fff;
     }
-    table.ot tbody td {
+    table.ot tbody tr:not(.ot-spacer) td {
       font-size: 11.5px;
+      height: 36px;
     }
     table.ot td.bn {
       font-size: 12px;
@@ -1281,10 +1282,13 @@ function printOvertimeSheet(docTitle = "Overtime_Work_Form") {
       break-before: avoid;
     }
     table.ot tr.ot-spacer td {
-      height: 5px !important;
-      padding: 0 !important;
-      line-height: 0 !important;
-      font-size: 0 !important;
+      height: 18px !important;
+      padding: 0 3px !important;
+      line-height: 16px !important;
+      font-size: 10px !important;
+      background-color: #f5f5f5 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
       border-left: 1px solid #000;
       border-right: 1px solid #000;
     }
@@ -1481,7 +1485,13 @@ function OfficialOvertimeSheet({
             break-before: avoid;
           }
           #overtime-print-root table.ot tr.ot-spacer td {
-            background-color: #f4f4f5 !important;
+            height: 18px !important;
+            padding: 0 3px !important;
+            line-height: 16px !important;
+            font-size: 10px !important;
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           @page {
             size: A4 landscape;
@@ -1512,7 +1522,7 @@ function OfficialOvertimeSheet({
           font-size: 10.5px;
           background: #fff;
         }
-        #overtime-print-root table.ot tbody td {
+        #overtime-print-root table.ot tbody tr:not(.ot-spacer) td {
           font-size: 11.5px;
           height: 36px;
         }
@@ -1520,7 +1530,13 @@ function OfficialOvertimeSheet({
           font-size: 12px;
         }
         #overtime-print-root table.ot tr.ot-spacer td {
-          background-color: #f4f4f5;
+          height: 18px !important;
+          padding: 0 3px !important;
+          line-height: 16px !important;
+          font-size: 10px !important;
+          background-color: #f5f5f5 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         #overtime-print-root .meta-table td {
           border: none !important;
