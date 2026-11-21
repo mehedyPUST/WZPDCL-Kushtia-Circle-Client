@@ -947,7 +947,14 @@ function OvertimeSheetModal({
   );
 }
 
-/** Official form layout — matches Overtime Form M H.docx cell-for-cell */
+/**
+ * Pixel-faithful overtime sheet matching "Overtime Form M H-2.pdf"
+ * Header: circular logo LEFT | titles CENTER | boxed station RIGHT
+ * Table: Date | Normal From/To | Worked Beyond From/To | Hours | Purpose | Signatures | C/S SE
+ * Weekly holiday → Normal cells merged as "সাপ্তাহিক বিরতি"
+ * Extra day → Normal From + To split
+ * Each duty row followed by blank spacer row; total row as in form
+ */
 function OfficialOvertimeSheet({
   year,
   month,
@@ -967,11 +974,12 @@ function OfficialOvertimeSheet({
 
   return (
     <div
-      className="bg-white text-black mx-auto border border-zinc-400 shadow-sm print:shadow-none print:border-0"
+      className="bg-white text-black mx-auto print:shadow-none"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
-        maxWidth: 1100,
-        padding: "12px 14px 16px",
+        maxWidth: 1050,
+        padding: "10px 12px 14px",
+        border: "1px solid #ccc",
       }}
     >
       <style>{`
@@ -983,64 +991,72 @@ function OfficialOvertimeSheet({
             left: 0; top: 0; width: 100%;
             background: #fff !important;
             border: none !important;
-            box-shadow: none !important;
+            padding: 0 !important;
           }
-          @page { size: A4 landscape; margin: 10mm; }
+          @page { size: A4 landscape; margin: 8mm; }
         }
         #overtime-print-root .bn {
           font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", sans-serif;
         }
-        #overtime-print-root table.ot-main {
+        #overtime-print-root table.ot {
           border-collapse: collapse;
           width: 100%;
-          table-layout: fixed;
         }
-        #overtime-print-root table.ot-main th,
-        #overtime-print-root table.ot-main td {
+        #overtime-print-root table.ot th,
+        #overtime-print-root table.ot td {
           border: 1px solid #000;
-          padding: 3px 4px;
+          padding: 2px 3px;
           vertical-align: middle;
-          font-size: 11px;
-          line-height: 1.25;
+          font-size: 10.5px;
+          line-height: 1.2;
         }
-        #overtime-print-root table.ot-main th {
-          background: #fff;
+        #overtime-print-root table.ot thead th {
           font-weight: 700;
           text-align: center;
+          background: #fff;
         }
-        #overtime-print-root table.ot-main td {
+        #overtime-print-root table.ot tbody td {
           text-align: center;
         }
-        #overtime-print-root table.ot-main td.left {
+        #overtime-print-root table.ot td.purp {
           text-align: left;
+          padding-left: 5px;
         }
-        #overtime-print-root table.ot-meta td {
+        #overtime-print-root .meta-table td {
           border: none !important;
-          padding: 1px 6px 1px 0;
+          padding: 0 4px 1px 0;
           font-size: 12.5px;
-          vertical-align: baseline;
         }
       `}</style>
 
       <div id="overtime-print-root">
-        {/* Header: title block + official logo (from form DOCX) on the right */}
+        {/* ===== HEADER (exact PDF arrangement) ===== */}
         <div
           style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: 10,
-            gap: 12,
+            display: "grid",
+            gridTemplateColumns: "78px 1fr 130px",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 8,
           }}
         >
-          <div style={{ flex: 1, textAlign: "center", paddingTop: 2 }}>
-            <div style={{ fontSize: 15, fontWeight: 700 }}>
+          {/* Left: circular WZPDCL logo from official form */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <img
+              src="/wzpdcl-form-logo.jpeg"
+              alt="WZPDCL"
+              width={70}
+              height={70}
+              style={{ width: 70, height: 70, objectFit: "contain" }}
+            />
+          </div>
+
+          {/* Center titles */}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25 }}>
               Office of the Executive Engineer
             </div>
-            <div style={{ fontSize: 12.5, fontWeight: 600 }}>
-              33/11 KV Bottail S/S
-            </div>
-            <div style={{ fontSize: 12.5 }}>
+            <div style={{ fontSize: 12.5, lineHeight: 1.25 }}>
               Sales &amp; Distribution Division- 1
             </div>
             <div
@@ -1048,27 +1064,32 @@ function OfficialOvertimeSheet({
                 fontSize: 13.5,
                 fontWeight: 700,
                 textDecoration: "underline",
+                lineHeight: 1.3,
               }}
             >
               WZPDCL, Kushtia
             </div>
           </div>
-          <img
-            src="/wzpdcl-form-logo.jpeg"
-            alt="WZPDCL"
-            width={72}
-            height={72}
-            style={{
-              width: 72,
-              height: 72,
-              objectFit: "contain",
-              flexShrink: 0,
-            }}
-          />
+
+          {/* Right: boxed station label */}
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                border: "1.5px solid #000",
+                padding: "4px 8px",
+                fontSize: 11,
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+                lineHeight: 1.2,
+              }}
+            >
+              33/11 KV Bottail S/S
+            </div>
+          </div>
         </div>
 
-        {/* Meta — same 3-row label : value table as DOCX */}
-        <table className="ot-meta" style={{ marginBottom: 10 }}>
+        {/* ===== META ===== */}
+        <table className="meta-table" style={{ marginBottom: 8 }}>
           <tbody>
             <tr>
               <td style={{ fontWeight: 700, whiteSpace: "nowrap" }}>
@@ -1096,23 +1117,19 @@ function OfficialOvertimeSheet({
           </tbody>
         </table>
 
-        {/* Main table — DOCX grid: 12 columns
-            Date | N.From | N.To | W.From | W.To | Hours | Purpose | Emp | SAE | CO | HoO | SE
-            Weekly holiday: Normal cells merged (colSpan 2) = "সাপ্তাহিক বিরতি"
-            Extra day: Normal From + To split
-        */}
-        <table className="ot-main">
+        {/* ===== MAIN TABLE ===== */}
+        <table className="ot">
           <colgroup>
             <col style={{ width: "9%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "7%" }} />
-            <col style={{ width: "9%" }} />
+            <col style={{ width: "8%" }} />
             <col style={{ width: "18%" }} />
             <col style={{ width: "7%" }} />
             <col style={{ width: "6%" }} />
-            <col style={{ width: "8%" }} />
+            <col style={{ width: "9%" }} />
             <col style={{ width: "8%" }} />
             <col style={{ width: "5%" }} />
           </colgroup>
@@ -1122,9 +1139,11 @@ function OfficialOvertimeSheet({
               <th colSpan={2}>Normal Working Hour</th>
               <th colSpan={2}>Worked Beyond Normal Time</th>
               <th rowSpan={2}>
-                Total Hour for
+                Total Hour
                 <br />
-                Extra Working
+                for Extra
+                <br />
+                Working
               </th>
               <th rowSpan={2}>Purpose of Extra Work</th>
               <th colSpan={4}>Signature</th>
@@ -1156,7 +1175,7 @@ function OfficialOvertimeSheet({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={12} style={{ padding: 20, color: "#666" }}>
+                <td colSpan={12} style={{ padding: 16, color: "#666" }}>
                   No overtime days
                 </td>
               </tr>
@@ -1167,6 +1186,8 @@ function OfficialOvertimeSheet({
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
                       {formatYmdDisplayBn(r.dateYmd)}
                     </td>
+
+                    {/* Weekly holiday: ONE merged Normal cell (as official form) */}
                     {r.isExtra ? (
                       <>
                         <td className="bn" style={{ whiteSpace: "nowrap" }}>
@@ -1179,11 +1200,11 @@ function OfficialOvertimeSheet({
                         </td>
                       </>
                     ) : (
-                      /* DOCX: single merged cell across From+To */
                       <td className="bn" colSpan={2}>
                         সাপ্তাহিক বিরতি
                       </td>
                     )}
+
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
                       {toBengaliDigits(r.dutyFrom)}
                     </td>
@@ -1191,24 +1212,35 @@ function OfficialOvertimeSheet({
                       {toBengaliDigits(r.dutyTo)}
                     </td>
                     <td className="bn" style={{ whiteSpace: "nowrap" }}>
-                      {/* official spelling: ঘণ্টা */}
                       {`${toBengaliDigits(Math.round(r.hours))} ঘণ্টা`}
                     </td>
-                    <td className="bn left">{r.purpose}</td>
-                    <td style={{ height: 26 }} />
+                    <td className="bn purp">{r.purpose}</td>
+                    <td style={{ height: 22 }} />
                     <td />
                     <td />
                     <td />
                     <td />
                   </tr>
-                  {/* Official form inserts a blank row after each duty row */}
+                  {/* Blank spacer row under each duty row (matches form) */}
                   <tr>
-                    <td colSpan={12} style={{ height: 14, padding: 0 }} />
+                    <td style={{ height: 16, padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
+                    <td style={{ padding: 0 }} />
                   </tr>
                 </Fragment>
               ))
             )}
-            {/* Total row — মোট under Worked-Beyond "To", hours under Total Hour (DOCX) */}
+
+            {/* Total row — মোট in Worked-Beyond To col, hours in Total Hour col */}
             <tr>
               <td />
               <td />
