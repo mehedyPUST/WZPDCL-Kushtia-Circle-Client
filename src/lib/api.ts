@@ -1159,14 +1159,18 @@ export async function generateNightLog(payload: { dayKey: string; slots: Record<
 export async function fetchOvertimeSheet({
   year,
   month,
+  userId,
 }: {
   year: number;
   month: number;
+  /** When set (duty/admin), load another duty person's sheet */
+  userId?: string;
 }) {
   const q = new URLSearchParams({
     year: String(year),
     month: String(month),
   });
+  if (userId) q.set("userId", userId);
   const res = await fetchWithCredentials(url(`/api/overtime?${q}`), {
     method: "GET",
     cache: "no-store",
@@ -1176,6 +1180,43 @@ export async function fetchOvertimeSheet({
     throw new Error(data.message || "Failed to load overtime data");
   }
   return data;
+}
+
+export async function fetchAllOvertimeSheets({
+  year,
+  month,
+}: {
+  year: number;
+  month: number;
+}) {
+  const q = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+  });
+  const res = await fetchWithCredentials(url(`/api/overtime/all?${q}`), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to load team overtime sheets");
+  }
+  return data as {
+    success: boolean;
+    year: number;
+    month: number;
+    total: number;
+    items: Array<{
+      userId: string;
+      username: string;
+      displayName: string;
+      role: string;
+      assignedStation: string;
+      hasSheet: boolean;
+      sheet: any;
+      updatedAt: string | null;
+    }>;
+  };
 }
 
 export async function saveOvertimeSheet(payload: {
@@ -1196,6 +1237,8 @@ export async function saveOvertimeSheet(payload: {
   }>;
   dutyShift: "A" | "B" | "C";
   purpose?: string;
+  /** When set (duty/admin), save for another duty person */
+  userId?: string;
 }) {
   const res = await fetchWithCredentials(url("/api/overtime"), {
     method: "PUT",
