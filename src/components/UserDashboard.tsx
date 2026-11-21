@@ -288,7 +288,7 @@ export default function UserDashboard() {
         },
         {
           href: "/monthly-overtime",
-          label: "Monthly Overtime Sheets",
+          label: "Overtime Sheets",
           detail: "Team duty SBA overtime forms",
           icon: Clock,
         },

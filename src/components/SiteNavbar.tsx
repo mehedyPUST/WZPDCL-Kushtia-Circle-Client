@@ -19,7 +19,7 @@ const NAV_LINKS = [
   { href: "/statistics", label: "Statistics", icon: "stats" },
   {
     href: "/monthly-overtime",
-    label: "Monthly Overtime Sheets",
+    label: "Overtime Sheets",
     icon: "overtime",
     authOnly: true,
   },

@@ -208,7 +208,7 @@ export default function AllOvertimePanel() {
             </div>
             <div className="min-w-0">
               <h1 className="text-lg sm:text-xl font-bold text-zinc-800 dark:text-white tracking-tight font-display">
-                Monthly Overtime Sheets
+                Overtime Sheets
               </h1>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-slate-300 mt-0.5 leading-relaxed">
                 Select a billing month to inspect every duty operator&apos;s SBA overtime sheet, verify the {MAX_OVERTIME_HOURS}h monthly limit, and preview or update entries.

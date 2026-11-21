@@ -174,7 +174,7 @@ const FEATURES: {
     },
     {
       href: "/monthly-overtime",
-      title: "Monthly Overtime Sheets",
+      title: "Overtime Sheets",
       desc: "Review team duty SBA overtime hours, monitor 32h caps, and inspect or update monthly sheets.",
       icon: Clock,
       writeOnly: true,

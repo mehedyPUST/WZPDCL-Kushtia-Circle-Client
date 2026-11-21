@@ -84,7 +84,7 @@ const NAV_SECTIONS: NavSection[] = [
       { href: "/circle-load", label: "Circle Load", icon: CircleDot },
       { href: "/kushtia-district-load", label: "District Load", icon: MapPin },
       { href: "/statistics", label: "Statistics", icon: BarChart3 },
-      { href: "/monthly-overtime", label: "Monthly Overtime Sheets", icon: Clock },
+      { href: "/monthly-overtime", label: "Overtime Sheets", icon: Clock },
     ],
   },
   {
