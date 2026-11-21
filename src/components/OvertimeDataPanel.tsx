@@ -1481,10 +1481,7 @@ function OfficialOvertimeSheet({
             break-before: avoid;
           }
           #overtime-print-root table.ot tr.ot-spacer td {
-            height: 5px !important;
-            padding: 0 !important;
-            line-height: 0 !important;
-            font-size: 0 !important;
+            background-color: #f4f4f5 !important;
           }
           @page {
             size: A4 landscape;
@@ -1517,15 +1514,13 @@ function OfficialOvertimeSheet({
         }
         #overtime-print-root table.ot tbody td {
           font-size: 11.5px;
+          height: 36px;
         }
         #overtime-print-root table.ot td.bn {
           font-size: 12px;
         }
         #overtime-print-root table.ot tr.ot-spacer td {
-          height: 5px !important;
-          padding: 0 !important;
-          line-height: 0 !important;
-          font-size: 0 !important;
+          background-color: #f4f4f5;
         }
         #overtime-print-root .meta-table td {
           border: none !important;
@@ -1717,25 +1712,25 @@ function OfficialOvertimeSheet({
                       {`${toBengaliDigits(Math.round(r.hours))} ঘণ্টা`}
                     </td>
                     <td className="bn">{r.purpose}</td>
-                    <td style={{ height: 22 }} />
+                    <td />
                     <td />
                     <td />
                     <td />
                     <td />
                   </tr>
-                  <tr className="ot-spacer">
-                    <td style={{ height: 10, padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
-                    <td style={{ padding: 0 }} />
+                  <tr className="ot-spacer" aria-hidden="true">
+                    <td>&nbsp;</td>
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td />
                   </tr>
                 </Fragment>
               ))
