@@ -100,7 +100,7 @@ export function toBengaliDigits(input: string | number): string {
 
 export function formatDurationBn(hours: number): string {
   const whole = Math.round(hours);
-  return `${toBengaliDigits(whole)} ঘন্টা`;
+  return `${toBengaliDigits(whole)} ঘণ্টা`;
 }
 
 export function ymdFromParts(year: number, month: number, day: number): string {
@@ -178,7 +178,7 @@ export interface OvertimeGenerateInput {
   purpose?: string;
 }
 
-const DEFAULT_PURPOSE = "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়";
+const DEFAULT_PURPOSE = "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়";
 
 function hmDisplay(hm: string): string {
   const mins = parseHmToMinutes(hm);
