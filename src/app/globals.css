@@ -2298,3 +2298,42 @@ html[data-theme="light"] .text-secondary {
 html[data-theme="light"] .login-form-panel {
   background: #ffffff;
 }
+
+/* ── Print / Save as PDF layout reset ── */
+@media print {
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    color-scheme: light !important;
+  }
+
+  .app-grid-shell {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .app-grid-1,
+  .app-grid-2,
+  .app-grid-3 {
+    display: none !important;
+  }
+
+  .app-grid-4,
+  .app-grid-4 > * {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    transform: none !important;
+    background: #ffffff !important;
+  }
+}
+

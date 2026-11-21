@@ -470,7 +470,11 @@ export default function OvertimeDataPanel({
           onClose={() => setModalMode(null)}
           onSwitchMode={(m) => setModalMode(m)}
           onSave={async () => handleSave()}
-          onDownload={() => printOvertimeSheet()}
+          onDownload={() =>
+            printOvertimeSheet(
+              `Overtime_${MONTH_LABELS[month - 1]}_${year}`
+            )
+          }
           setEmployeeName={setEmployeeName}
           setDesignation={setDesignation}
           setWeeklyHoliday={setWeeklyHoliday}
@@ -582,12 +586,12 @@ function OvertimeSheetModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/55 backdrop-blur-[2px] print:static print:bg-transparent print:p-0 print:inset-auto print:overflow-visible print:h-auto print:min-h-0"
+      className="fixed inset-0 z-[80] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/55 backdrop-blur-[2px] print:static print:block print:bg-transparent print:backdrop-blur-none print:p-0 print:inset-auto print:overflow-visible print:h-auto print:min-h-0"
       role="dialog"
       aria-modal="true"
       aria-label="Overtime sheet"
     >
-      <div className="w-full max-w-6xl max-h-[96vh] overflow-hidden rounded-xl bg-zinc-100 dark:bg-[#0b1220] border border-zinc-300 dark:border-slate-700 shadow-2xl flex flex-col print:max-w-none print:max-h-none print:h-auto print:overflow-visible print:shadow-none print:border-0 print:rounded-none print:bg-white">
+      <div className="w-full max-w-6xl max-h-[96vh] overflow-hidden rounded-xl bg-zinc-100 dark:bg-[#0b1220] border border-zinc-300 dark:border-slate-700 shadow-2xl flex flex-col print:block print:max-w-none print:max-h-none print:h-auto print:overflow-visible print:shadow-none print:border-0 print:rounded-none print:bg-white">
         {/* Toolbar */}
         <div className="print:hidden shrink-0 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f1726]">
           <div className="flex items-center gap-3 min-w-0">
@@ -1138,32 +1142,53 @@ function OvertimeSheetModal({
 }
 
 /**
- * Opens a clean print window with only the overtime sheet.
- * Avoids modal overflow / visibility / absolute-position clipping
- * that commonly cuts the bottom of the PDF in Chrome "Save as PDF".
+ * Prints the overtime sheet from an isolated off-screen iframe.
+ * Avoids window.open (blocked in iframes / returns null with noopener)
+ * and prevents app-shell 100dvh/overflow clipping and dark-mode leakage.
  */
-function printOvertimeSheet() {
+function printOvertimeSheet(docTitle = "Overtime_Work_Form") {
   const root = document.getElementById("overtime-print-root");
   if (!root) {
-    window.print(); // fallback
+    window.print();
     return;
   }
 
-  // Resolve logo to absolute URL so it loads in the new window
-  const logoImg = root.querySelector("img");
-  const logoSrc = logoImg
-    ? new URL(logoImg.getAttribute("src") || "", window.location.href).href
-    : "";
+  const origin = window.location.origin;
+  const fontUrl = new URL("/SHONAR.TTF", origin).href;
+  const logoUrl = new URL("/wzpdcl-form-logo.jpeg", origin).href;
+
+  const clone = root.cloneNode(true) as HTMLElement;
+  clone.style.minWidth = "0";
+  clone.style.width = "100%";
+
+  clone.querySelectorAll("img").forEach((img) => {
+    const rawSrc = img.getAttribute("src") || "";
+    if (!rawSrc || rawSrc.includes("wzpdcl-form-logo")) {
+      img.setAttribute("src", logoUrl);
+    } else {
+      img.setAttribute("src", new URL(rawSrc, window.location.href).href);
+    }
+  });
+
+  const safeTitle = docTitle.replace(/[<>:"/\\|?*]+/g, "_");
 
   const styles = `
+    @font-face {
+      font-family: "Shonar";
+      src: url("${fontUrl}") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
     @page {
       size: A4 landscape;
-      margin: 6mm 7mm 10mm 7mm;
+      margin: 5mm 6mm 6mm 6mm;
     }
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
       background: #fff;
       color: #000;
       -webkit-print-color-adjust: exact;
@@ -1171,13 +1196,20 @@ function printOvertimeSheet() {
     }
     body {
       font-family: 'Times New Roman', Times, serif;
-      padding: 2mm 3mm 4mm;
+      padding: 1mm 2mm 2mm;
+    }
+    #overtime-print-root {
+      width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
     .bn {
       font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", "Kalpurush", sans-serif;
     }
     table.ot {
       border-collapse: collapse;
+      table-layout: fixed;
       width: 100%;
       page-break-inside: auto;
     }
@@ -1187,29 +1219,36 @@ function printOvertimeSheet() {
     table.ot th,
     table.ot td {
       border: 1px solid #000;
-      padding: 4px 3px;
+      padding: 3.5px 3px;
       vertical-align: middle !important;
       text-align: center !important;
-      font-size: 11.5px;
+      font-size: 11px;
       line-height: 1.25;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
     }
     table.ot thead th {
       font-weight: 700;
-      font-size: 11px;
+      font-size: 10.5px;
       background: #fff;
     }
     table.ot tbody td {
-      font-size: 12px;
+      font-size: 11.5px;
     }
     table.ot td.bn {
-      font-size: 12.5px;
+      font-size: 12px;
     }
     table.ot tr {
       page-break-inside: avoid;
+      break-inside: avoid;
       page-break-after: auto;
     }
+    table.ot tr.ot-spacer {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
     table.ot tr.ot-spacer td {
-      height: 6px !important;
+      height: 5px !important;
       padding: 0 !important;
       line-height: 0 !important;
       font-size: 0 !important;
@@ -1219,80 +1258,112 @@ function printOvertimeSheet() {
     .meta-table td {
       border: none !important;
       padding: 2px 6px 2px 0;
-      font-size: 13px;
+      font-size: 12.5px;
       vertical-align: middle;
     }
     img {
-      max-width: 92px;
+      max-width: 84px;
+      max-height: 84px;
       height: auto;
     }
   `;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <title>Overtime Work Form</title>
-        <style>${styles}</style>
-      </head>
-      <body>
-        ${root.outerHTML.replace(
-          /src="[^"]*wzpdcl-form-logo[^"]*"/,
-          `src="${logoSrc}"`
-        )}
-      </body>
-    </html>
-  `;
+  const html = `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>${safeTitle}</title>
+    <style>${styles}</style>
+  </head>
+  <body>${clone.outerHTML}</body>
+</html>`;
 
-  const win = window.open("", "_blank", "noopener,noreferrer");
-  if (!win) {
-    // Popup blocked → fall back to normal print
+  const existing = document.getElementById("overtime-print-iframe");
+  if (existing) existing.remove();
+
+  const iframe = document.createElement("iframe");
+  iframe.id = "overtime-print-iframe";
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.style.position = "fixed";
+  iframe.style.left = "-9999px";
+  iframe.style.top = "0";
+  iframe.style.width = "1120px";
+  iframe.style.height = "790px";
+  iframe.style.border = "0";
+  iframe.style.opacity = "0";
+  iframe.style.pointerEvents = "none";
+
+  document.body.appendChild(iframe);
+
+  const iframeWin = iframe.contentWindow;
+  const iframeDoc = iframe.contentDocument || iframeWin?.document;
+  if (!iframeWin || !iframeDoc) {
+    iframe.remove();
     window.print();
     return;
   }
 
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
+  iframeDoc.open();
+  iframeDoc.write(html);
+  iframeDoc.close();
 
-  // Wait for images (logo) then print
-  const doPrint = () => {
+  const cleanup = () => {
     try {
-      win.focus();
-      win.print();
-    } finally {
-      // Close after print dialog finishes (or after a short delay)
-      setTimeout(() => {
-        try {
-          win.close();
-        } catch {
-          /* ignore */
-        }
-      }, 800);
+      iframe.remove();
+    } catch {
+      /* ignore */
     }
   };
 
-  // Give the browser a moment to parse + load the logo
-  const imgs = win.document.images;
-  if (imgs.length === 0) {
-    setTimeout(doPrint, 150);
-  } else {
-    let pending = imgs.length;
-    const done = () => {
-      pending -= 1;
-      if (pending <= 0) setTimeout(doPrint, 80);
-    };
-    Array.from(imgs).forEach((img) => {
-      if (img.complete) done();
-      else {
-        img.onload = done;
-        img.onerror = done;
+  let printed = false;
+  const doPrint = () => {
+    if (printed) return;
+    printed = true;
+    try {
+      iframeWin.addEventListener("afterprint", cleanup, { once: true });
+      window.addEventListener("afterprint", cleanup, { once: true });
+      setTimeout(cleanup, 60000);
+      iframeWin.focus();
+      iframeWin.print();
+    } catch {
+      cleanup();
+      window.print();
+    }
+  };
+
+  const waitForImages = async () => {
+    const imgs = Array.from(iframeDoc.images || []);
+    if (imgs.length === 0) return;
+    await Promise.all(
+      imgs.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true });
+          })
+      )
+    );
+  };
+
+  const waitForFonts = async () => {
+    try {
+      if (iframeDoc.fonts?.ready) {
+        await iframeDoc.fonts.ready;
       }
-    });
-    // Safety timeout
-    setTimeout(doPrint, 1500);
-  }
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const safetyTimer = window.setTimeout(doPrint, 1800);
+  Promise.all([waitForImages(), waitForFonts()]).then(() => {
+    window.clearTimeout(safetyTimer);
+    window.setTimeout(doPrint, 80);
+  });
 }
 
 /**
@@ -1319,11 +1390,11 @@ function OfficialOvertimeSheet({
 
   return (
     <div
-      className="bg-white text-black mx-auto print:shadow-none print:border-0 print:p-0"
+      className="bg-white text-black mx-auto overflow-x-auto print:overflow-visible print:shadow-none print:border-0 print:p-0"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
         maxWidth: 1100,
-        padding: "0 8px 10px",
+        padding: "6px 10px 12px",
         border: "1px solid #ccc",
       }}
     >
@@ -1346,6 +1417,7 @@ function OfficialOvertimeSheet({
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
+            min-width: 0 !important;
             height: auto !important;
             min-height: 0 !important;
             max-height: none !important;
@@ -1358,8 +1430,9 @@ function OfficialOvertimeSheet({
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          /* Ensure table can paginate cleanly across pages */
           #overtime-print-root table.ot {
+            table-layout: fixed;
+            width: 100%;
             page-break-inside: auto;
           }
           #overtime-print-root table.ot thead {
@@ -1367,20 +1440,22 @@ function OfficialOvertimeSheet({
           }
           #overtime-print-root table.ot tr {
             page-break-inside: avoid;
+            break-inside: avoid;
             page-break-after: auto;
           }
-          #overtime-print-root table.ot tbody tr {
-            page-break-inside: avoid;
+          #overtime-print-root table.ot tr.ot-spacer {
+            page-break-before: avoid;
+            break-before: avoid;
           }
           #overtime-print-root table.ot tr.ot-spacer td {
-            height: 6px !important;
+            height: 5px !important;
             padding: 0 !important;
             line-height: 0 !important;
             font-size: 0 !important;
           }
           @page {
             size: A4 landscape;
-            margin: 5mm 6mm 8mm 6mm; /* extra bottom margin so last rows are not clipped */
+            margin: 5mm 6mm 6mm 6mm;
           }
         }
         #overtime-print-root .bn {
@@ -1388,42 +1463,51 @@ function OfficialOvertimeSheet({
         }
         #overtime-print-root table.ot {
           border-collapse: collapse;
+          table-layout: fixed;
           width: 100%;
         }
         #overtime-print-root table.ot th,
         #overtime-print-root table.ot td {
           border: 1px solid #000;
-          padding: 4px 3px;
+          padding: 3.5px 3px;
           vertical-align: middle !important;
           text-align: center !important;
-          font-size: 11.5px;
+          font-size: 11px;
           line-height: 1.25;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
         }
         #overtime-print-root table.ot thead th {
           font-weight: 700;
-          font-size: 11px;
+          font-size: 10.5px;
           background: #fff;
         }
         #overtime-print-root table.ot tbody td {
-          font-size: 12px;
+          font-size: 11.5px;
         }
         #overtime-print-root table.ot td.bn {
-          font-size: 12.5px;
+          font-size: 12px;
+        }
+        #overtime-print-root table.ot tr.ot-spacer td {
+          height: 5px !important;
+          padding: 0 !important;
+          line-height: 0 !important;
+          font-size: 0 !important;
         }
         #overtime-print-root .meta-table td {
           border: none !important;
           padding: 2px 6px 2px 0;
-          font-size: 13px;
+          font-size: 12.5px;
           vertical-align: middle;
         }
       `}</style>
 
-      <div id="overtime-print-root">
+      <div id="overtime-print-root" style={{ minWidth: 860 }}>
         {/* ===== HEADER ===== */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "100px 1fr 140px",
+            gridTemplateColumns: "100px 1fr 165px",
             alignItems: "center",
             gap: 10,
             marginTop: 0,
@@ -1434,9 +1518,9 @@ function OfficialOvertimeSheet({
             <img
               src="/wzpdcl-form-logo.jpeg"
               alt="WZPDCL"
-              width={92}
-              height={92}
-              style={{ width: 92, height: 92, objectFit: "contain" }}
+              width={84}
+              height={84}
+              style={{ width: 84, height: 84, objectFit: "contain" }}
             />
           </div>
 
