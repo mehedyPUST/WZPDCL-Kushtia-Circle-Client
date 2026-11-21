@@ -580,12 +580,12 @@ function OvertimeSheetModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/55 backdrop-blur-[2px] print:static print:bg-transparent print:p-0 print:inset-auto"
+      className="fixed inset-0 z-[80] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/55 backdrop-blur-[2px] print:static print:bg-transparent print:p-0 print:inset-auto print:overflow-visible print:h-auto print:min-h-0"
       role="dialog"
       aria-modal="true"
       aria-label="Overtime sheet"
     >
-      <div className="w-full max-w-6xl max-h-[96vh] overflow-hidden rounded-xl bg-zinc-100 dark:bg-[#0b1220] border border-zinc-300 dark:border-slate-700 shadow-2xl flex flex-col print:max-w-none print:max-h-none print:shadow-none print:border-0 print:rounded-none print:bg-white">
+      <div className="w-full max-w-6xl max-h-[96vh] overflow-hidden rounded-xl bg-zinc-100 dark:bg-[#0b1220] border border-zinc-300 dark:border-slate-700 shadow-2xl flex flex-col print:max-w-none print:max-h-none print:h-auto print:overflow-visible print:shadow-none print:border-0 print:rounded-none print:bg-white">
         {/* Toolbar */}
         <div className="print:hidden shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2.5 border-b border-zinc-200 dark:border-slate-700 bg-white dark:bg-[#0f1726]">
           <div>
@@ -644,7 +644,7 @@ function OvertimeSheetModal({
           </div>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-2 sm:p-4 print:p-0">
+        <div className="overflow-y-auto flex-1 p-2 sm:p-4 print:p-0 print:overflow-visible print:h-auto print:flex-none">
           {/* Modify form inside modal */}
           {mode === "modify" && (
             <div className="print:hidden mb-4 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-white dark:bg-[#0f1726] p-3 sm:p-4 space-y-3 text-xs">
@@ -971,7 +971,7 @@ function OfficialOvertimeSheet({
 
   return (
     <div
-      className="bg-white text-black mx-auto print:shadow-none"
+      className="bg-white text-black mx-auto print:shadow-none print:border-0 print:p-0"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
         maxWidth: 1100,
@@ -981,22 +981,58 @@ function OfficialOvertimeSheet({
     >
       <style>{`
         @media print {
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+          }
           body * { visibility: hidden !important; }
-          #overtime-print-root, #overtime-print-root * { visibility: visible !important; }
+          #overtime-print-root,
+          #overtime-print-root * {
+            visibility: visible !important;
+          }
           #overtime-print-root {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
             margin: 0 !important;
-            padding: 0 4mm 4mm !important;
+            padding: 2mm 4mm 6mm !important;
             background: #fff !important;
             border: none !important;
+            overflow: visible !important;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
-          /* Pull content to the very top of the printed page */
+          /* Ensure table can paginate cleanly across pages */
+          #overtime-print-root table.ot {
+            page-break-inside: auto;
+          }
+          #overtime-print-root table.ot thead {
+            display: table-header-group;
+          }
+          #overtime-print-root table.ot tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          #overtime-print-root table.ot tbody tr {
+            page-break-inside: avoid;
+          }
+          #overtime-print-root table.ot tr.ot-spacer td {
+            height: 6px !important;
+            padding: 0 !important;
+            line-height: 0 !important;
+            font-size: 0 !important;
+          }
           @page {
             size: A4 landscape;
-            margin: 4mm 6mm 6mm 6mm;
+            margin: 5mm 6mm 8mm 6mm; /* extra bottom margin so last rows are not clipped */
           }
         }
         #overtime-print-root .bn {
@@ -1009,27 +1045,27 @@ function OfficialOvertimeSheet({
         #overtime-print-root table.ot th,
         #overtime-print-root table.ot td {
           border: 1px solid #000;
-          padding: 5px 4px;
+          padding: 4px 3px;
           vertical-align: middle !important;
           text-align: center !important;
-          font-size: 12px;
-          line-height: 1.3;
+          font-size: 11.5px;
+          line-height: 1.25;
         }
         #overtime-print-root table.ot thead th {
           font-weight: 700;
-          font-size: 11.5px;
+          font-size: 11px;
           background: #fff;
         }
         #overtime-print-root table.ot tbody td {
-          font-size: 12.5px;
+          font-size: 12px;
         }
         #overtime-print-root table.ot td.bn {
-          font-size: 13px;
+          font-size: 12.5px;
         }
         #overtime-print-root .meta-table td {
           border: none !important;
           padding: 2px 6px 2px 0;
-          font-size: 13.5px;
+          font-size: 13px;
           vertical-align: middle;
         }
       `}</style>
@@ -1216,14 +1252,14 @@ function OfficialOvertimeSheet({
                       {`${toBengaliDigits(Math.round(r.hours))} ঘণ্টা`}
                     </td>
                     <td className="bn">{r.purpose}</td>
-                    <td style={{ height: 26 }} />
+                    <td style={{ height: 22 }} />
                     <td />
                     <td />
                     <td />
                     <td />
                   </tr>
-                  <tr>
-                    <td style={{ height: 14, padding: 0 }} />
+                  <tr className="ot-spacer">
+                    <td style={{ height: 10, padding: 0 }} />
                     <td style={{ padding: 0 }} />
                     <td style={{ padding: 0 }} />
                     <td style={{ padding: 0 }} />
