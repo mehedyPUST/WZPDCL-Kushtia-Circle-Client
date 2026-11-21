@@ -42,15 +42,16 @@ const overtimeSheetSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    dutyFrom: {
-      type: String,
-      default: "22:00",
-      trim: true,
+    /** Extra duty dates that are not the normal weekly holiday */
+    extraDutyDates: {
+      type: [String],
+      default: [],
     },
-    dutyTo: {
+    /** A | B | C — duty shift performed on holiday */
+    dutyShift: {
       type: String,
-      default: "06:00",
-      trim: true,
+      enum: ["A", "B", "C"],
+      default: "C",
     },
     purpose: {
       type: String,

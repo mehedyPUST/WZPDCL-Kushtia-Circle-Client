@@ -4,8 +4,10 @@ import { connectDB, isDbConnected } from "@/lib/db";
 import OvertimeSheet from "@/lib/models/OvertimeSheet";
 import { getMockStore, generateId } from "@/lib/mockStore";
 import {
+  currentDhakaYearMonth,
   defaultOvertimeSheet,
   generateOvertimeRows,
+  normalizeDutyShift,
   totalOvertimeHours,
   type OvertimeSheetRecord,
 } from "@/lib/overtime";
@@ -24,8 +26,10 @@ function serializeDoc(doc: any): OvertimeSheetRecord {
     clLeaveDates: Array.isArray(doc.clLeaveDates)
       ? doc.clLeaveDates.map((d: any) => String(d))
       : [],
-    dutyFrom: String(doc.dutyFrom || "22:00"),
-    dutyTo: String(doc.dutyTo || "06:00"),
+    extraDutyDates: Array.isArray(doc.extraDutyDates)
+      ? doc.extraDutyDates.map((d: any) => String(d))
+      : [],
+    dutyShift: normalizeDutyShift(doc.dutyShift ?? "C"),
     purpose: String(
       doc.purpose || "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়"
     ),
@@ -44,8 +48,8 @@ function withGenerated(sheet: OvertimeSheetRecord) {
     month: sheet.month,
     weeklyHoliday: sheet.weeklyHoliday,
     clLeaveDates: sheet.clLeaveDates,
-    dutyFrom: sheet.dutyFrom,
-    dutyTo: sheet.dutyTo,
+    extraDutyDates: sheet.extraDutyDates || [],
+    dutyShift: sheet.dutyShift,
     purpose: sheet.purpose,
   });
   return {
@@ -55,20 +59,27 @@ function withGenerated(sheet: OvertimeSheetRecord) {
   };
 }
 
-/** GET — load overtime sheet for current user + year/month */
+function parseYmdList(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((d) => String(d || "").trim())
+    .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d));
+}
+
+/** GET — load overtime sheet for current user + year/month (defaults to current Dhaka month) */
 export async function GET(request: Request) {
   const auth = requireAuth(request);
   if (!auth.ok) return auth.response;
 
   try {
     const { searchParams } = new URL(request.url);
-    const now = new Date();
+    const dhaka = currentDhakaYearMonth();
     const year = parseInt(
-      searchParams.get("year") || String(now.getFullYear()),
+      searchParams.get("year") || String(dhaka.year),
       10
     );
     const month = parseInt(
-      searchParams.get("month") || String(now.getMonth() + 1),
+      searchParams.get("month") || String(dhaka.month),
       10
     );
 
@@ -147,11 +158,6 @@ export async function PUT(request: Request) {
       6,
       Math.max(0, Number(body.weeklyHoliday ?? 0))
     );
-    const clLeaveDates = Array.isArray(body.clLeaveDates)
-      ? body.clLeaveDates
-          .map((d: any) => String(d || "").trim())
-          .filter((d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d))
-      : [];
 
     const payload = {
       userId,
@@ -160,9 +166,9 @@ export async function PUT(request: Request) {
       employeeName: String(body.employeeName || "").trim(),
       designation: String(body.designation || "SBA-A").trim() || "SBA-A",
       weeklyHoliday,
-      clLeaveDates,
-      dutyFrom: String(body.dutyFrom || "22:00").trim() || "22:00",
-      dutyTo: String(body.dutyTo || "06:00").trim() || "06:00",
+      clLeaveDates: parseYmdList(body.clLeaveDates),
+      extraDutyDates: parseYmdList(body.extraDutyDates),
+      dutyShift: normalizeDutyShift(body.dutyShift ?? "C"),
       purpose:
         String(body.purpose || "").trim() ||
         "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়",

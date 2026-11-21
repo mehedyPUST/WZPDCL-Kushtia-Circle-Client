@@ -1,8 +1,66 @@
 /**
  * Monthly overtime sheet helpers for Bottail SS duty operators.
- * Weekly-holiday overtime: all calendar dates in the month that fall on the
- * configured weekly holiday, excluding CL (casual leave) dates.
+ *
+ * Weekly-holiday overtime: calendar dates in the month that fall on the
+ * configured weekly holiday, excluding CL leave dates, plus any extra
+ * (non-holiday) duty dates the user adds.
+ *
+ * Duty on holiday is recorded by shift, not free-form clock times:
+ *   A — 06:00 – 14:00
+ *   B — 14:00 – 22:00
+ *   C — 22:00 – 06:00 (+1)
  */
+
+export type DutyShiftId = "A" | "B" | "C";
+
+export const DUTY_SHIFTS: Record<
+  DutyShiftId,
+  {
+    id: DutyShiftId;
+    label: string;
+    from: string;
+    to: string;
+    fromDisplay: string;
+    toDisplay: string;
+    hours: number;
+  }
+> = {
+  A: {
+    id: "A",
+    label: "A Shift",
+    from: "06:00",
+    to: "14:00",
+    fromDisplay: "06:00 AM",
+    toDisplay: "02:00 PM",
+    hours: 8,
+  },
+  B: {
+    id: "B",
+    label: "B Shift",
+    from: "14:00",
+    to: "22:00",
+    fromDisplay: "02:00 PM",
+    toDisplay: "10:00 PM",
+    hours: 8,
+  },
+  C: {
+    id: "C",
+    label: "C Shift",
+    from: "22:00",
+    to: "06:00",
+    fromDisplay: "10:00 PM",
+    toDisplay: "06:00 AM",
+    hours: 8,
+  },
+};
+
+export function normalizeDutyShift(value: unknown): DutyShiftId {
+  const s = String(value || "")
+    .trim()
+    .toUpperCase();
+  if (s === "A" || s === "B" || s === "C") return s;
+  return "C";
+}
 
 export const WEEKDAY_LABELS = [
   "Sunday",
@@ -46,39 +104,12 @@ export function toBengaliDigits(input: string | number): string {
   return String(input).replace(/\d/g, (d) => BN_DIGITS[Number(d)] ?? d);
 }
 
-/** Parse "HH:mm" → minutes from midnight (0–1439). Invalid → null */
-export function parseHmToMinutes(hm: string): number | null {
-  const m = String(hm || "")
-    .trim()
-    .match(/^(\d{1,2}):(\d{2})$/);
-  if (!m) return null;
-  const h = Number(m[1]);
-  const min = Number(m[2]);
-  if (!Number.isFinite(h) || !Number.isFinite(min) || h < 0 || h > 23 || min < 0 || min > 59) {
-    return null;
-  }
-  return h * 60 + min;
-}
-
-/**
- * Duration in hours between dutyFrom and dutyTo.
- * Supports overnight shifts (e.g. 22:00 → 06:00 = 8).
- */
-export function dutyDurationHours(dutyFrom: string, dutyTo: string): number {
-  const a = parseHmToMinutes(dutyFrom);
-  const b = parseHmToMinutes(dutyTo);
-  if (a == null || b == null) return 0;
-  let diff = b - a;
-  if (diff <= 0) diff += 24 * 60; // overnight
-  return Math.round((diff / 60) * 100) / 100;
-}
-
 export function formatDurationBn(hours: number): string {
   const whole = Math.round(hours);
   return `${toBengaliDigits(whole)} ঘন্টা`;
 }
 
-/** YYYY-MM-DD for a civil date (no TZ shift — pure calendar) */
+/** YYYY-MM-DD for a civil date */
 export function ymdFromParts(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
@@ -99,10 +130,13 @@ export interface OvertimeRow {
   dateYmd: string;
   dateDisplay: string;
   dateDisplayBn: string;
-  normalFrom: string;
-  normalTo: string;
+  /** true when this date is not on the configured weekly holiday */
+  isExtra: boolean;
+  shift: DutyShiftId;
   dutyFrom: string;
   dutyTo: string;
+  dutyFromDisplay: string;
+  dutyToDisplay: string;
   hours: number;
   hoursLabel: string;
   hoursLabelBn: string;
@@ -114,16 +148,16 @@ export interface OvertimeGenerateInput {
   month: number; // 1–12
   weeklyHoliday: number; // 0=Sun … 6=Sat
   clLeaveDates: string[]; // YYYY-MM-DD
-  dutyFrom: string;
-  dutyTo: string;
+  /** Extra duty dates that are not the normal weekly holiday */
+  extraDutyDates: string[]; // YYYY-MM-DD
+  dutyShift: DutyShiftId;
   purpose?: string;
 }
 
 const DEFAULT_PURPOSE = "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়";
 
 /**
- * All dates in the given month that fall on `weeklyHoliday`, excluding CL leave days.
- * Uses pure civil calendar (not station TZ) — same as form dates.
+ * Holiday dates in month (weekly holiday minus CL) plus any extra duty dates.
  */
 export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[] {
   const year = Number(input.year);
@@ -147,37 +181,56 @@ export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[
       .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
   );
 
-  const dutyFrom = String(input.dutyFrom || "22:00").trim() || "22:00";
-  const dutyTo = String(input.dutyTo || "06:00").trim() || "06:00";
-  const hours = dutyDurationHours(dutyFrom, dutyTo);
-  const purpose = String(input.purpose || DEFAULT_PURPOSE).trim() || DEFAULT_PURPOSE;
+  const shift = normalizeDutyShift(input.dutyShift);
+  const meta = DUTY_SHIFTS[shift];
+  const purpose =
+    String(input.purpose || DEFAULT_PURPOSE).trim() || DEFAULT_PURPOSE;
 
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  const rows: OvertimeRow[] = [];
+  const holidayYmds: string[] = [];
 
   for (let day = 1; day <= daysInMonth; day++) {
-    // UTC noon avoids DST edge cases; weekday is calendar-correct
     const wd = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)).getUTCDay();
     if (wd !== weeklyHoliday) continue;
     const ymd = ymdFromParts(year, month, day);
     if (clSet.has(ymd)) continue;
+    holidayYmds.push(ymd);
+  }
 
-    rows.push({
+  const holidaySet = new Set(holidayYmds);
+
+  const extraYmds = (input.extraDutyDates || [])
+    .map((d) => String(d || "").trim())
+    .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+    .filter((d) => {
+      const m = d.match(/^(\d{4})-(\d{2})-/);
+      if (!m) return false;
+      if (Number(m[1]) !== year || Number(m[2]) !== month) return false;
+      if (clSet.has(d)) return false;
+      if (holidaySet.has(d)) return false;
+      return true;
+    });
+
+  const allYmds = [...holidayYmds, ...extraYmds].sort();
+
+  return allYmds.map((ymd) => {
+    const isExtra = !holidaySet.has(ymd);
+    return {
       dateYmd: ymd,
       dateDisplay: formatYmdDisplay(ymd),
       dateDisplayBn: formatYmdDisplayBn(ymd),
-      normalFrom: "সাপ্তাহিক বিরতি",
-      normalTo: "",
-      dutyFrom,
-      dutyTo,
-      hours,
-      hoursLabel: `${hours} hours`,
-      hoursLabelBn: formatDurationBn(hours),
-      purpose,
-    });
-  }
-
-  return rows;
+      isExtra,
+      shift,
+      dutyFrom: meta.from,
+      dutyTo: meta.to,
+      dutyFromDisplay: meta.fromDisplay,
+      dutyToDisplay: meta.toDisplay,
+      hours: meta.hours,
+      hoursLabel: `${meta.hours} hours`,
+      hoursLabelBn: formatDurationBn(meta.hours),
+      purpose: isExtra ? purpose || "অতিরিক্ত ডিউটি" : purpose,
+    };
+  });
 }
 
 export function totalOvertimeHours(rows: OvertimeRow[]): number {
@@ -193,8 +246,8 @@ export interface OvertimeSheetRecord {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
-  dutyFrom: string;
-  dutyTo: string;
+  extraDutyDates: string[];
+  dutyShift: DutyShiftId;
   purpose: string;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -217,8 +270,19 @@ export function defaultOvertimeSheet(
     clLeaveDates: Array.isArray(defaults?.clLeaveDates)
       ? defaults!.clLeaveDates
       : [],
-    dutyFrom: defaults?.dutyFrom || "22:00",
-    dutyTo: defaults?.dutyTo || "06:00",
+    extraDutyDates: Array.isArray(defaults?.extraDutyDates)
+      ? defaults!.extraDutyDates
+      : [],
+    dutyShift: normalizeDutyShift(defaults?.dutyShift ?? "C"),
     purpose: defaults?.purpose || DEFAULT_PURPOSE,
+  };
+}
+
+/** Asia/Dhaka current year + month */
+export function currentDhakaYearMonth(): { year: number; month: number } {
+  const shifted = new Date(Date.now() + 6 * 60 * 60 * 1000);
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth() + 1,
   };
 }

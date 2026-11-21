@@ -1185,8 +1185,8 @@ export async function saveOvertimeSheet(payload: {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
-  dutyFrom: string;
-  dutyTo: string;
+  extraDutyDates: string[];
+  dutyShift: "A" | "B" | "C";
   purpose?: string;
 }) {
   const res = await fetchWithCredentials(url("/api/overtime"), {

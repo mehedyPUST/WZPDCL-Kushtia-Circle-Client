@@ -1,5 +1,16 @@
 @import "tailwindcss";
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@font-face {
+  font-family: "Shonar";
+  src: url("/SHONAR.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-bangla {
+  font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", sans-serif;
+}
 
 @theme inline {
   --color-surface: var(--app-surface);
