@@ -1185,7 +1185,14 @@ export async function saveOvertimeSheet(payload: {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
-  extraDutyDates: string[];
+  extraDutyEntries: Array<{
+    date: string;
+    normalFrom: string;
+    normalTo: string;
+    dutyFrom: string;
+    dutyTo: string;
+    purpose: string;
+  }>;
   dutyShift: "A" | "B" | "C";
   purpose?: string;
 }) {

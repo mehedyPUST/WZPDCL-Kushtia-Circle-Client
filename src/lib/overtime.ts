@@ -1,14 +1,8 @@
 /**
  * Monthly overtime sheet helpers for Bottail SS duty operators.
  *
- * Weekly-holiday overtime: calendar dates in the month that fall on the
- * configured weekly holiday, excluding CL leave dates, plus any extra
- * (non-holiday) duty dates the user adds.
- *
- * Duty on holiday is recorded by shift, not free-form clock times:
- *   A — 06:00 – 14:00
- *   B — 14:00 – 22:00
- *   C — 22:00 – 06:00 (+1)
+ * Weekly-holiday rows use the configured weekly holiday day + duty shift.
+ * Extra duty rows carry their own normal hours, duty hours, and purpose.
  */
 
 export type DutyShiftId = "A" | "B" | "C";
@@ -55,9 +49,7 @@ export const DUTY_SHIFTS: Record<
 };
 
 export function normalizeDutyShift(value: unknown): DutyShiftId {
-  const s = String(value || "")
-    .trim()
-    .toUpperCase();
+  const s = String(value || "").trim().toUpperCase();
   if (s === "A" || s === "B" || s === "C") return s;
   return "C";
 }
@@ -99,7 +91,6 @@ export const MONTH_LABELS = [
 
 const BN_DIGITS = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
 
-/** Convert ASCII digits in a string to Bengali numerals */
 export function toBengaliDigits(input: string | number): string {
   return String(input).replace(/\d/g, (d) => BN_DIGITS[Number(d)] ?? d);
 }
@@ -109,30 +100,59 @@ export function formatDurationBn(hours: number): string {
   return `${toBengaliDigits(whole)} ঘন্টা`;
 }
 
-/** YYYY-MM-DD for a civil date */
 export function ymdFromParts(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-/** Display date as DD-MM-YYYY (ASCII) */
 export function formatYmdDisplay(ymd: string): string {
   const m = String(ymd || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return ymd;
   return `${m[3]}-${m[2]}-${m[1]}`;
 }
 
-/** Display date as DD-MM-YYYY with Bengali digits */
 export function formatYmdDisplayBn(ymd: string): string {
   return toBengaliDigits(formatYmdDisplay(ymd));
+}
+
+/** Parse "HH:mm" → minutes from midnight */
+export function parseHmToMinutes(hm: string): number | null {
+  const m = String(hm || "").trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (!Number.isFinite(h) || !Number.isFinite(min) || h < 0 || h > 23 || min < 0 || min > 59) {
+    return null;
+  }
+  return h * 60 + min;
+}
+
+/** Duration hours; supports overnight (22:00 → 06:00 = 8) */
+export function dutyDurationHours(dutyFrom: string, dutyTo: string): number {
+  const a = parseHmToMinutes(dutyFrom);
+  const b = parseHmToMinutes(dutyTo);
+  if (a == null || b == null) return 0;
+  let diff = b - a;
+  if (diff <= 0) diff += 24 * 60;
+  return Math.round((diff / 60) * 100) / 100;
+}
+
+export interface ExtraDutyEntry {
+  date: string;
+  normalFrom: string;
+  normalTo: string;
+  dutyFrom: string;
+  dutyTo: string;
+  purpose: string;
 }
 
 export interface OvertimeRow {
   dateYmd: string;
   dateDisplay: string;
   dateDisplayBn: string;
-  /** true when this date is not on the configured weekly holiday */
   isExtra: boolean;
-  shift: DutyShiftId;
+  shift: DutyShiftId | "";
+  normalFrom: string;
+  normalTo: string;
   dutyFrom: string;
   dutyTo: string;
   dutyFromDisplay: string;
@@ -145,20 +165,27 @@ export interface OvertimeRow {
 
 export interface OvertimeGenerateInput {
   year: number;
-  month: number; // 1–12
-  weeklyHoliday: number; // 0=Sun … 6=Sat
-  clLeaveDates: string[]; // YYYY-MM-DD
-  /** Extra duty dates that are not the normal weekly holiday */
-  extraDutyDates: string[]; // YYYY-MM-DD
+  month: number;
+  weeklyHoliday: number;
+  clLeaveDates: string[];
+  extraDutyEntries: ExtraDutyEntry[];
   dutyShift: DutyShiftId;
   purpose?: string;
 }
 
 const DEFAULT_PURPOSE = "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়";
 
-/**
- * Holiday dates in month (weekly holiday minus CL) plus any extra duty dates.
- */
+function hmDisplay(hm: string): string {
+  const mins = parseHmToMinutes(hm);
+  if (mins == null) return hm;
+  const h24 = Math.floor(mins / 60);
+  const m = mins % 60;
+  const ampm = h24 >= 12 ? "PM" : "AM";
+  let h12 = h24 % 12;
+  if (h12 === 0) h12 = 12;
+  return `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${ampm}`;
+}
+
 export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[] {
   const year = Number(input.year);
   const month = Number(input.month);
@@ -198,29 +225,17 @@ export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[
   }
 
   const holidaySet = new Set(holidayYmds);
+  const rows: OvertimeRow[] = [];
 
-  const extraYmds = (input.extraDutyDates || [])
-    .map((d) => String(d || "").trim())
-    .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
-    .filter((d) => {
-      const m = d.match(/^(\d{4})-(\d{2})-/);
-      if (!m) return false;
-      if (Number(m[1]) !== year || Number(m[2]) !== month) return false;
-      if (clSet.has(d)) return false;
-      if (holidaySet.has(d)) return false;
-      return true;
-    });
-
-  const allYmds = [...holidayYmds, ...extraYmds].sort();
-
-  return allYmds.map((ymd) => {
-    const isExtra = !holidaySet.has(ymd);
-    return {
+  for (const ymd of holidayYmds) {
+    rows.push({
       dateYmd: ymd,
       dateDisplay: formatYmdDisplay(ymd),
       dateDisplayBn: formatYmdDisplayBn(ymd),
-      isExtra,
+      isExtra: false,
       shift,
+      normalFrom: "সাপ্তাহিক বিরতি",
+      normalTo: "",
       dutyFrom: meta.from,
       dutyTo: meta.to,
       dutyFromDisplay: meta.fromDisplay,
@@ -228,9 +243,47 @@ export function generateOvertimeRows(input: OvertimeGenerateInput): OvertimeRow[
       hours: meta.hours,
       hoursLabel: `${meta.hours} hours`,
       hoursLabelBn: formatDurationBn(meta.hours),
-      purpose: isExtra ? purpose || "অতিরিক্ত ডিউটি" : purpose,
-    };
-  });
+      purpose,
+    });
+  }
+
+  for (const entry of input.extraDutyEntries || []) {
+    const ymd = String(entry.date || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) continue;
+    const m = ymd.match(/^(\d{4})-(\d{2})-/);
+    if (!m || Number(m[1]) !== year || Number(m[2]) !== month) continue;
+    if (clSet.has(ymd)) continue;
+    if (holidaySet.has(ymd)) continue;
+
+    const dutyFrom = String(entry.dutyFrom || "22:00").trim() || "22:00";
+    const dutyTo = String(entry.dutyTo || "06:00").trim() || "06:00";
+    const hours = dutyDurationHours(dutyFrom, dutyTo);
+    const normalFrom = String(entry.normalFrom || "").trim();
+    const normalTo = String(entry.normalTo || "").trim();
+    const entryPurpose =
+      String(entry.purpose || "").trim() || purpose || "অতিরিক্ত ডিউটি";
+
+    rows.push({
+      dateYmd: ymd,
+      dateDisplay: formatYmdDisplay(ymd),
+      dateDisplayBn: formatYmdDisplayBn(ymd),
+      isExtra: true,
+      shift: "",
+      normalFrom: normalFrom || "—",
+      normalTo: normalTo || "",
+      dutyFrom,
+      dutyTo,
+      dutyFromDisplay: hmDisplay(dutyFrom),
+      dutyToDisplay: hmDisplay(dutyTo),
+      hours,
+      hoursLabel: `${hours} hours`,
+      hoursLabelBn: formatDurationBn(hours),
+      purpose: entryPurpose,
+    });
+  }
+
+  rows.sort((a, b) => a.dateYmd.localeCompare(b.dateYmd));
+  return rows;
 }
 
 export function totalOvertimeHours(rows: OvertimeRow[]): number {
@@ -246,7 +299,7 @@ export interface OvertimeSheetRecord {
   designation: string;
   weeklyHoliday: number;
   clLeaveDates: string[];
-  extraDutyDates: string[];
+  extraDutyEntries: ExtraDutyEntry[];
   dutyShift: DutyShiftId;
   purpose: string;
   updatedAt?: string | null;
@@ -270,19 +323,29 @@ export function defaultOvertimeSheet(
     clLeaveDates: Array.isArray(defaults?.clLeaveDates)
       ? defaults!.clLeaveDates
       : [],
-    extraDutyDates: Array.isArray(defaults?.extraDutyDates)
-      ? defaults!.extraDutyDates
+    extraDutyEntries: Array.isArray(defaults?.extraDutyEntries)
+      ? defaults!.extraDutyEntries
       : [],
     dutyShift: normalizeDutyShift(defaults?.dutyShift ?? "C"),
     purpose: defaults?.purpose || DEFAULT_PURPOSE,
   };
 }
 
-/** Asia/Dhaka current year + month */
 export function currentDhakaYearMonth(): { year: number; month: number } {
   const shifted = new Date(Date.now() + 6 * 60 * 60 * 1000);
   return {
     year: shifted.getUTCFullYear(),
     month: shifted.getUTCMonth() + 1,
+  };
+}
+
+export function emptyExtraEntry(date = ""): ExtraDutyEntry {
+  return {
+    date,
+    normalFrom: "09:00",
+    normalTo: "17:00",
+    dutyFrom: "22:00",
+    dutyTo: "06:00",
+    purpose: DEFAULT_PURPOSE,
   };
 }

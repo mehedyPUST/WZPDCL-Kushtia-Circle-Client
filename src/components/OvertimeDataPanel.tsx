@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   Download,
@@ -8,7 +8,6 @@ import {
   FileText,
   Pencil,
   Plus,
-  Printer,
   Save,
   Trash2,
   X,
@@ -21,6 +20,8 @@ import {
   MONTH_LABELS,
   DUTY_SHIFTS,
   currentDhakaYearMonth,
+  dutyDurationHours,
+  emptyExtraEntry,
   formatDurationBn,
   formatYmdDisplayBn,
   generateOvertimeRows,
@@ -28,6 +29,7 @@ import {
   totalOvertimeHours,
   toBengaliDigits,
   type DutyShiftId,
+  type ExtraDutyEntry,
   type OvertimeRow,
   type OvertimeSheetRecord,
 } from "@/lib/overtime";
@@ -50,9 +52,8 @@ export default function OvertimeDataPanel({
   const [designation, setDesignation] = useState("SBA-A");
   const [weeklyHoliday, setWeeklyHoliday] = useState(0);
   const [clLeaveDates, setClLeaveDates] = useState<string[]>([]);
-  const [extraDutyDates, setExtraDutyDates] = useState<string[]>([]);
+  const [extraDutyEntries, setExtraDutyEntries] = useState<ExtraDutyEntry[]>([]);
   const [clInput, setClInput] = useState("");
-  const [extraInput, setExtraInput] = useState("");
   const [dutyShift, setDutyShift] = useState<DutyShiftId>("C");
   const [purpose, setPurpose] = useState(
     "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়"
@@ -62,7 +63,9 @@ export default function OvertimeDataPanel({
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<PanelMode>("view");
   const [dirty, setDirty] = useState(false);
-  const printRef = useRef<HTMLDivElement>(null);
+
+  // Draft for adding a new extra day
+  const [extraDraft, setExtraDraft] = useState<ExtraDutyEntry>(emptyExtraEntry());
 
   const applySheet = useCallback(
     (sheet: Partial<OvertimeSheetRecord>) => {
@@ -74,8 +77,8 @@ export default function OvertimeDataPanel({
       setClLeaveDates(
         Array.isArray(sheet.clLeaveDates) ? sheet.clLeaveDates : []
       );
-      setExtraDutyDates(
-        Array.isArray(sheet.extraDutyDates) ? sheet.extraDutyDates : []
+      setExtraDutyEntries(
+        Array.isArray(sheet.extraDutyEntries) ? sheet.extraDutyEntries : []
       );
       setDutyShift(normalizeDutyShift(sheet.dutyShift ?? "C"));
       setPurpose(
@@ -109,16 +112,15 @@ export default function OvertimeDataPanel({
         month,
         weeklyHoliday,
         clLeaveDates,
-        extraDutyDates,
+        extraDutyEntries,
         dutyShift,
         purpose,
       }),
-    [year, month, weeklyHoliday, clLeaveDates, extraDutyDates, dutyShift, purpose]
+    [year, month, weeklyHoliday, clLeaveDates, extraDutyEntries, dutyShift, purpose]
   );
 
   const totalHours = useMemo(() => totalOvertimeHours(rows), [rows]);
   const shiftMeta = DUTY_SHIFTS[dutyShift];
-
   const markDirty = () => setDirty(true);
 
   const addClDate = () => {
@@ -141,28 +143,47 @@ export default function OvertimeDataPanel({
     markDirty();
   };
 
-  const addExtraDate = () => {
-    const v = extraInput.trim();
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+  const addExtraEntry = () => {
+    const date = extraDraft.date.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       toast.error("Pick a valid extra duty date");
       return;
     }
-    const m = v.match(/^(\d{4})-(\d{2})-/);
+    const m = date.match(/^(\d{4})-(\d{2})-/);
     if (!m || Number(m[1]) !== year || Number(m[2]) !== month) {
       toast.error("Extra day must be inside the selected month");
       return;
     }
-    if (extraDutyDates.includes(v) || clLeaveDates.includes(v)) {
-      toast.error("Date already listed");
+    if (clLeaveDates.includes(date)) {
+      toast.error("This date is marked as CL leave");
       return;
     }
-    setExtraDutyDates((prev) => [...prev, v].sort());
-    setExtraInput("");
+    if (extraDutyEntries.some((e) => e.date === date)) {
+      toast.error("Extra day already added");
+      return;
+    }
+    if (!extraDraft.dutyFrom || !extraDraft.dutyTo) {
+      toast.error("Duty time (from / to) is required");
+      return;
+    }
+    setExtraDutyEntries((prev) =>
+      [...prev, { ...extraDraft, date }].sort((a, b) =>
+        a.date.localeCompare(b.date)
+      )
+    );
+    setExtraDraft(emptyExtraEntry());
     markDirty();
   };
 
-  const removeExtraDate = (ymd: string) => {
-    setExtraDutyDates((prev) => prev.filter((d) => d !== ymd));
+  const updateExtraEntry = (date: string, patch: Partial<ExtraDutyEntry>) => {
+    setExtraDutyEntries((prev) =>
+      prev.map((e) => (e.date === date ? { ...e, ...patch } : e))
+    );
+    markDirty();
+  };
+
+  const removeExtraEntry = (date: string) => {
+    setExtraDutyEntries((prev) => prev.filter((e) => e.date !== date));
     markDirty();
   };
 
@@ -173,7 +194,7 @@ export default function OvertimeDataPanel({
     designation: designation.trim() || "SBA-A",
     weeklyHoliday,
     clLeaveDates,
-    extraDutyDates,
+    extraDutyEntries,
     dutyShift,
     purpose,
   });
@@ -187,7 +208,7 @@ export default function OvertimeDataPanel({
     try {
       await saveOvertimeSheet(buildPayload());
       setDirty(false);
-      toast.success("Overtime data saved to your account");
+      toast.success("Overtime data saved to backend");
       return true;
     } catch (err: any) {
       toast.error(err?.message || "Save failed");
@@ -195,11 +216,6 @@ export default function OvertimeDataPanel({
     } finally {
       setSaving(false);
     }
-  };
-
-  const handlePrint = () => {
-    // Same-tab print — no pop-up window (avoids browser block)
-    window.print();
   };
 
   const yearOptions = useMemo(() => {
@@ -216,13 +232,9 @@ export default function OvertimeDataPanel({
         designation={designation}
         rows={rows}
         totalHours={totalHours}
-        printRef={printRef}
         saving={saving}
-        onSave={async () => {
-          const ok = await handleSave();
-          return ok;
-        }}
-        onDownload={handlePrint}
+        onSave={async () => handleSave()}
+        onDownload={() => window.print()}
         onModify={() => setMode("edit")}
         onClose={() => setMode("view")}
       />
@@ -231,7 +243,6 @@ export default function OvertimeDataPanel({
 
   return (
     <div className="space-y-4">
-      {/* Header strip */}
       <div className="rounded-xl border bg-gradient-to-br from-amber-50/80 via-white to-emerald-50/30 border-amber-200/80 dark:from-amber-950/40 dark:via-[#0f1726] dark:to-[#0f1726] dark:border-amber-500/25 overflow-hidden shadow-sm print:hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-amber-200/70 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-950/30">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -243,7 +254,7 @@ export default function OvertimeDataPanel({
                 Overtime Data
               </h2>
               <p className="text-[11px] text-zinc-500 dark:text-slate-400 truncate">
-                Auto sheet for current month · saved under your account
+                Saved on backend under your user id
                 {username ? ` (${username})` : ""}
               </p>
             </div>
@@ -255,9 +266,7 @@ export default function OvertimeDataPanel({
                 setMonth(Number(e.target.value));
                 setMode("view");
               }}
-              disabled={mode === "edit" && dirty}
               className="text-xs rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 font-medium"
-              aria-label="Month"
             >
               {MONTH_LABELS.map((label, i) => (
                 <option key={label} value={i + 1}>
@@ -271,9 +280,7 @@ export default function OvertimeDataPanel({
                 setYear(Number(e.target.value));
                 setMode("view");
               }}
-              disabled={mode === "edit" && dirty}
               className="text-xs rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 font-medium"
-              aria-label="Year"
             >
               {yearOptions.map((y) => (
                 <option key={y} value={y}>
@@ -291,8 +298,8 @@ export default function OvertimeDataPanel({
         ) : mode === "edit" ? (
           <div className="p-4 sm:p-5 space-y-4">
             <p className="text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-500/30 rounded-lg px-3 py-2">
-              Modify mode — change variables below, then Save. You can add extra
-              duty days that are not your normal weekly holiday.
+              Modify mode — changes are stored on the <strong>backend</strong> when
+              you click Save.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -308,8 +315,6 @@ export default function OvertimeDataPanel({
                     markDirty();
                   }}
                   className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-                  placeholder="Md. Mehedy Hasan"
-                  required
                 />
               </label>
               <label className="block">
@@ -324,7 +329,6 @@ export default function OvertimeDataPanel({
                     markDirty();
                   }}
                   className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-                  placeholder="SBA-A"
                 />
               </label>
             </div>
@@ -351,7 +355,7 @@ export default function OvertimeDataPanel({
               </label>
               <label className="block">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-slate-400">
-                  Duty shift on holiday
+                  Duty shift on weekly holiday
                 </span>
                 <select
                   value={dutyShift}
@@ -373,11 +377,20 @@ export default function OvertimeDataPanel({
               </label>
             </div>
 
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
-              Selected shift: <strong>{shiftMeta.label}</strong> ·{" "}
-              {shiftMeta.fromDisplay} → {shiftMeta.toDisplay} · {shiftMeta.hours}{" "}
-              hours each day
-            </p>
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-slate-400">
+                Default purpose (weekly holiday rows)
+              </span>
+              <input
+                type="text"
+                value={purpose}
+                onChange={(e) => {
+                  setPurpose(e.target.value);
+                  markDirty();
+                }}
+                className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-bangla"
+              />
+            </label>
 
             {/* CL leave */}
             <div className="rounded-lg border border-zinc-200 dark:border-slate-700 bg-zinc-50/80 dark:bg-slate-900/40 p-3">
@@ -403,7 +416,7 @@ export default function OvertimeDataPanel({
                   Add
                 </button>
               </div>
-              {clLeaveDates.length > 0 ? (
+              {clLeaveDates.length > 0 && (
                 <ul className="mt-2 flex flex-wrap gap-1.5">
                   {clLeaveDates.map((d) => (
                     <li
@@ -411,89 +424,243 @@ export default function OvertimeDataPanel({
                       className="inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 px-2.5 py-0.5 text-[11px] font-mono text-rose-800 dark:text-rose-200"
                     >
                       {d}
-                      <button
-                        type="button"
-                        onClick={() => removeClDate(d)}
-                        className="p-0.5 rounded hover:bg-rose-100 dark:hover:bg-rose-900/50"
-                        aria-label={`Remove ${d}`}
-                      >
+                      <button type="button" onClick={() => removeClDate(d)}>
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <p className="mt-2 text-[11px] text-zinc-500 dark:text-slate-400">
-                  No CL leave dates.
-                </p>
               )}
             </div>
 
-            {/* Extra duty days (not weekly holiday) */}
-            <div className="rounded-lg border border-zinc-200 dark:border-slate-700 bg-sky-50/50 dark:bg-sky-950/20 p-3">
-              <div className="flex items-center gap-2 mb-2">
+            {/* Extra duty days with full time + purpose */}
+            <div className="rounded-lg border border-sky-200 dark:border-sky-500/30 bg-sky-50/50 dark:bg-sky-950/20 p-3 space-y-3">
+              <div className="flex items-center gap-2">
                 <Plus className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                 <span className="text-xs font-semibold text-zinc-700 dark:text-slate-200">
                   Extra duty days (not normal weekly holiday)
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="date"
-                  value={extraInput}
-                  onChange={(e) => setExtraInput(e.target.value)}
-                  className="rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-xs font-mono"
-                />
+              <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+                For each extra day set normal duty time, overtime (duty) time, and
+                purpose.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <label className="block text-[11px]">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Date
+                  </span>
+                  <input
+                    type="date"
+                    value={extraDraft.date}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({ ...d, date: e.target.value }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-mono"
+                  />
+                </label>
+                <label className="block text-[11px]">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Normal duty From
+                  </span>
+                  <input
+                    type="time"
+                    value={extraDraft.normalFrom}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({
+                        ...d,
+                        normalFrom: e.target.value,
+                      }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-mono"
+                  />
+                </label>
+                <label className="block text-[11px]">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Normal duty To
+                  </span>
+                  <input
+                    type="time"
+                    value={extraDraft.normalTo}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({
+                        ...d,
+                        normalTo: e.target.value,
+                      }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-mono"
+                  />
+                </label>
+                <label className="block text-[11px]">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Duty (overtime) From
+                  </span>
+                  <input
+                    type="time"
+                    value={extraDraft.dutyFrom}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({
+                        ...d,
+                        dutyFrom: e.target.value,
+                      }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-mono"
+                  />
+                </label>
+                <label className="block text-[11px]">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Duty (overtime) To
+                  </span>
+                  <input
+                    type="time"
+                    value={extraDraft.dutyTo}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({
+                        ...d,
+                        dutyTo: e.target.value,
+                      }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-mono"
+                  />
+                </label>
+                <label className="block text-[11px] sm:col-span-2 lg:col-span-1">
+                  <span className="font-semibold text-zinc-600 dark:text-slate-300">
+                    Purpose
+                  </span>
+                  <input
+                    type="text"
+                    value={extraDraft.purpose}
+                    onChange={(e) =>
+                      setExtraDraft((d) => ({
+                        ...d,
+                        purpose: e.target.value,
+                      }))
+                    }
+                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 text-xs font-bangla"
+                  />
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={addExtraDate}
+                  onClick={addExtraEntry}
                   className="inline-flex items-center gap-1 rounded-md bg-sky-700 hover:bg-sky-800 text-white px-2.5 py-1.5 text-xs font-semibold"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Add day
+                  Add extra day
                 </button>
+                <span className="text-[11px] text-zinc-500 dark:text-slate-400 font-mono">
+                  OT hours:{" "}
+                  {dutyDurationHours(
+                    extraDraft.dutyFrom || "00:00",
+                    extraDraft.dutyTo || "00:00"
+                  )}
+                  h
+                </span>
               </div>
-              {extraDutyDates.length > 0 ? (
-                <ul className="mt-2 flex flex-wrap gap-1.5">
-                  {extraDutyDates.map((d) => (
-                    <li
-                      key={d}
-                      className="inline-flex items-center gap-1 rounded-full bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-500/30 px-2.5 py-0.5 text-[11px] font-mono text-sky-800 dark:text-sky-200"
-                    >
-                      {d}
-                      <button
-                        type="button"
-                        onClick={() => removeExtraDate(d)}
-                        className="p-0.5 rounded hover:bg-sky-100 dark:hover:bg-sky-900/50"
-                        aria-label={`Remove ${d}`}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-[11px] text-zinc-500 dark:text-slate-400">
-                  Optional — add a weekday you performed duty that is not your
-                  weekly holiday.
-                </p>
+
+              {extraDutyEntries.length > 0 && (
+                <div className="overflow-x-auto rounded-md border border-sky-200/80 dark:border-sky-500/20">
+                  <table className="w-full text-[11px]">
+                    <thead>
+                      <tr className="bg-sky-100/80 dark:bg-sky-950/40 text-left">
+                        <th className="px-2 py-1.5">Date</th>
+                        <th className="px-2 py-1.5">Normal</th>
+                        <th className="px-2 py-1.5">Duty OT</th>
+                        <th className="px-2 py-1.5">Hrs</th>
+                        <th className="px-2 py-1.5">Purpose</th>
+                        <th className="px-2 py-1.5" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {extraDutyEntries.map((e) => (
+                        <tr
+                          key={e.date}
+                          className="border-t border-sky-100 dark:border-sky-500/10"
+                        >
+                          <td className="px-2 py-1.5 font-mono align-top">
+                            {e.date}
+                          </td>
+                          <td className="px-2 py-1.5 align-top">
+                            <div className="flex gap-1">
+                              <input
+                                type="time"
+                                value={e.normalFrom}
+                                onChange={(ev) =>
+                                  updateExtraEntry(e.date, {
+                                    normalFrom: ev.target.value,
+                                  })
+                                }
+                                className="w-[5.5rem] rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1 py-0.5 font-mono"
+                              />
+                              <input
+                                type="time"
+                                value={e.normalTo}
+                                onChange={(ev) =>
+                                  updateExtraEntry(e.date, {
+                                    normalTo: ev.target.value,
+                                  })
+                                }
+                                className="w-[5.5rem] rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1 py-0.5 font-mono"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-2 py-1.5 align-top">
+                            <div className="flex gap-1">
+                              <input
+                                type="time"
+                                value={e.dutyFrom}
+                                onChange={(ev) =>
+                                  updateExtraEntry(e.date, {
+                                    dutyFrom: ev.target.value,
+                                  })
+                                }
+                                className="w-[5.5rem] rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1 py-0.5 font-mono"
+                              />
+                              <input
+                                type="time"
+                                value={e.dutyTo}
+                                onChange={(ev) =>
+                                  updateExtraEntry(e.date, {
+                                    dutyTo: ev.target.value,
+                                  })
+                                }
+                                className="w-[5.5rem] rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1 py-0.5 font-mono"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-2 py-1.5 font-mono align-top">
+                            {dutyDurationHours(e.dutyFrom, e.dutyTo)}h
+                          </td>
+                          <td className="px-2 py-1.5 align-top min-w-[8rem]">
+                            <input
+                              type="text"
+                              value={e.purpose}
+                              onChange={(ev) =>
+                                updateExtraEntry(e.date, {
+                                  purpose: ev.target.value,
+                                })
+                              }
+                              className="w-full rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-0.5 font-bangla"
+                            />
+                          </td>
+                          <td className="px-2 py-1.5 align-top">
+                            <button
+                              type="button"
+                              onClick={() => removeExtraEntry(e.date)}
+                              className="text-rose-600"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
-
-            <label className="block">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-slate-400">
-                Purpose of Extra Work
-              </span>
-              <input
-                type="text"
-                value={purpose}
-                onChange={(e) => {
-                  setPurpose(e.target.value);
-                  markDirty();
-                }}
-                className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-bangla"
-              />
-            </label>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <button
@@ -506,7 +673,7 @@ export default function OvertimeDataPanel({
                 className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-3.5 py-2 text-xs font-semibold shadow-sm"
               >
                 <Save className="w-3.5 h-3.5" />
-                {saving ? "Saving…" : "Save to account"}
+                {saving ? "Saving…" : "Save to backend"}
               </button>
               <button
                 type="button"
@@ -514,7 +681,7 @@ export default function OvertimeDataPanel({
                   void load();
                   setMode("view");
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-slate-200"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 px-3.5 py-2 text-xs font-semibold"
               >
                 Cancel
               </button>
@@ -529,7 +696,6 @@ export default function OvertimeDataPanel({
             </div>
           </div>
         ) : (
-          /* VIEW mode — auto-generated current (or selected) month summary */
           <div className="p-4 sm:p-5 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               <InfoTile label="Employee" value={employeeName || "—"} />
@@ -539,11 +705,10 @@ export default function OvertimeDataPanel({
                 value={`${WEEKDAY_LABELS[weeklyHoliday]} (${WEEKDAY_LABELS_BN[weeklyHoliday]})`}
               />
               <InfoTile
-                label="Duty shift"
+                label="Holiday duty shift"
                 value={`${shiftMeta.label} · ${shiftMeta.fromDisplay} – ${shiftMeta.toDisplay}`}
               />
             </div>
-
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
@@ -556,7 +721,7 @@ export default function OvertimeDataPanel({
               <button
                 type="button"
                 onClick={() => setMode("edit")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-zinc-800 dark:text-slate-100"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold"
               >
                 <Pencil className="w-3.5 h-3.5" />
                 Modify
@@ -575,81 +740,69 @@ export default function OvertimeDataPanel({
         )}
       </div>
 
-      {/* Generated rows — always visible in view/edit */}
       {!loading && mode !== "preview" && (
         <section className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-[#0f1726] overflow-hidden shadow-sm print:hidden">
           <div className="px-4 sm:px-5 py-3 border-b border-zinc-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-zinc-800 dark:text-white">
-              Auto-generated overtime · {MONTH_LABELS[month - 1]} {year}
+              Generated overtime · {MONTH_LABELS[month - 1]} {year}
             </h3>
             <p className="text-xs font-mono text-zinc-600 dark:text-slate-300">
-              {rows.length} day{rows.length === 1 ? "" : "s"} · total{" "}
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {totalHours} h
-              </span>{" "}
-              <span className="font-bangla">({formatDurationBn(totalHours)})</span>
+              {rows.length} day{rows.length === 1 ? "" : "s"} ·{" "}
+              <span className="font-bold text-emerald-700 dark:text-emerald-400 font-bangla">
+                {formatDurationBn(totalHours)}
+              </span>
             </p>
           </div>
           {rows.length === 0 ? (
             <p className="px-5 py-8 text-center text-sm text-zinc-500 dark:text-slate-400">
-              No overtime days yet. Set weekly holiday / extra days via Modify.
+              No overtime days yet. Use Modify to set weekly holiday / extra days.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-zinc-50 dark:bg-slate-900/60 text-zinc-600 dark:text-slate-400">
-                    <th className="px-4 py-2.5 font-semibold">Date</th>
-                    <th className="px-3 py-2.5 font-semibold">Type</th>
-                    <th className="px-3 py-2.5 font-semibold">Shift</th>
-                    <th className="px-3 py-2.5 font-semibold">From</th>
-                    <th className="px-3 py-2.5 font-semibold">To</th>
-                    <th className="px-3 py-2.5 font-semibold text-right">Hours</th>
-                    <th className="px-3 py-2.5 font-semibold hidden sm:table-cell">
-                      Purpose
-                    </th>
+                    <th className="px-4 py-2.5">Date</th>
+                    <th className="px-3 py-2.5">Normal</th>
+                    <th className="px-3 py-2.5">Duty From</th>
+                    <th className="px-3 py-2.5">Duty To</th>
+                    <th className="px-3 py-2.5 text-right">Hours</th>
+                    <th className="px-3 py-2.5 hidden sm:table-cell">Purpose</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-slate-800">
                   {rows.map((r) => (
                     <tr key={r.dateYmd}>
-                      <td className="px-4 py-2.5 font-mono tabular-nums text-zinc-800 dark:text-slate-100">
+                      <td className="px-4 py-2.5 font-mono">
                         <span className="block font-bangla">{r.dateDisplayBn}</span>
                         <span className="text-[10px] text-zinc-400">
-                          {r.dateDisplay}
+                          {r.isExtra ? "Extra" : "Holiday"}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
-                        {r.isExtra ? (
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">
-                            Extra
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 font-bangla">
-                            সাপ্তাহিক বিরতি
-                          </span>
-                        )}
+                      <td className="px-3 py-2.5 font-bangla text-[11px]">
+                        {r.normalTo
+                          ? `${r.normalFrom}–${r.normalTo}`
+                          : r.normalFrom}
                       </td>
-                      <td className="px-3 py-2.5 font-semibold">{r.shift}</td>
-                      <td className="px-3 py-2.5 font-mono text-[11px]">
-                        {r.dutyFromDisplay}
+                      <td className="px-3 py-2.5 font-mono font-bangla">
+                        {toBengaliDigits(r.dutyFrom)}
                       </td>
-                      <td className="px-3 py-2.5 font-mono text-[11px]">
-                        {r.dutyToDisplay}
+                      <td className="px-3 py-2.5 font-mono font-bangla">
+                        {toBengaliDigits(r.dutyTo)}
                       </td>
-                      <td className="px-3 py-2.5 text-right font-mono font-semibold text-emerald-700 dark:text-emerald-400 font-bangla">
+                      <td className="px-3 py-2.5 text-right font-bangla font-semibold text-emerald-700 dark:text-emerald-400">
                         {r.hoursLabelBn}
                       </td>
-                      <td className="px-3 py-2.5 text-zinc-600 dark:text-slate-300 truncate max-w-[200px] hidden sm:table-cell font-bangla">
+                      <td className="px-3 py-2.5 hidden sm:table-cell font-bangla truncate max-w-[180px]">
                         {r.purpose}
                       </td>
                     </tr>
                   ))}
                   <tr className="bg-emerald-50/60 dark:bg-emerald-950/20 font-semibold">
-                    <td className="px-4 py-2.5 font-bangla" colSpan={5}>
-                      মোট (Total)
+                    <td className="px-4 py-2.5 font-bangla" colSpan={4}>
+                      মোট
                     </td>
-                    <td className="px-3 py-2.5 text-right font-mono text-emerald-800 dark:text-emerald-300 font-bangla">
+                    <td className="px-3 py-2.5 text-right font-bangla">
                       {formatDurationBn(totalHours)}
                     </td>
                     <td className="hidden sm:table-cell" />
@@ -677,6 +830,7 @@ function InfoTile({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Printable form matching official Overtime Work Form layout */
 function OvertimePreviewPage({
   year,
   month,
@@ -684,7 +838,6 @@ function OvertimePreviewPage({
   designation,
   rows,
   totalHours,
-  printRef,
   saving,
   onSave,
   onDownload,
@@ -697,7 +850,6 @@ function OvertimePreviewPage({
   designation: string;
   rows: OvertimeRow[];
   totalHours: number;
-  printRef: React.RefObject<HTMLDivElement | null>;
   saving: boolean;
   onSave: () => Promise<boolean>;
   onDownload: () => void;
@@ -708,14 +860,13 @@ function OvertimePreviewPage({
 
   return (
     <div className="space-y-3">
-      {/* Toolbar — hidden when printing */}
       <div className="print:hidden flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/80 dark:bg-amber-950/30 px-4 py-3">
         <div>
           <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
             Overtime sheet preview
           </h2>
           <p className="text-[11px] text-zinc-500 dark:text-slate-400">
-            {monthLabel}-{year} · use Save / Download or Modify variables
+            {monthLabel}-{year} · official form layout
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -739,7 +890,7 @@ function OvertimePreviewPage({
           <button
             type="button"
             onClick={onModify}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-zinc-800 dark:text-slate-100"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold"
           >
             <Pencil className="w-3.5 h-3.5" />
             Modify
@@ -747,7 +898,7 @@ function OvertimePreviewPage({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-zinc-600 dark:text-slate-300 hover:bg-zinc-100 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-zinc-600 dark:text-slate-300"
           >
             <X className="w-3.5 h-3.5" />
             Close
@@ -755,36 +906,32 @@ function OvertimePreviewPage({
         </div>
       </div>
 
-      {/* Printable sheet */}
       <div
-        ref={printRef}
-        className="bg-white text-black mx-auto shadow-md border border-zinc-300 p-5 sm:p-6 max-w-[1100px] print:shadow-none print:border-0 print:max-w-none"
+        className="bg-white text-black mx-auto shadow-md border border-zinc-300 p-4 sm:p-5 max-w-[1100px] print:shadow-none print:border-0 print:max-w-none"
         style={{ fontFamily: "'Times New Roman', Times, serif" }}
       >
         <style>{`
           @media print {
             body * { visibility: hidden !important; }
             #overtime-print-root, #overtime-print-root * { visibility: visible !important; }
-            #overtime-print-root {
-              position: absolute !important;
-              left: 0; top: 0; width: 100%;
-            }
-            @page { size: A4 landscape; margin: 10mm; }
+            #overtime-print-root { position: absolute !important; left: 0; top: 0; width: 100%; }
+            @page { size: A4 landscape; margin: 8mm; }
           }
+          #overtime-print-root .bn { font-family: "Shonar", "Noto Sans Bengali", "SolaimanLipi", sans-serif; }
         `}</style>
         <div id="overtime-print-root">
-          <div className="relative text-center mb-3">
-            <div className="absolute right-0 top-0 border border-zinc-700 px-2 py-0.5 text-[11px]">
+          <div className="relative text-center mb-2">
+            <div className="absolute right-0 top-0 border border-black px-2 py-0.5 text-[10px] leading-tight">
               33/11 KV Bottail S/S
             </div>
-            <div className="text-[13px] font-bold">
+            <div className="text-[14px] font-bold">
               Office of the Executive Engineer
             </div>
             <div className="text-[12px]">Sales &amp; Distribution Division- 1</div>
             <div className="text-[13px] font-bold underline">WZPDCL, Kushtia</div>
           </div>
 
-          <div className="text-[12.5px] space-y-0.5 mb-3">
+          <div className="text-[12px] mb-2 space-y-0.5">
             <div>
               <strong>Overtime Work Form</strong>
               {" : "}
@@ -802,104 +949,120 @@ function OvertimePreviewPage({
             </div>
           </div>
 
-          <table className="w-full border-collapse text-[11px]">
+          <table className="w-full border-collapse text-[10.5px]">
             <thead>
-              <tr className="bg-zinc-100">
-                <th rowSpan={2} className="border border-zinc-700 px-1.5 py-1">
+              <tr>
+                <th rowSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
                   Date
                 </th>
-                <th colSpan={2} className="border border-zinc-700 px-1.5 py-1">
+                <th colSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
                   Normal Working Hour
                 </th>
-                <th colSpan={2} className="border border-zinc-700 px-1.5 py-1">
+                <th colSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
                   Worked Beyond Normal Time
                 </th>
-                <th rowSpan={2} className="border border-zinc-700 px-1.5 py-1">
-                  Total Hour for Extra Working
+                <th rowSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
+                  Total Hour for
+                  <br />
+                  Extra Working
                 </th>
-                <th rowSpan={2} className="border border-zinc-700 px-1.5 py-1">
+                <th rowSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
                   Purpose of Extra Work
                 </th>
-                <th colSpan={4} className="border border-zinc-700 px-1.5 py-1">
+                <th colSpan={4} className="border border-black px-1 py-1 bg-zinc-100">
                   Signature
                 </th>
-                <th rowSpan={2} className="border border-zinc-700 px-1.5 py-1">
+                <th rowSpan={2} className="border border-black px-1 py-1 bg-zinc-100">
                   C/S
                   <br />
                   SE
                 </th>
               </tr>
-              <tr className="bg-zinc-100">
-                <th className="border border-zinc-700 px-1 py-0.5">From</th>
-                <th className="border border-zinc-700 px-1 py-0.5">To</th>
-                <th className="border border-zinc-700 px-1 py-0.5">From</th>
-                <th className="border border-zinc-700 px-1 py-0.5">To</th>
-                <th className="border border-zinc-700 px-1 py-0.5">Employee</th>
-                <th className="border border-zinc-700 px-1 py-0.5">SAE</th>
-                <th className="border border-zinc-700 px-1 py-0.5">
-                  Controlling Officer
+              <tr>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">From</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">To</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">From</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">To</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">Employee</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">SAE</th>
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">
+                  Controlling
+                  <br />
+                  Officer
                 </th>
-                <th className="border border-zinc-700 px-1 py-0.5">
-                  Head of Office
+                <th className="border border-black px-1 py-0.5 bg-zinc-100">
+                  Head of
+                  <br />
+                  Office
                 </th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={12}
-                    className="border border-zinc-700 px-2 py-6 text-center text-zinc-500"
-                  >
-                    No overtime days generated for this month.
+                  <td colSpan={12} className="border border-black px-2 py-6 text-center">
+                    No overtime days
                   </td>
                 </tr>
               ) : (
                 rows.map((r) => (
                   <tr key={r.dateYmd}>
-                    <td className="border border-zinc-700 px-1.5 py-1.5 font-mono font-bangla">
+                    <td className="border border-black px-1 py-1.5 text-center bn">
                       {formatYmdDisplayBn(r.dateYmd)}
                     </td>
-                    <td
-                      className="border border-zinc-700 px-1.5 py-1.5 font-bangla"
-                      colSpan={2}
-                    >
-                      {r.isExtra ? "অতিরিক্ত ডিউটি" : "সাপ্তাহিক বিরতি"}
-                    </td>
-                    <td className="border border-zinc-700 px-1.5 py-1.5 font-mono font-bangla">
+                    {r.isExtra ? (
+                      <>
+                        <td className="border border-black px-1 py-1.5 text-center bn">
+                          {r.normalFrom && r.normalFrom !== "—"
+                            ? toBengaliDigits(r.normalFrom)
+                            : ""}
+                        </td>
+                        <td className="border border-black px-1 py-1.5 text-center bn">
+                          {r.normalTo ? toBengaliDigits(r.normalTo) : ""}
+                        </td>
+                      </>
+                    ) : (
+                      <td
+                        className="border border-black px-1 py-1.5 text-center bn"
+                        colSpan={2}
+                      >
+                        সাপ্তাহিক বিরতি
+                      </td>
+                    )}
+                    <td className="border border-black px-1 py-1.5 text-center bn">
                       {toBengaliDigits(r.dutyFrom)}
                     </td>
-                    <td className="border border-zinc-700 px-1.5 py-1.5 font-mono font-bangla">
+                    <td className="border border-black px-1 py-1.5 text-center bn">
                       {toBengaliDigits(r.dutyTo)}
                     </td>
-                    <td className="border border-zinc-700 px-1.5 py-1.5 font-bangla">
+                    <td className="border border-black px-1 py-1.5 text-center bn">
                       {r.hoursLabelBn}
                     </td>
-                    <td className="border border-zinc-700 px-1.5 py-1.5 text-left font-bangla">
+                    <td className="border border-black px-1.5 py-1.5 text-left bn">
                       {r.purpose}
                     </td>
-                    <td className="border border-zinc-700 px-3 py-3" />
-                    <td className="border border-zinc-700 px-3 py-3" />
-                    <td className="border border-zinc-700 px-3 py-3" />
-                    <td className="border border-zinc-700 px-3 py-3" />
-                    <td className="border border-zinc-700 px-3 py-3" />
+                    <td className="border border-black px-2 py-3" />
+                    <td className="border border-black px-2 py-3" />
+                    <td className="border border-black px-2 py-3" />
+                    <td className="border border-black px-2 py-3" />
+                    <td className="border border-black px-2 py-3" />
                   </tr>
                 ))
               )}
               <tr>
-                <td className="border border-zinc-700 px-1.5 py-1.5 font-bold font-bangla" colSpan={5}>
+                <td
+                  className="border border-black px-1 py-1.5 text-center font-bold bn"
+                  colSpan={5}
+                >
                   মোট
                 </td>
-                <td className="border border-zinc-700 px-1.5 py-1.5 font-bold font-bangla">
+                <td className="border border-black px-1 py-1.5 text-center font-bold bn">
                   {formatDurationBn(totalHours)}
                 </td>
-                <td className="border border-zinc-700" colSpan={6} />
+                <td className="border border-black" colSpan={6} />
               </tr>
             </tbody>
           </table>
-          <p className="mt-3 text-[10px] text-zinc-500 print:hidden">
-            Shonar Bangla font · Bottail SS operator dashboard
-          </p>
         </div>
       </div>
     </div>
