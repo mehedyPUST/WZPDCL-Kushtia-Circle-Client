@@ -1151,3 +1151,52 @@ export async function generateNightLog(payload: { dayKey: string; slots: Record<
   if (!res.ok || data.success === false) throw new Error(data.message || "Night-log generation failed");
   return data;
 }
+
+// ============================================
+// OVERTIME SHEETS (per-user monthly)
+// ============================================
+
+export async function fetchOvertimeSheet({
+  year,
+  month,
+}: {
+  year: number;
+  month: number;
+}) {
+  const q = new URLSearchParams({
+    year: String(year),
+    month: String(month),
+  });
+  const res = await fetchWithCredentials(url(`/api/overtime?${q}`), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to load overtime data");
+  }
+  return data;
+}
+
+export async function saveOvertimeSheet(payload: {
+  year: number;
+  month: number;
+  employeeName: string;
+  designation: string;
+  weeklyHoliday: number;
+  clLeaveDates: string[];
+  dutyFrom: string;
+  dutyTo: string;
+  purpose?: string;
+}) {
+  const res = await fetchWithCredentials(url("/api/overtime"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await parseJson(res);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed to save overtime data");
+  }
+  return data;
+}

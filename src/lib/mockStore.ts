@@ -50,6 +50,7 @@ function createInitialStore() {
     circleEntries: new Map(),
     shiftMessages: [],
     monthlyEnergySheets: [],
+    overtimeSheets: [],
     users: [
       {
         id: "admin-default-1",
