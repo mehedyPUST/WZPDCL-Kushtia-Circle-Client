@@ -40,6 +40,14 @@ import {
 interface OvertimeDataPanelProps {
   displayName?: string;
   username?: string;
+  /** When set, load/save this duty person's sheet (duty/admin shared access) */
+  targetUserId?: string;
+  targetDisplayName?: string;
+  /** Optional controlled year/month (e.g. from team list) */
+  initialYear?: number;
+  initialMonth?: number;
+  /** Called after a successful save (e.g. to refresh team list) */
+  onSaved?: () => void;
 }
 
 type ModalMode = "preview" | "modify" | null;
@@ -47,11 +55,17 @@ type ModalMode = "preview" | "modify" | null;
 export default function OvertimeDataPanel({
   displayName = "",
   username = "",
+  targetUserId,
+  targetDisplayName = "",
+  initialYear,
+  initialMonth,
+  onSaved,
 }: OvertimeDataPanelProps) {
   const init = currentDhakaYearMonth();
-  const [year, setYear] = useState(init.year);
-  const [month, setMonth] = useState(init.month);
-  const [employeeName, setEmployeeName] = useState(displayName || "");
+  const [year, setYear] = useState(initialYear ?? init.year);
+  const [month, setMonth] = useState(initialMonth ?? init.month);
+  const nameFallback = targetDisplayName || displayName || "";
+  const [employeeName, setEmployeeName] = useState(nameFallback);
   const [designation, setDesignation] = useState("SBA-A");
   const [weeklyHoliday, setWeeklyHoliday] = useState(0);
   const [clLeaveDates, setClLeaveDates] = useState<string[]>([]);
@@ -70,7 +84,7 @@ export default function OvertimeDataPanel({
 
   const applySheet = useCallback(
     (sheet: Partial<OvertimeSheetRecord>) => {
-      setEmployeeName(sheet.employeeName || displayName || "");
+      setEmployeeName(sheet.employeeName || nameFallback || "");
       setDesignation(sheet.designation || "SBA-A");
       setWeeklyHoliday(
         typeof sheet.weeklyHoliday === "number" ? sheet.weeklyHoliday : 0
@@ -89,20 +103,24 @@ export default function OvertimeDataPanel({
         sheet.purpose || "সাপ্তাহিক বিরতির দিনে ডিউটি করা হয়"
       );
     },
-    [displayName]
+    [nameFallback]
   );
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchOvertimeSheet({ year, month });
+      const data = await fetchOvertimeSheet({
+        year,
+        month,
+        userId: targetUserId || undefined,
+      });
       applySheet((data.sheet || {}) as OvertimeSheetRecord);
     } catch (err: any) {
       toast.error(err?.message || "Failed to load overtime data");
     } finally {
       setLoading(false);
     }
-  }, [year, month, applySheet]);
+  }, [year, month, targetUserId, applySheet]);
 
   useEffect(() => {
     void load();
@@ -206,6 +224,7 @@ export default function OvertimeDataPanel({
     extraDutyEntries,
     dutyShift,
     purpose,
+    ...(targetUserId ? { userId: targetUserId } : {}),
   });
 
   const handleSave = async () => {
@@ -216,7 +235,12 @@ export default function OvertimeDataPanel({
     setSaving(true);
     try {
       await saveOvertimeSheet(buildPayload());
-      toast.success("Overtime data saved to backend");
+      toast.success(
+        targetUserId
+          ? "Overtime data saved for this duty person"
+          : "Overtime data saved to backend"
+      );
+      onSaved?.();
       return true;
     } catch (err: any) {
       toast.error(err?.message || "Save failed");
