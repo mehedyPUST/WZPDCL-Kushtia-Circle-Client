@@ -3,6 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
+  Clock,
   Download,
   Eye,
   FileText,
@@ -10,6 +11,7 @@ import {
   Plus,
   Save,
   Trash2,
+  User,
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -587,21 +589,26 @@ function OvertimeSheetModal({
     >
       <div className="w-full max-w-6xl max-h-[96vh] overflow-hidden rounded-xl bg-zinc-100 dark:bg-[#0b1220] border border-zinc-300 dark:border-slate-700 shadow-2xl flex flex-col print:max-w-none print:max-h-none print:h-auto print:overflow-visible print:shadow-none print:border-0 print:rounded-none print:bg-white">
         {/* Toolbar */}
-        <div className="print:hidden shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2.5 border-b border-zinc-200 dark:border-slate-700 bg-white dark:bg-[#0f1726]">
-          <div>
-            <h2 className="text-sm font-bold text-zinc-800 dark:text-white">
-              {mode === "modify" ? "Modify overtime sheet" : "Overtime sheet preview"}
-            </h2>
-            <p className="text-[11px] text-zinc-500 dark:text-slate-400">
-              {monthLabel}-{year} · official form layout
-            </p>
+        <div className="print:hidden shrink-0 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f1726]">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <FileText className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold text-slate-800 dark:text-white truncate">
+                {mode === "modify" ? "Modify Overtime Sheet" : "Overtime Sheet Preview"}
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {monthLabel}-{year} · Official form layout
+              </p>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               disabled={saving}
               onClick={() => void onSave()}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-3 py-1.5 text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-3.5 py-2 text-xs font-semibold shadow-sm transition"
             >
               <Save className="w-3.5 h-3.5" />
               {saving ? "Saving…" : "Save"}
@@ -609,7 +616,7 @@ function OvertimeSheetModal({
             <button
               type="button"
               onClick={onDownload}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 text-xs font-semibold"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 text-xs font-semibold shadow-sm transition"
             >
               <Download className="w-3.5 h-3.5" />
               Download / Print PDF
@@ -618,7 +625,7 @@ function OvertimeSheetModal({
               <button
                 type="button"
                 onClick={() => onSwitchMode("modify")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm transition"
               >
                 <Pencil className="w-3.5 h-3.5" />
                 Modify
@@ -627,7 +634,7 @@ function OvertimeSheetModal({
               <button
                 type="button"
                 onClick={() => onSwitchMode("preview")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-100 px-3 py-1.5 text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 dark:border-indigo-500/40 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-800 dark:text-indigo-100 px-3.5 py-2 text-xs font-semibold shadow-sm transition"
               >
                 <Eye className="w-3.5 h-3.5" />
                 Preview only
@@ -636,7 +643,7 @@ function OvertimeSheetModal({
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-zinc-600 dark:text-slate-300 hover:bg-zinc-100 dark:hover:bg-slate-800"
+              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               <X className="w-3.5 h-3.5" />
               Close
@@ -645,290 +652,473 @@ function OvertimeSheetModal({
         </div>
 
         <div className="overflow-y-auto flex-1 p-2 sm:p-4 print:p-0 print:overflow-visible print:h-auto print:flex-none">
-          {/* Modify form inside modal */}
+          {/* ─── Professional Modify Form ───────────────────────────────────── */}
           {mode === "modify" && (
-            <div className="print:hidden mb-4 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-white dark:bg-[#0f1726] p-3 sm:p-4 space-y-3 text-xs">
-              <p className="text-[11px] text-amber-800 dark:text-amber-200">
-                Edit variables below — the PDF sheet updates live. Click Save to
-                store on backend.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label className="block">
-                  <span className="font-semibold text-zinc-500 dark:text-slate-400">
-                    Name of Employee
-                  </span>
-                  <input
-                    type="text"
-                    value={employeeName}
-                    onChange={(e) => setEmployeeName(e.target.value)}
-                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5"
-                  />
-                </label>
-                <label className="block">
-                  <span className="font-semibold text-zinc-500 dark:text-slate-400">
-                    Designation
-                  </span>
-                  <input
-                    type="text"
-                    value={designation}
-                    onChange={(e) => setDesignation(e.target.value)}
-                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5"
-                  />
-                </label>
-                <label className="block">
-                  <span className="font-semibold text-zinc-500 dark:text-slate-400">
-                    Weekly Holiday
-                  </span>
-                  <select
-                    value={weeklyHoliday}
-                    onChange={(e) => setWeeklyHoliday(Number(e.target.value))}
-                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5"
-                  >
-                    {WEEKDAY_LABELS.map((label, i) => (
-                      <option key={label} value={i}>
-                        {label} ({WEEKDAY_LABELS_BN[i]})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="font-semibold text-zinc-500 dark:text-slate-400">
-                    Duty shift on weekly holiday
-                  </span>
-                  <select
-                    value={dutyShift}
-                    onChange={(e) =>
-                      setDutyShift(normalizeDutyShift(e.target.value))
-                    }
-                    className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5"
-                  >
-                    {(Object.keys(DUTY_SHIFTS) as DutyShiftId[]).map((id) => {
-                      const s = DUTY_SHIFTS[id];
-                      return (
-                        <option key={id} value={id}>
-                          {s.label} — {s.fromDisplay} to {s.toDisplay}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </label>
-              </div>
-              <label className="block">
-                <span className="font-semibold text-zinc-500 dark:text-slate-400">
-                  Default purpose (weekly holiday)
-                </span>
-                <input
-                  type="text"
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                  className="mt-0.5 w-full rounded-md border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1.5 font-bangla"
-                />
-              </label>
-
-              <div className="rounded-lg border border-zinc-200 dark:border-slate-700 p-2 space-y-2">
-                <div className="font-semibold text-zinc-600 dark:text-slate-300 flex items-center gap-1">
-                  <CalendarDays className="w-3.5 h-3.5 text-rose-500" />
-                  CL leave days
-                </div>
-                <div className="flex flex-wrap gap-2 items-center">
-                  <input
-                    type="date"
-                    value={clInput}
-                    onChange={(e) => setClInput(e.target.value)}
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1 font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={addClDate}
-                    className="rounded bg-zinc-800 dark:bg-slate-100 text-white dark:text-slate-900 px-2 py-1 font-semibold"
-                  >
-                    Add
-                  </button>
-                  {clLeaveDates.map((d) => (
-                    <span
-                      key={d}
-                      className="inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 px-2 py-0.5 font-mono"
-                    >
-                      {d}
-                      <button type="button" onClick={() => removeClDate(d)}>
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-sky-200 dark:border-sky-500/30 p-2 space-y-2">
-                <div className="font-semibold text-zinc-600 dark:text-slate-300">
-                  Extra duty days (not weekly holiday)
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
-                  <input
-                    type="date"
-                    value={extraDraft.date}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({ ...d, date: e.target.value }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono"
-                    title="Date"
-                  />
-                  <input
-                    type="time"
-                    value={extraDraft.normalFrom}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({
-                        ...d,
-                        normalFrom: e.target.value,
-                      }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono"
-                    title="Normal From"
-                  />
-                  <input
-                    type="time"
-                    value={extraDraft.normalTo}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({
-                        ...d,
-                        normalTo: e.target.value,
-                      }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono"
-                    title="Normal To"
-                  />
-                  <input
-                    type="time"
-                    value={extraDraft.dutyFrom}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({
-                        ...d,
-                        dutyFrom: e.target.value,
-                      }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono"
-                    title="Duty From"
-                  />
-                  <input
-                    type="time"
-                    value={extraDraft.dutyTo}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({
-                        ...d,
-                        dutyTo: e.target.value,
-                      }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono"
-                    title="Duty To"
-                  />
-                  <input
-                    type="text"
-                    value={extraDraft.purpose}
-                    onChange={(e) =>
-                      setExtraDraft((d) => ({
-                        ...d,
-                        purpose: e.target.value,
-                      }))
-                    }
-                    className="rounded border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-bangla"
-                    placeholder="Purpose"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={addExtraEntry}
-                  className="inline-flex items-center gap-1 rounded bg-sky-700 text-white px-2 py-1 font-semibold"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Add extra day ({dutyDurationHours(extraDraft.dutyFrom, extraDraft.dutyTo)}h)
-                </button>
-                {extraDutyEntries.length > 0 && (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-[10px]">
-                      <thead>
-                        <tr className="text-left bg-sky-50 dark:bg-sky-950/30">
-                          <th className="px-1 py-1">Date</th>
-                          <th className="px-1 py-1">Normal</th>
-                          <th className="px-1 py-1">Duty OT</th>
-                          <th className="px-1 py-1">Purpose</th>
-                          <th className="px-1 py-1" />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {extraDutyEntries.map((e) => (
-                          <tr key={e.date} className="border-t border-sky-100 dark:border-sky-900/40">
-                            <td className="px-1 py-1 font-mono">{e.date}</td>
-                            <td className="px-1 py-1">
-                              <input type="time" value={e.normalFrom} onChange={(ev) => updateExtraEntry(e.date, { normalFrom: ev.target.value })} className="w-[4.8rem] rounded border px-0.5 font-mono bg-white dark:bg-slate-900" />
-                              <input type="time" value={e.normalTo} onChange={(ev) => updateExtraEntry(e.date, { normalTo: ev.target.value })} className="w-[4.8rem] rounded border px-0.5 font-mono bg-white dark:bg-slate-900 ml-0.5" />
-                            </td>
-                            <td className="px-1 py-1">
-                              <input type="time" value={e.dutyFrom} onChange={(ev) => updateExtraEntry(e.date, { dutyFrom: ev.target.value })} className="w-[4.8rem] rounded border px-0.5 font-mono bg-white dark:bg-slate-900" />
-                              <input type="time" value={e.dutyTo} onChange={(ev) => updateExtraEntry(e.date, { dutyTo: ev.target.value })} className="w-[4.8rem] rounded border px-0.5 font-mono bg-white dark:bg-slate-900 ml-0.5" />
-                            </td>
-                            <td className="px-1 py-1">
-                              <input type="text" value={e.purpose} onChange={(ev) => updateExtraEntry(e.date, { purpose: ev.target.value })} className="w-full min-w-[6rem] rounded border px-1 font-bangla bg-white dark:bg-slate-900" />
-                            </td>
-                            <td className="px-1 py-1">
-                              <button type="button" onClick={() => removeExtraEntry(e.date)}>
-                                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+            <div className="print:hidden mb-5 space-y-4">
+              {/* Header bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900/80 dark:to-[#0f1726] px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
+                    <Pencil className="h-4 w-4" />
                   </div>
-                )}
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
+                      Modify Overtime Sheet
+                    </h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Changes update the official form live · Click Save when finished
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-3 py-1.5 shadow-sm">
+                  <Clock className="h-3.5 w-3.5 text-indigo-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                    Total OT
+                  </span>
+                  <span
+                    className={`text-sm font-bold tabular-nums ${
+                      overCap
+                        ? "text-rose-600 dark:text-rose-400"
+                        : "text-emerald-600 dark:text-emerald-400"
+                    }`}
+                  >
+                    {totalHours}h
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    / {MAX_OVERTIME_HOURS}h
+                  </span>
+                </div>
               </div>
-              <p className="text-[10px] text-zinc-500">
-                Holiday shift: {shiftMeta.label} · {shiftMeta.fromDisplay} – {shiftMeta.toDisplay}
-              </p>
+
+              {/* Employee & Shift settings */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f1726] shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 px-4 py-2.5">
+                  <User className="h-3.5 w-3.5 text-slate-500" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                    Employee &amp; Shift Settings
+                  </span>
+                </div>
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <label className="block space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Name of Employee
+                    </span>
+                    <input
+                      type="text"
+                      value={employeeName}
+                      onChange={(e) => setEmployeeName(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                    />
+                  </label>
+                  <label className="block space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Designation
+                    </span>
+                    <input
+                      type="text"
+                      value={designation}
+                      onChange={(e) => setDesignation(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                    />
+                  </label>
+                  <label className="block space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Weekly Holiday
+                    </span>
+                    <select
+                      value={weeklyHoliday}
+                      onChange={(e) => setWeeklyHoliday(Number(e.target.value))}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                    >
+                      {WEEKDAY_LABELS.map((label, i) => (
+                        <option key={label} value={i}>
+                          {label} ({WEEKDAY_LABELS_BN[i]})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Duty Shift (on holiday)
+                    </span>
+                    <select
+                      value={dutyShift}
+                      onChange={(e) =>
+                        setDutyShift(normalizeDutyShift(e.target.value))
+                      }
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                    >
+                      {(Object.keys(DUTY_SHIFTS) as DutyShiftId[]).map((id) => {
+                        const s = DUTY_SHIFTS[id];
+                        return (
+                          <option key={id} value={id}>
+                            {s.label} — {s.fromDisplay} to {s.toDisplay}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </label>
+                  <label className="block space-y-1 sm:col-span-2 lg:col-span-4">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Default Purpose (weekly holiday duty)
+                    </span>
+                    <input
+                      type="text"
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition font-bangla"
+                    />
+                  </label>
+                </div>
+                <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 px-4 py-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  Holiday shift currently set to{" "}
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">
+                    {shiftMeta.label}
+                  </span>{" "}
+                  · {shiftMeta.fromDisplay} – {shiftMeta.toDisplay}
+                </div>
+              </div>
+
+              {/* CL Leave Days */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f1726] shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 bg-rose-50/60 dark:bg-rose-950/20 px-4 py-2.5">
+                  <CalendarDays className="h-3.5 w-3.5 text-rose-500" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                    CL Leave Days
+                  </span>
+                  <span className="ml-auto text-[10px] text-slate-400">
+                    These dates are excluded from overtime
+                  </span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex flex-wrap items-end gap-2">
+                    <label className="block space-y-1">
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                        Select date
+                      </span>
+                      <input
+                        type="date"
+                        value={clInput}
+                        onChange={(e) => setClInput(e.target.value)}
+                        className="block rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-mono shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={addClDate}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 px-3.5 py-2 text-xs font-semibold shadow-sm transition"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add CL Day
+                    </button>
+                  </div>
+                  {clLeaveDates.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {clLeaveDates.map((d) => (
+                        <span
+                          key={d}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 px-3 py-1 text-xs font-mono text-rose-800 dark:text-rose-200"
+                        >
+                          {d}
+                          <button
+                            type="button"
+                            onClick={() => removeClDate(d)}
+                            className="rounded-full p-0.5 hover:bg-rose-200/60 dark:hover:bg-rose-800/40 transition"
+                            title="Remove"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-slate-400 italic">
+                      No CL leave days added yet.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Extra Duty Days */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f1726] shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 bg-sky-50/60 dark:bg-sky-950/20 px-4 py-2.5">
+                  <Clock className="h-3.5 w-3.5 text-sky-600" />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                    Extra Duty Days
+                  </span>
+                  <span className="ml-auto text-[10px] text-slate-400">
+                    Days that are not weekly holidays
+                  </span>
+                </div>
+                <div className="p-4 space-y-4">
+                  {/* Add new extra day form */}
+                  <div className="rounded-lg border border-slate-150 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/30 p-3.5 space-y-3">
+                    <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Add a new extra duty day
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-medium text-slate-500">Date</span>
+                        <input
+                          type="date"
+                          value={extraDraft.date}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({ ...d, date: e.target.value }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm font-mono shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition"
+                        />
+                      </label>
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-medium text-slate-500">Normal From</span>
+                        <input
+                          type="time"
+                          value={extraDraft.normalFrom}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({
+                              ...d,
+                              normalFrom: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm font-mono shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition"
+                        />
+                      </label>
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-medium text-slate-500">Normal To</span>
+                        <input
+                          type="time"
+                          value={extraDraft.normalTo}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({
+                              ...d,
+                              normalTo: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm font-mono shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition"
+                        />
+                      </label>
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-medium text-slate-500">Duty From</span>
+                        <input
+                          type="time"
+                          value={extraDraft.dutyFrom}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({
+                              ...d,
+                              dutyFrom: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm font-mono shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition"
+                        />
+                      </label>
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-medium text-slate-500">Duty To</span>
+                        <input
+                          type="time"
+                          value={extraDraft.dutyTo}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({
+                              ...d,
+                              dutyTo: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm font-mono shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition"
+                        />
+                      </label>
+                      <label className="block space-y-1 sm:col-span-2 lg:col-span-1">
+                        <span className="text-[10px] font-medium text-slate-500">Purpose</span>
+                        <input
+                          type="text"
+                          value={extraDraft.purpose}
+                          onChange={(e) =>
+                            setExtraDraft((d) => ({
+                              ...d,
+                              purpose: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-sm shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition font-bangla"
+                          placeholder="Purpose of extra work"
+                        />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addExtraEntry}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 text-xs font-semibold shadow-sm transition"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add Extra Day
+                      <span className="ml-1 rounded bg-sky-500/40 px-1.5 py-0.5 text-[10px] font-medium">
+                        {dutyDurationHours(extraDraft.dutyFrom, extraDraft.dutyTo)}h
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Existing extra entries table */}
+                  {extraDutyEntries.length > 0 && (
+                    <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 dark:bg-slate-900/60 text-left text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                            <th className="px-3 py-2.5 font-semibold">Date</th>
+                            <th className="px-3 py-2.5 font-semibold">Normal Hours</th>
+                            <th className="px-3 py-2.5 font-semibold">Duty / OT Hours</th>
+                            <th className="px-3 py-2.5 font-semibold">Purpose</th>
+                            <th className="px-3 py-2.5 font-semibold w-10" />
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                          {extraDutyEntries.map((e) => (
+                            <tr
+                              key={e.date}
+                              className="bg-white dark:bg-[#0f1726] hover:bg-slate-50/80 dark:hover:bg-slate-900/40 transition"
+                            >
+                              <td className="px-3 py-2 font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                                {e.date}
+                              </td>
+                              <td className="px-3 py-2">
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="time"
+                                    value={e.normalFrom}
+                                    onChange={(ev) =>
+                                      updateExtraEntry(e.date, {
+                                        normalFrom: ev.target.value,
+                                      })
+                                    }
+                                    className="w-[5.2rem] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono text-[11px] shadow-sm"
+                                  />
+                                  <span className="text-slate-400 text-[10px]">→</span>
+                                  <input
+                                    type="time"
+                                    value={e.normalTo}
+                                    onChange={(ev) =>
+                                      updateExtraEntry(e.date, {
+                                        normalTo: ev.target.value,
+                                      })
+                                    }
+                                    className="w-[5.2rem] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono text-[11px] shadow-sm"
+                                  />
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="time"
+                                    value={e.dutyFrom}
+                                    onChange={(ev) =>
+                                      updateExtraEntry(e.date, {
+                                        dutyFrom: ev.target.value,
+                                      })
+                                    }
+                                    className="w-[5.2rem] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono text-[11px] shadow-sm"
+                                  />
+                                  <span className="text-slate-400 text-[10px]">→</span>
+                                  <input
+                                    type="time"
+                                    value={e.dutyTo}
+                                    onChange={(ev) =>
+                                      updateExtraEntry(e.date, {
+                                        dutyTo: ev.target.value,
+                                      })
+                                    }
+                                    className="w-[5.2rem] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-1.5 py-1 font-mono text-[11px] shadow-sm"
+                                  />
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">
+                                <input
+                                  type="text"
+                                  value={e.purpose}
+                                  onChange={(ev) =>
+                                    updateExtraEntry(e.date, {
+                                      purpose: ev.target.value,
+                                    })
+                                  }
+                                  className="w-full min-w-[8rem] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-2 py-1 text-[11px] font-bangla shadow-sm"
+                                />
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => removeExtraEntry(e.date)}
+                                  className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                                  title="Remove entry"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  {extraDutyEntries.length === 0 && (
+                    <p className="text-[11px] text-slate-400 italic text-center py-2">
+                      No extra duty days added yet.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
 
           {overCap && (
-            <div className="print:hidden mb-3 rounded-lg border border-rose-300 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 px-3 py-2.5 text-xs text-rose-900 dark:text-rose-100">
-              <p className="font-semibold">
-                Monthly overtime limit is {MAX_OVERTIME_HOURS} hours — current total is {totalHours} h.
-              </p>
-              <p className="mt-1 text-[11px]">
-                Remove a day row so the sheet stays within {MAX_OVERTIME_HOURS} hours, then Save.
-              </p>
-              <ul className="mt-2 space-y-1">
-                {rows.map((r) => (
-                  <li
-                    key={r.dateYmd}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-white/80 dark:bg-black/20 px-2 py-1"
-                  >
-                    <span className="font-mono text-[11px]">
-                      {r.dateDisplay} · {r.hours}h · {r.isExtra ? "Extra" : "Weekly holiday"}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => excludeDay(r.dateYmd)}
-                      className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 text-[11px] font-semibold"
-                    >
-                      Remove this day
-                    </button>
-                  </li>
-                ))}
-              </ul>
+            <div className="print:hidden mb-4 rounded-xl border border-rose-200 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-950/30 px-4 py-3.5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300">
+                  <span className="text-sm font-bold">!</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-rose-900 dark:text-rose-100">
+                    Overtime limit exceeded
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-rose-700 dark:text-rose-200">
+                    Monthly limit is <strong>{MAX_OVERTIME_HOURS}h</strong> — current total is{" "}
+                    <strong>{totalHours}h</strong>. Remove day(s) below so the sheet stays within limit, then Save.
+                  </p>
+                  <ul className="mt-3 space-y-1.5">
+                    {rows.map((r) => (
+                      <li
+                        key={r.dateYmd}
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/90 dark:bg-black/25 border border-rose-100 dark:border-rose-800/40 px-3 py-1.5"
+                      >
+                        <span className="font-mono text-[11px] text-slate-700 dark:text-slate-200">
+                          {r.dateDisplay} · {r.hours}h · {r.isExtra ? "Extra" : "Weekly holiday"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => excludeDay(r.dateYmd)}
+                          className="rounded-md bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1 text-[11px] font-semibold shadow-sm transition"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
           {excludedDates.length > 0 && (
-            <div className="print:hidden mb-3 rounded-lg border border-zinc-200 dark:border-slate-600 bg-zinc-50 dark:bg-slate-900/40 px-3 py-2 text-[11px] text-zinc-600 dark:text-slate-300">
-              <span className="font-semibold">Excluded (click to restore): </span>
-              {excludedDates.map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => restoreDay(d)}
-                  className="inline-flex items-center mr-1.5 mt-1 rounded-full border border-zinc-300 dark:border-slate-600 px-2 py-0.5 font-mono hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
-                >
-                  {d} ×
-                </button>
-              ))}
+            <div className="print:hidden mb-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/40 px-4 py-3 text-[11px] text-slate-600 dark:text-slate-300 shadow-sm">
+              <span className="font-semibold text-slate-700 dark:text-slate-200">
+                Excluded days
+              </span>
+              <span className="text-slate-400 ml-1">(click to restore)</span>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {excludedDates.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => restoreDay(d)}
+                    className="inline-flex items-center rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2.5 py-1 font-mono text-[11px] hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition"
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
