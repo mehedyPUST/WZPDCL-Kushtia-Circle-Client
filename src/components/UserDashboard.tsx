@@ -41,7 +41,6 @@ import { toDayKey } from "@/lib/logsheetSlots";
 import ConfirmModal from "./ConfirmModal";
 import DashboardAccountPanel from "./DashboardAccountPanel";
 import OvertimeDataPanel from "./OvertimeDataPanel";
-import AllOvertimePanel from "./AllOvertimePanel";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrator",
@@ -50,7 +49,7 @@ const ROLE_LABELS: Record<string, string> = {
   viewer: "Viewer",
 };
 
-type WorkspaceTab = "overview" | "account" | "overtime" | "team-overtime";
+type WorkspaceTab = "overview" | "account" | "overtime";
 
 export default function UserDashboard() {
   const router = useRouter();
@@ -287,6 +286,12 @@ export default function UserDashboard() {
           detail: "Prepare overnight 22–08h slots",
           icon: Moon,
         },
+        {
+          href: "/monthly-overtime",
+          label: "Monthly Overtime Sheets",
+          detail: "Team duty SBA overtime forms",
+          icon: Clock,
+        },
       ]
       : []),
     {
@@ -419,20 +424,6 @@ export default function UserDashboard() {
             >
               My Overtime
             </button>
-            {(role === "duty" || role === "admin" || isAdmin) && (
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab === "team-overtime"}
-                onClick={() => setTab("team-overtime")}
-                className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${tab === "team-overtime"
-                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-teal-500/20 dark:text-teal-100 dark:border-teal-400/40 shadow-xs"
-                    : "text-zinc-600 dark:text-slate-300 hover:text-zinc-800 dark:hover:text-white border border-transparent"
-                  }`}
-              >
-                All Duty Overtime
-              </button>
-            )}
           </div>
 
           <div className="text-xs text-zinc-600 dark:text-slate-300 font-mono tabular-nums flex items-center gap-2">
@@ -476,8 +467,6 @@ export default function UserDashboard() {
           displayName={admin?.displayName || displayNameDraft || ""}
           username={admin?.username || ""}
         />
-      ) : tab === "team-overtime" ? (
-        <AllOvertimePanel />
       ) : (
         <>
           {/* 4-Column Operational KPI Strip */}

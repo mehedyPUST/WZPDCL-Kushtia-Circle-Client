@@ -25,6 +25,7 @@ import {
   CalendarDays,
   MessageSquare,
   FileSpreadsheet,
+  Clock,
 } from "lucide-react";
 import { APP_META } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
@@ -83,6 +84,7 @@ const NAV_SECTIONS: NavSection[] = [
       { href: "/circle-load", label: "Circle Load", icon: CircleDot },
       { href: "/kushtia-district-load", label: "District Load", icon: MapPin },
       { href: "/statistics", label: "Statistics", icon: BarChart3 },
+      { href: "/monthly-overtime", label: "Monthly Overtime Sheets", icon: Clock },
     ],
   },
   {
@@ -199,7 +201,8 @@ export default function AppShell({ children }) {
     if (
       href === "/manual-input" ||
       href === "/loadshed" ||
-      href === "/night-logs"
+      href === "/night-logs" ||
+      href === "/monthly-overtime"
     ) {
       return canWrite;
     }

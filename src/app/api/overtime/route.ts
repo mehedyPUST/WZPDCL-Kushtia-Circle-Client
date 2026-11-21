@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/serverAuth";
 import { connectDB, isDbConnected } from "@/lib/db";
 import OvertimeSheet from "@/lib/models/OvertimeSheet";
 import { getMockStore, generateId } from "@/lib/mockStore";
+import { findUserByIdOrUsername } from "@/lib/userStore";
 import {
   currentDhakaYearMonth,
   defaultOvertimeSheet,
@@ -77,8 +78,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid year or month" }, { status: 400 });
     }
 
-    const userId = String(auth.admin!.id);
+    const requestedUserId = String(searchParams.get("userId") || "").trim();
+    const selfId = String(auth.admin!.id);
+    const requesterRole = String(auth.admin!.role || "").toLowerCase();
+    const canManageTeam = requesterRole === "duty" || requesterRole === "admin";
+
+    if (requestedUserId && requestedUserId !== selfId && !canManageTeam) {
+      return NextResponse.json(
+        { success: false, message: "Only duty or admin users can view other sheets" },
+        { status: 403 }
+      );
+    }
+
+    const userId = requestedUserId || selfId;
     if (!isDbConnected()) await connectDB();
+
+    let defaultName = auth.admin!.displayName || "";
+    if (requestedUserId && requestedUserId !== selfId) {
+      const targetUser = await findUserByIdOrUsername({ id: requestedUserId });
+      defaultName = targetUser?.displayName || targetUser?.username || "";
+    }
 
     if (!isDbConnected()) {
       const store = getMockStore();
@@ -92,7 +111,7 @@ export async function GET(request: Request) {
       const sheet = found
         ? serializeDoc(found)
         : defaultOvertimeSheet(userId, year, month, {
-            employeeName: auth.admin!.displayName || "",
+            employeeName: defaultName,
           });
       return NextResponse.json({ success: true, sheet });
     }
@@ -101,7 +120,7 @@ export async function GET(request: Request) {
     const sheet = doc
       ? serializeDoc(doc)
       : defaultOvertimeSheet(userId, year, month, {
-          employeeName: auth.admin!.displayName || "",
+          employeeName: defaultName,
         });
     return NextResponse.json({ success: true, sheet });
   } catch (err: any) {
@@ -125,7 +144,19 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid year or month" }, { status: 400 });
     }
 
-    const userId = String(auth.admin!.id);
+    const requestedUserId = String(body.userId || "").trim();
+    const selfId = String(auth.admin!.id);
+    const requesterRole = String(auth.admin!.role || "").toLowerCase();
+    const canManageTeam = requesterRole === "duty" || requesterRole === "admin";
+
+    if (requestedUserId && requestedUserId !== selfId && !canManageTeam) {
+      return NextResponse.json(
+        { success: false, message: "Only duty or admin users can update other sheets" },
+        { status: 403 }
+      );
+    }
+
+    const userId = requestedUserId || selfId;
     const payload = {
       userId,
       year,

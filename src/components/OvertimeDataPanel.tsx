@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarDays,
   Clock,
@@ -48,6 +48,8 @@ interface OvertimeDataPanelProps {
   initialMonth?: number;
   /** Called after a successful save (e.g. to refresh team list) */
   onSaved?: () => void;
+  /** Optional initial modal mode when opened from Monthly Overtime Sheets */
+  initialModalMode?: ModalMode;
 }
 
 type ModalMode = "preview" | "modify" | null;
@@ -60,6 +62,7 @@ export default function OvertimeDataPanel({
   initialYear,
   initialMonth,
   onSaved,
+  initialModalMode = null,
 }: OvertimeDataPanelProps) {
   const init = currentDhakaYearMonth();
   const [year, setYear] = useState(initialYear ?? init.year);
@@ -80,6 +83,7 @@ export default function OvertimeDataPanel({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>(null);
+  const initialOpenedRef = useRef(false);
   const [extraDraft, setExtraDraft] = useState<ExtraDutyEntry>(emptyExtraEntry());
 
   const applySheet = useCallback(
@@ -115,12 +119,16 @@ export default function OvertimeDataPanel({
         userId: targetUserId || undefined,
       });
       applySheet((data.sheet || {}) as OvertimeSheetRecord);
+      if (initialModalMode && !initialOpenedRef.current) {
+        initialOpenedRef.current = true;
+        setModalMode(initialModalMode);
+      }
     } catch (err: any) {
       toast.error(err?.message || "Failed to load overtime data");
     } finally {
       setLoading(false);
     }
-  }, [year, month, targetUserId, applySheet]);
+  }, [year, month, targetUserId, applySheet, initialModalMode]);
 
   useEffect(() => {
     void load();
@@ -268,8 +276,9 @@ export default function OvertimeDataPanel({
                 Overtime Data
               </h2>
               <p className="text-[11px] text-zinc-500 dark:text-slate-400 truncate">
-                Saved on backend under your user id
-                {username ? ` (${username})` : ""}
+                {targetUserId
+                  ? `Managing sheet for ${nameFallback || username}${username ? ` (@${username})` : ""}`
+                  : `Saved on backend under your user id${username ? ` (${username})` : ""}`}
               </p>
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   Calculator,
   CircleDot,
   ClipboardEdit,
+  Clock,
   History,
   LayoutDashboard,
   MapPin,
@@ -170,6 +171,15 @@ const FEATURES: {
       icon: BarChart3,
       highlight: "Substation analytics",
       tone: "sky",
+    },
+    {
+      href: "/monthly-overtime",
+      title: "Monthly Overtime Sheets",
+      desc: "Review team duty SBA overtime hours, monitor 32h caps, and inspect or update monthly sheets.",
+      icon: Clock,
+      writeOnly: true,
+      highlight: "Team duty overtime",
+      tone: "teal",
     },
   ];
 
